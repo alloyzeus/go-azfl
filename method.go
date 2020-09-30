@@ -1,5 +1,10 @@
 package azcore
 
+// MethodError provides an abstraction for all errors returned by a method.
+type MethodError interface {
+	Error
+}
+
 // MethodCallContext is an abstraction for input and output contexts used
 // when calling a method.
 type MethodCallContext interface {
