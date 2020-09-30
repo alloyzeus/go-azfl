@@ -39,16 +39,44 @@ var (
 // AZEntityEvent is required by EntityEvent.
 func (evt EntityEventBase) AZEntityEvent() EntityEvent { return evt }
 
-// EntityOperationContext provides an abstraction for all operations which
+// EntityMethodCallContext provides an abstraction for all operations which
 // apply to entity instances.
-type EntityOperationContext interface {
-	Context
+type EntityMethodCallContext interface {
+	MethodCallContext
 }
 
-// EntityMutatingContext is a specialization of EntityOperationContext which
+// EntityMethodCallInputContext is an abstraction for all method call
+// input contexts.
+type EntityMethodCallInputContext interface {
+	EntityMethodCallContext
+	MethodCallInputContext
+}
+
+// EntityMethodCallOutputContext is an abstraction for all method call
+// output contexts.
+type EntityMethodCallOutputContext interface {
+	EntityMethodCallContext
+	MethodCallOutputContext
+}
+
+// EntityMutatingCallContext is a specialization of EntityOperationContext which
 // is used for operations which make any change to the entity.
-type EntityMutatingContext interface {
-	EntityOperationContext
+type EntityMutatingCallContext interface {
+	EntityMethodCallContext
+}
+
+// EntityMutatingInputContext provides an abstraction for input contexts
+// for mutating method calls.
+type EntityMutatingInputContext interface {
+	EntityMutatingCallContext
+	EntityMethodCallInputContext
+}
+
+// EntityMutatingOutputContext provides an abstraction for output contexts
+// for mutating method calls.
+type EntityMutatingOutputContext interface {
+	EntityMutatingCallContext
+	EntityMethodCallOutputContext
 }
 
 // EntityService provides an abstraction for all entity services. This
