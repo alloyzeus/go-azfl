@@ -162,6 +162,7 @@ type EntityCreationOutputContext interface {
 // EntityCreationOutputContextBase is the base implementation
 // for EntityCreationOutputContext.
 type EntityCreationOutputContextBase struct {
+	MethodCallOutputContextBase
 }
 
 var _ EntityCreationOutputContext = EntityCreationOutputContextBase{}
