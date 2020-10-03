@@ -12,18 +12,7 @@ type AdjunctEntityRefKey interface {
 
 // AdjunctEntityAttributes abstracts adjunct entity attributes.
 type AdjunctEntityAttributes interface {
+	Equatable
+
 	AZAdjunctEntityAttributes() AdjunctEntityAttributes
-}
-
-// AdjunctEntityAttributesBase is a base
-// for AdjunctEntityAttributes implementations.
-type AdjunctEntityAttributesBase struct {
-}
-
-var _ AdjunctEntityAttributes = AdjunctEntityAttributesBase{}
-
-// AZAdjunctEntityAttributes is required for conformance
-// with AdjunctEntityAttributes.
-func (attrs AdjunctEntityAttributesBase) AZAdjunctEntityAttributes() AdjunctEntityAttributes {
-	return attrs
 }

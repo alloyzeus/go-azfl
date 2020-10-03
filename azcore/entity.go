@@ -19,6 +19,17 @@ type EntityRefKey interface {
 	AZEntityRefKey() EntityRefKey
 }
 
+//----
+
+// EntityAttributes abstracts entity attributes.
+type EntityAttributes interface {
+	Equatable
+
+	AZEntityAttributes() EntityAttributes
+}
+
+//----
+
 // EntityEvent defines the contract for all event types of the entity.
 type EntityEvent interface {
 	Event
