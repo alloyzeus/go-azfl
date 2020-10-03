@@ -2,17 +2,21 @@ package azcore
 
 // AdjunctEntityID abstracts adjunct entity IDs.
 type AdjunctEntityID interface {
-	AZAdjunctEntityID() AdjunctEntityID
+	ID
+
+	AZAdjunctEntityID()
 }
 
 // AdjunctEntityRefKey abstracts adjunct entity ref keys.
 type AdjunctEntityRefKey interface {
-	AZAdjunctEntityRefKey() AdjunctEntityRefKey
+	RefKey
+
+	AZAdjunctEntityRefKey()
 }
 
 // AdjunctEntityAttributes abstracts adjunct entity attributes.
 type AdjunctEntityAttributes interface {
-	Equatable
+	Attributes
 
-	AZAdjunctEntityAttributes() AdjunctEntityAttributes
+	AZAdjunctEntityAttributes()
 }

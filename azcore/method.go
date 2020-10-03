@@ -1,30 +1,65 @@
 package azcore
 
+//----
+
 // MethodCallError provides an abstraction for all errors returned by a method.
 //
 //TODO: sub-classes: input (acces, parameters, context), internal
 type MethodCallError interface {
 	Error
 
-	AZMethodCallError() MethodCallError
+	AZMethodCallError()
 }
+
+//----
 
 // MethodCallContext is an abstraction for input and output contexts used
 // when calling a method.
 type MethodCallContext interface {
 	Context
+
+	AZMethodCallContext()
 }
+
+//----
 
 // MethodCallInputContext provides an abstraction for all input contexts
 // in method call inputs.
 type MethodCallInputContext interface {
 	MethodCallContext
+
+	AZMethodCallInputContext()
 }
+
+//----
+
+// MethodCallInputContextBase is a partial implementation
+// of MethodCallInputContext.
+type MethodCallInputContextBase struct{}
+
+var _ MethodCallContext = MethodCallInputContextBase{}
+var _ MethodCallInputContext = MethodCallInputContextBase{}
+
+// AZContext is required
+// for conformance with Context.
+func (MethodCallInputContextBase) AZContext() {}
+
+// AZMethodCallContext is required
+// for conformance with MethodCallContext.
+func (MethodCallInputContextBase) AZMethodCallContext() {}
+
+// AZMethodCallInputContext is required
+// for conformance with MethodCallInputContext.
+func (MethodCallInputContextBase) AZMethodCallInputContext() {}
+
+//----
 
 // MethodCallOutputContext provides an abstraction for all output contexts
 // in method call outputs.
 type MethodCallOutputContext interface {
 	MethodCallContext
+
+	AZMethodCallOutputContext()
 
 	// Returns the error, if any.
 	Err() MethodCallError
@@ -39,6 +74,8 @@ type MethodCallOutputContext interface {
 	// method returned this context.
 	Mutated() bool
 }
+
+//----
 
 // MethodCallOutputContextBase is a base
 // for MethodCallOutputContext implementations.
@@ -56,6 +93,17 @@ func NewMethodCallOutputContext(
 ) MethodCallOutputContextBase {
 	return MethodCallOutputContextBase{err: err, mutated: mutated}
 }
+
+// AZContext is required for conformance with Context.
+func (MethodCallOutputContextBase) AZContext() {}
+
+// AZMethodCallContext is required
+// for conformance with MethodCallContext.
+func (MethodCallOutputContextBase) AZMethodCallContext() {}
+
+// AZMethodCallOutputContext is required
+// for conformance with MethodCallOutputContext.
+func (MethodCallOutputContextBase) AZMethodCallOutputContext() {}
 
 // Err is required for conformance with MethodCallOutputContext.
 func (outputCtx MethodCallOutputContextBase) Err() MethodCallError { return outputCtx.err }

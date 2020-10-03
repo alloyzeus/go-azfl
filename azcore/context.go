@@ -5,7 +5,9 @@ import (
 )
 
 // Context is a generalized context for all service methods.
-type Context interface{}
+type Context interface {
+	AZContext()
+}
 
 // HumanContext is a specialized context, where current processing
 // was initiated by a human.

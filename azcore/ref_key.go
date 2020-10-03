@@ -2,7 +2,9 @@ package azcore
 
 // RefKey defines the contract for all its concrete implementations.
 type RefKey interface {
-	AZRefKey() RefKey
+	Equatable
+
+	AZRefKey()
 
 	// RefKeyString returns a string representation of the instance.
 	RefKeyString() string
