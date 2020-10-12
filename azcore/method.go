@@ -26,6 +26,7 @@ type MethodCallContext interface {
 // MethodCallID represents the identifier of a method call. This identifier
 // doubles as idempotency token.
 type MethodCallID interface {
+	Equatable
 	AZMethodCallID()
 }
 

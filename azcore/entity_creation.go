@@ -1,5 +1,10 @@
 package azcore
 
+// EntityCreationInfo holds information about the creation of an entity.
+type EntityCreationInfo interface {
+	ActionInfo
+}
+
 // EntityCreationInfoBase is the base for all entity creation info.
 type EntityCreationInfoBase struct{}
 
