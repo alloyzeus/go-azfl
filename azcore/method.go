@@ -10,6 +10,8 @@ type MethodCallContext interface {
 	AZMethodCallContext()
 }
 
+//endregion
+
 //region MethodCallError
 
 // MethodCallError provides an abstraction for all errors returned by a method.
@@ -23,15 +25,51 @@ type MethodCallError interface {
 
 //endregion
 
-//endregion
-
 //region MethodCallID
 
 // MethodCallID represents the identifier of a method call. This identifier
 // doubles as idempotency token.
 type MethodCallID interface {
 	Equatable
+
 	AZMethodCallID()
+}
+
+//endregion
+
+//region MethodCallMessage
+
+// MethodCallMessage abstracts the messages, i.e., request and response.
+type MethodCallMessage interface {
+	AZMethodCallMessage()
+}
+
+//endregion
+
+//region MethodRequest
+
+// MethodRequest abstracts request messages.
+type MethodRequest interface {
+	MethodCallMessage
+
+	Context() MethodRequestContext
+}
+
+// type MethodRequestBase struct {
+// 	context MethodRequestContext
+// 	parameters MethodRequestParameters
+// }
+
+//endregion
+
+//region MethodRequestError
+
+// MethodRequestError is a sub-class of MethodCallError which indicates that
+// there's an error in the request.
+type MethodRequestError interface {
+	MethodCallError
+
+	AZMethodRequestError()
 }
 
 //endregion
@@ -48,14 +86,14 @@ type MethodRequestContext interface {
 
 //endregion
 
-//region MethodRequestError
+//region MethodRequestContextError
 
-// MethodRequestError is a sub-class of MethodCallError which indicates that
-// there's an error in the request.
-type MethodRequestError interface {
-	MethodCallError
+// MethodRequestContextError provides request-context-related error
+// information. It is a sub-class of MethodRequestError.
+type MethodRequestContextError interface {
+	MethodRequestError
 
-	AZMethodRequestError()
+	AZMethodRequestContextError()
 }
 
 //endregion
@@ -90,20 +128,20 @@ func (MethodRequestContextBase) AZMethodRequestContext() {}
 //
 //TODO: listing of affected states with their respective revision ID.
 //TODO: directive: done/end, retry (on failure; optionally with timing and
-// retry count parameters), redirect
+// retry count parameters or exponentially back-off parameters), redirect
 type MethodResponseContext interface {
 	MethodCallContext
 
 	AZMethodResponseContext()
 
-	// Returns the error, if any.
-	Err() MethodCallError
-
 	// // Succeed returns true when the method achieved its objective.
 	// Succeed() bool
 
-	// Mutated returns true if the method made any changes, even when the
-	// method failed to fulfill its objective. It should not
+	// Returns the error, if any.
+	Err() MethodCallError
+
+	// Mutated returns true if the method made any changes to any state in the
+	// server, even when the method did not succeed. It should not
 	// return true if the change has been completely rolled-back before the
 	// method returned this context.
 	Mutated() bool
