@@ -4,12 +4,15 @@ package azcore
 
 // EntityMethodMessage abstracts the messages, i.e., requests and responses.
 type EntityMethodMessage interface {
-	MethodCallMessage
+	MethodMessage
+
+	EntityMethodContext() EntityMethodContext
 }
 
 // EntityMethodRequest abstracts all entity method requests messages.
 type EntityMethodRequest interface {
 	MethodRequest
+	EntityMethodMessage
 
 	EntityMethodRequestContext() EntityMethodRequestContext
 }
@@ -17,6 +20,7 @@ type EntityMethodRequest interface {
 // EntityMethodResponse abstracts all entity method response messages.
 type EntityMethodResponse interface {
 	MethodResponse
+	EntityMethodMessage
 
 	EntityMethodResponseContext() EntityMethodResponseContext
 }
@@ -28,7 +32,7 @@ type EntityMethodResponse interface {
 // EntityMethodContext provides an abstraction for all operations which
 // apply to entity instances.
 type EntityMethodContext interface {
-	MethodCallContext
+	MethodContext
 }
 
 // EntityMethodRequestContext is an abstraction for all method call
@@ -49,24 +53,51 @@ type EntityMethodResponseContext interface {
 
 //region MutatingMethodContext
 
-// EntityMutatingMethodContext is a specialization of EntityOperationContext which
+// EntityMutatingContext is a specialization of EntityOperationContext which
 // is used for operations which make any change to the entity.
-type EntityMutatingMethodContext interface {
+type EntityMutatingContext interface {
 	EntityMethodContext
+	MutatingMethodContext
 }
 
 // EntityMutatingRequestContext provides an abstraction for input contexts
 // for mutating method calls.
 type EntityMutatingRequestContext interface {
-	EntityMutatingMethodContext
+	EntityMutatingContext
 	EntityMethodRequestContext
+	MutatingRequestContext
 }
 
 // EntityMutatingResponseContext provides an abstraction for output contexts
 // for mutating method calls.
 type EntityMutatingResponseContext interface {
-	EntityMutatingMethodContext
+	EntityMutatingContext
 	EntityMethodResponseContext
+	MutatingResponseContext
+}
+
+// EntityMutatingMessage abstracts entity mutating method requests and responses.
+type EntityMutatingMessage interface {
+	EntityMethodMessage
+	MutatingMethodMessage
+
+	EntityMutatingContext() EntityMutatingContext
+}
+
+// EntityMutatingRequest abstracts entity mutating requests.
+type EntityMutatingRequest interface {
+	EntityMutatingMessage
+	MutatingRequest
+
+	EntityMutatingRequestContext() EntityMutatingRequestContext
+}
+
+// EntityMutatingResponse abstracts entity mutating responses.
+type EntityMutatingResponse interface {
+	EntityMutatingMessage
+	MutatingResponse
+
+	EntityMutatingResponseContext() EntityMutatingResponseContext
 }
 
 //endregion

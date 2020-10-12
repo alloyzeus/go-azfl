@@ -25,42 +25,42 @@ type EntityCreationEventBase struct {
 // AZEntityCreationEvent is required for conformance with EntityCreationEvent.
 func (EntityCreationEventBase) AZEntityCreationEvent() {}
 
-// EntityCreationInputContext is the abstraction for all entity creation
+// EntityCreationRequestContext is the abstraction for all entity creation
 // call input contexts.
-type EntityCreationInputContext interface {
+type EntityCreationRequestContext interface {
 	EntityMutatingRequestContext
 
-	AZEntityCreationInputContext()
+	AZEntityCreationRequestContext()
 }
 
-// EntityCreationInputContextBase is the base implementation
-// for EntityCreationInputContext.
-type EntityCreationInputContextBase struct {
+// EntityCreationRequestContextBase is the base implementation
+// for EntityCreationRequestContext.
+type EntityCreationRequestContextBase struct {
 	MethodRequestContextBase
 }
 
-var _ EntityCreationInputContext = EntityCreationInputContextBase{}
+var _ EntityCreationRequestContext = EntityCreationRequestContextBase{}
 
-// AZEntityCreationInputContext is required for conformance
-// with EntityCreationInputContext.
-func (EntityCreationInputContextBase) AZEntityCreationInputContext() {}
+// AZEntityCreationRequestContext is required for conformance
+// with EntityCreationRequestContext.
+func (EntityCreationRequestContextBase) AZEntityCreationRequestContext() {}
 
-// EntityCreationOutputContext is the abstraction for all entity creation
+// EntityCreationResponseContext is the abstraction for all entity creation
 // call output contexts.
-type EntityCreationOutputContext interface {
+type EntityCreationResponseContext interface {
 	EntityMutatingResponseContext
 
-	AZEntityCreationOutputContext()
+	AZEntityCreationResponseContext()
 }
 
-// EntityCreationOutputContextBase is the base implementation
-// for EntityCreationOutputContext.
-type EntityCreationOutputContextBase struct {
+// EntityCreationResponseContextBase is the base implementation
+// for EntityCreationResponseContext.
+type EntityCreationResponseContextBase struct {
 	MethodResponseContextBase
 }
 
-var _ EntityCreationOutputContext = EntityCreationOutputContextBase{}
+var _ EntityCreationResponseContext = EntityCreationResponseContextBase{}
 
-// AZEntityCreationOutputContext is required for conformance
-// with EntityCreationOutputContext.
-func (EntityCreationOutputContextBase) AZEntityCreationOutputContext() {}
+// AZEntityCreationResponseContext is required for conformance
+// with EntityCreationResponseContext.
+func (EntityCreationResponseContextBase) AZEntityCreationResponseContext() {}

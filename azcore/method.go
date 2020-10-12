@@ -56,29 +56,14 @@ func (err MethodInternalErrorMsg) Error() string { return err.msg }
 // Analogous to HTTP's 501 status code and gRPC's 12 status code.
 var ErrMethodNotImplemented = &MethodInternalErrorMsg{msg: "not implemented"}
 
-//region MethodCallContext
+//region MethodContext
 
-// MethodCallContext is an abstraction for input and output contexts used
+// MethodContext is an abstraction for input and output contexts used
 // when calling a method.
-type MethodCallContext interface {
+type MethodContext interface {
 	Context
 
-	AZMethodCallContext()
-}
-
-//endregion
-
-//region MethodCallError
-
-// MethodCallError provides an abstraction for all errors returned by a method.
-//
-// This error class is analogous to HTTP's 4xx status codes.
-//
-//TODO: sub-classes: input (acces, parameters, context), internal
-type MethodCallError interface {
-	Error
-
-	AZMethodCallError()
+	AZMethodContext()
 }
 
 //endregion
@@ -95,11 +80,16 @@ type MethodCallID interface {
 
 //endregion
 
-//region MethodCallMessage
+//region MethodMessage
 
-// MethodCallMessage abstracts the messages, i.e., requests and responses.
-type MethodCallMessage interface {
-	AZMethodCallMessage()
+// MethodMessage abstracts the messages, i.e., requests and responses.
+type MethodMessage interface {
+	AZMethodMessage()
+
+	// MethodContext returns the context of this message.
+	//
+	// Implementations must return most specialized context implementation.
+	MethodContext() MethodContext
 }
 
 //endregion
@@ -108,7 +98,7 @@ type MethodCallMessage interface {
 
 // MethodRequest abstracts method request messages.
 type MethodRequest interface {
-	MethodCallMessage
+	MethodMessage
 
 	MethodRequestContext() MethodRequestContext
 }
@@ -122,10 +112,14 @@ type MethodRequest interface {
 
 //region MethodRequestError
 
-// MethodRequestError is a sub-class of MethodCallError which indicates that
+// MethodRequestError is a sub-class of MethodError which indicates that
 // there's an error in the request.
+//
+// This error class is analogous to HTTP's 4xx status codes.
+//
+//TODO: sub-classes: acces, parameters, context
 type MethodRequestError interface {
-	MethodCallError
+	MethodError
 
 	AZMethodRequestError()
 }
@@ -137,7 +131,7 @@ type MethodRequestError interface {
 // MethodRequestContext provides an abstraction for all input contexts
 // in method call inputs.
 type MethodRequestContext interface {
-	MethodCallContext
+	MethodContext
 
 	AZMethodRequestContext()
 }
@@ -162,16 +156,16 @@ type MethodRequestContextError interface {
 // of MethodRequestContext.
 type MethodRequestContextBase struct{}
 
-var _ MethodCallContext = MethodRequestContextBase{}
+var _ MethodContext = MethodRequestContextBase{}
 var _ MethodRequestContext = MethodRequestContextBase{}
 
 // AZContext is required
 // for conformance with Context.
 func (MethodRequestContextBase) AZContext() {}
 
-// AZMethodCallContext is required
-// for conformance with MethodCallContext.
-func (MethodRequestContextBase) AZMethodCallContext() {}
+// AZMethodContext is required
+// for conformance with MethodContext.
+func (MethodRequestContextBase) AZMethodContext() {}
 
 // AZMethodRequestContext is required
 // for conformance with MethodRequestContext.
@@ -183,7 +177,7 @@ func (MethodRequestContextBase) AZMethodRequestContext() {}
 
 // MethodResponse abstracts method response messages.
 type MethodResponse interface {
-	MethodCallMessage
+	MethodMessage
 
 	MethodResponseContext() MethodResponseContext
 }
@@ -199,7 +193,7 @@ type MethodResponse interface {
 //TODO: directive: done/end, retry (on failure; optionally with timing and
 // retry count parameters or exponentially back-off parameters), redirect
 type MethodResponseContext interface {
-	MethodCallContext
+	MethodContext
 
 	AZMethodResponseContext()
 
@@ -207,7 +201,7 @@ type MethodResponseContext interface {
 	// Succeed() bool
 
 	// Returns the error, if any.
-	Err() MethodCallError
+	Err() MethodError
 
 	// Mutated returns true if the method made any changes to any state in the
 	// server, even when the method did not succeed. It should not
@@ -223,7 +217,7 @@ type MethodResponseContext interface {
 // MethodResponseContextBase is a base
 // for MethodResponseContext implementations.
 type MethodResponseContextBase struct {
-	err     MethodCallError
+	err     MethodError
 	mutated bool
 }
 
@@ -232,7 +226,7 @@ var _ MethodResponseContext = MethodResponseContextBase{}
 // NewMethodResponseContext creates a new instance
 // of MethodResponseContext.
 func NewMethodResponseContext(
-	err MethodCallError, mutated bool,
+	err MethodError, mutated bool,
 ) MethodResponseContextBase {
 	return MethodResponseContextBase{err: err, mutated: mutated}
 }
@@ -240,18 +234,62 @@ func NewMethodResponseContext(
 // AZContext is required for conformance with Context.
 func (MethodResponseContextBase) AZContext() {}
 
-// AZMethodCallContext is required
-// for conformance with MethodCallContext.
-func (MethodResponseContextBase) AZMethodCallContext() {}
+// AZMethodContext is required
+// for conformance with MethodContext.
+func (MethodResponseContextBase) AZMethodContext() {}
 
 // AZMethodResponseContext is required
 // for conformance with MethodResponseContext.
 func (MethodResponseContextBase) AZMethodResponseContext() {}
 
 // Err is required for conformance with MethodResponseContext.
-func (ctx MethodResponseContextBase) Err() MethodCallError { return ctx.err }
+func (ctx MethodResponseContextBase) Err() MethodError { return ctx.err }
 
 // Mutated is required for conformance with MethodResponseContext.
 func (ctx MethodResponseContextBase) Mutated() bool { return ctx.mutated }
+
+//endregion
+
+//region Mutating method
+
+// MutatingMethodMessage abstracts mutating method requests and responses.
+type MutatingMethodMessage interface {
+	MethodMessage
+
+	MutatingMethodContext() MutatingMethodContext
+}
+
+// MutatingMethodContext abstracts contexts of mutating method requests and responses.
+type MutatingMethodContext interface {
+	MethodContext
+}
+
+// MutatingRequest abstracts mutating method requests.
+type MutatingRequest interface {
+	MutatingMethodMessage
+	MethodRequest
+
+	MutatingRequestContext() MutatingRequestContext
+}
+
+// MutatingRequestContext abstracts mutating method request contexts.
+type MutatingRequestContext interface {
+	MutatingMethodContext
+	MethodRequestContext
+}
+
+// MutatingResponse abstracts mutating method responses.
+type MutatingResponse interface {
+	MutatingMethodMessage
+	MethodResponse
+
+	MutatingResponseContext() MutatingResponseContext
+}
+
+// MutatingResponseContext abstracts mutating method response contexts.
+type MutatingResponseContext interface {
+	MutatingMethodContext
+	MethodResponseContext
+}
 
 //endregion

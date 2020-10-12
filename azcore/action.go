@@ -2,8 +2,8 @@ package azcore
 
 // ActionInfo holds information about an action.
 type ActionInfo interface {
-	// CallID returns the ID of the method call this action initiated through.
-	CallID() MethodCallID
+	// MethodCallID returns the ID of the method call this action initiated through.
+	MethodCallID() MethodCallID
 
 	// Actor returns the subject who executed the action. Must not be empty
 	// in server, might be empty in clients, might be queryable.
