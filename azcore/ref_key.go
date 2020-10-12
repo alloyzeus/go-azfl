@@ -23,7 +23,7 @@ type RefKey interface {
 	AZRefKey()
 
 	// ID returns only the ID-part of this ref-key.
-	ID() ID
+	ID() EID
 
 	// RefKeyString returns a string representation of the instance.
 	RefKeyString() string

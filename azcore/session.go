@@ -7,8 +7,8 @@ type Session interface {
 	// SessionRefKey returns the identifier of this session.
 	SessionRefKey() SessionRefKey
 
-	// ParentSessionRefKey returns the ID of the session which was used to
-	// create this session.
+	// ParentSessionRefKey returns the identifier of the session which
+	// was used to create this session.
 	ParentSessionRefKey() SessionRefKey
 
 	// Subject returns the subject this session is for.
