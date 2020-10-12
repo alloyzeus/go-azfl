@@ -252,21 +252,21 @@ func (ctx MethodResponseContextBase) Mutated() bool { return ctx.mutated }
 
 //region Mutating method
 
-// MutatingMethodMessage abstracts mutating method requests and responses.
-type MutatingMethodMessage interface {
+// MutatingMessage abstracts mutating method requests and responses.
+type MutatingMessage interface {
 	MethodMessage
 
-	MutatingMethodContext() MutatingMethodContext
+	MutatingContext() MutatingContext
 }
 
-// MutatingMethodContext abstracts contexts of mutating method requests and responses.
-type MutatingMethodContext interface {
+// MutatingContext abstracts contexts of mutating method requests and responses.
+type MutatingContext interface {
 	MethodContext
 }
 
 // MutatingRequest abstracts mutating method requests.
 type MutatingRequest interface {
-	MutatingMethodMessage
+	MutatingMessage
 	MethodRequest
 
 	MutatingRequestContext() MutatingRequestContext
@@ -274,13 +274,13 @@ type MutatingRequest interface {
 
 // MutatingRequestContext abstracts mutating method request contexts.
 type MutatingRequestContext interface {
-	MutatingMethodContext
+	MutatingContext
 	MethodRequestContext
 }
 
 // MutatingResponse abstracts mutating method responses.
 type MutatingResponse interface {
-	MutatingMethodMessage
+	MutatingMessage
 	MethodResponse
 
 	MutatingResponseContext() MutatingResponseContext
@@ -288,7 +288,7 @@ type MutatingResponse interface {
 
 // MutatingResponseContext abstracts mutating method response contexts.
 type MutatingResponseContext interface {
-	MutatingMethodContext
+	MutatingContext
 	MethodResponseContext
 }
 

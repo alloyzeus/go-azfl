@@ -51,13 +51,13 @@ type EntityMethodResponseContext interface {
 
 //endregion
 
-//region MutatingMethodContext
+//region MutatingContext
 
 // EntityMutatingContext is a specialization of EntityOperationContext which
 // is used for operations which make any change to the entity.
 type EntityMutatingContext interface {
 	EntityMethodContext
-	MutatingMethodContext
+	MutatingContext
 }
 
 // EntityMutatingRequestContext provides an abstraction for input contexts
@@ -79,7 +79,7 @@ type EntityMutatingResponseContext interface {
 // EntityMutatingMessage abstracts entity mutating method requests and responses.
 type EntityMutatingMessage interface {
 	EntityMethodMessage
-	MutatingMethodMessage
+	MutatingMessage
 
 	EntityMutatingContext() EntityMutatingContext
 }
