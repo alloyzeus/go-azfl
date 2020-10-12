@@ -1,5 +1,61 @@
 package azcore
 
+//region MethodError
+
+// MethodError abstracts all method-related errors.
+type MethodError interface {
+	Error
+
+	AZMethodError()
+}
+
+// MethodErrorMsg is a basic implementation of MethodError which provides
+// an error message string.
+type MethodErrorMsg struct {
+	msg string
+}
+
+var _ MethodError = MethodErrorMsg{}
+
+// AZMethodError is required for conformance with MethodError.
+func (MethodErrorMsg) AZMethodError() {}
+
+func (err MethodErrorMsg) Error() string { return err.msg }
+
+// MethodInternalError represents error in the method, service, or in
+// any dependency required to achieve the objective.
+//
+// This is analogous to HTTP's 5xx status code.
+type MethodInternalError interface {
+	MethodError
+
+	AZMethodInternalError()
+}
+
+// MethodInternalErrorMsg is a basic implementation of MethodInternalError
+// which provides error message string.
+type MethodInternalErrorMsg struct {
+	msg string
+}
+
+var _ MethodInternalError = MethodInternalErrorMsg{}
+
+// AZMethodInternalError is required for conformance with MethodInternalError.
+func (MethodInternalErrorMsg) AZMethodInternalError() {}
+
+// AZMethodError is required for conformance with MethodError.
+func (MethodInternalErrorMsg) AZMethodError() {}
+
+func (err MethodInternalErrorMsg) Error() string { return err.msg }
+
+//endregion
+
+// ErrMethodNotImplemented is usually used when a method is unable to
+// achieve its objective because some part of it is unimplemented.
+//
+// Analogous to HTTP's 501 status code and gRPC's 12 status code.
+var ErrMethodNotImplemented = &MethodInternalErrorMsg{msg: "not implemented"}
+
 //region MethodCallContext
 
 // MethodCallContext is an abstraction for input and output contexts used
@@ -15,6 +71,8 @@ type MethodCallContext interface {
 //region MethodCallError
 
 // MethodCallError provides an abstraction for all errors returned by a method.
+//
+// This error class is analogous to HTTP's 4xx status codes.
 //
 //TODO: sub-classes: input (acces, parameters, context), internal
 type MethodCallError interface {
