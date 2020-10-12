@@ -97,7 +97,7 @@ type MethodCallID interface {
 
 //region MethodCallMessage
 
-// MethodCallMessage abstracts the messages, i.e., request and response.
+// MethodCallMessage abstracts the messages, i.e., requests and responses.
 type MethodCallMessage interface {
 	AZMethodCallMessage()
 }
@@ -106,11 +106,11 @@ type MethodCallMessage interface {
 
 //region MethodRequest
 
-// MethodRequest abstracts request messages.
+// MethodRequest abstracts method request messages.
 type MethodRequest interface {
 	MethodCallMessage
 
-	Context() MethodRequestContext
+	MethodRequestContext() MethodRequestContext
 }
 
 // type MethodRequestBase struct {
@@ -176,6 +176,17 @@ func (MethodRequestContextBase) AZMethodCallContext() {}
 // AZMethodRequestContext is required
 // for conformance with MethodRequestContext.
 func (MethodRequestContextBase) AZMethodRequestContext() {}
+
+//endregion
+
+//region MethodResponse
+
+// MethodResponse abstracts method response messages.
+type MethodResponse interface {
+	MethodCallMessage
+
+	MethodResponseContext() MethodResponseContext
+}
 
 //endregion
 

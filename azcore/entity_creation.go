@@ -28,7 +28,7 @@ func (EntityCreationEventBase) AZEntityCreationEvent() {}
 // EntityCreationInputContext is the abstraction for all entity creation
 // call input contexts.
 type EntityCreationInputContext interface {
-	EntityMutatingInputContext
+	EntityMutatingRequestContext
 
 	AZEntityCreationInputContext()
 }
@@ -48,7 +48,7 @@ func (EntityCreationInputContextBase) AZEntityCreationInputContext() {}
 // EntityCreationOutputContext is the abstraction for all entity creation
 // call output contexts.
 type EntityCreationOutputContext interface {
-	EntityMutatingOutputContext
+	EntityMutatingResponseContext
 
 	AZEntityCreationOutputContext()
 }

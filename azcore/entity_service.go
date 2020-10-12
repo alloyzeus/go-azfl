@@ -1,49 +1,72 @@
 package azcore
 
-//region CallContext
+//region Method
 
-// EntityMethodCallContext provides an abstraction for all operations which
+// EntityMethodMessage abstracts the messages, i.e., requests and responses.
+type EntityMethodMessage interface {
+	MethodCallMessage
+}
+
+// EntityMethodRequest abstracts all entity method requests messages.
+type EntityMethodRequest interface {
+	MethodRequest
+
+	EntityMethodRequestContext() EntityMethodRequestContext
+}
+
+// EntityMethodResponse abstracts all entity method response messages.
+type EntityMethodResponse interface {
+	MethodResponse
+
+	EntityMethodResponseContext() EntityMethodResponseContext
+}
+
+//endregion
+
+//region Context
+
+// EntityMethodContext provides an abstraction for all operations which
 // apply to entity instances.
-type EntityMethodCallContext interface {
+type EntityMethodContext interface {
 	MethodCallContext
 }
 
-// EntityMethodCallInputContext is an abstraction for all method call
+// EntityMethodRequestContext is an abstraction for all method call
 // input contexts.
-type EntityMethodCallInputContext interface {
-	EntityMethodCallContext
+type EntityMethodRequestContext interface {
+	EntityMethodContext
 	MethodRequestContext
 }
 
-// EntityMethodCallOutputContext is an abstraction for all method call
+// EntityMethodResponseContext is an abstraction for all method call
 // output contexts.
-type EntityMethodCallOutputContext interface {
-	EntityMethodCallContext
+type EntityMethodResponseContext interface {
+	EntityMethodContext
 	MethodResponseContext
 }
 
 //endregion
 
-//region MutatingCallContext
+//region MutatingMethodContext
 
-// EntityMutatingCallContext is a specialization of EntityOperationContext which
+// EntityMutatingMethodContext is a specialization of EntityOperationContext which
 // is used for operations which make any change to the entity.
-type EntityMutatingCallContext interface {
-	EntityMethodCallContext
+type EntityMutatingMethodContext interface {
+	EntityMethodContext
 }
 
-// EntityMutatingInputContext provides an abstraction for input contexts
+// EntityMutatingRequestContext provides an abstraction for input contexts
 // for mutating method calls.
-type EntityMutatingInputContext interface {
-	EntityMutatingCallContext
-	EntityMethodCallInputContext
+type EntityMutatingRequestContext interface {
+	EntityMutatingMethodContext
+	EntityMethodRequestContext
 }
 
-// EntityMutatingOutputContext provides an abstraction for output contexts
+// EntityMutatingResponseContext provides an abstraction for output contexts
 // for mutating method calls.
-type EntityMutatingOutputContext interface {
-	EntityMutatingCallContext
-	EntityMethodCallOutputContext
+type EntityMutatingResponseContext interface {
+	EntityMutatingMethodContext
+	EntityMethodResponseContext
 }
 
 //endregion
