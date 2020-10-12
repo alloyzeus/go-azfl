@@ -11,14 +11,18 @@ type EntityCreationInfoBase struct{}
 // EntityCreationEvent is the abstraction for all entity creation events.
 type EntityCreationEvent interface {
 	AZEntityCreationEvent()
+
+	CreationInfo() EntityCreationInfo
 }
 
 // EntityCreationEventBase is the base implementation of EntityCreationEvent.
-type EntityCreationEventBase struct{}
+type EntityCreationEventBase struct {
+}
 
-var _ EntityCreationEvent = EntityCreationEventBase{}
+//TODO: use tests to assert partial interface implementations
+//var _ EntityCreationEvent = EntityCreationEventBase{}
 
-// AZEntityCreationEvent is required for conformance with EntityCreationEventBase.
+// AZEntityCreationEvent is required for conformance with EntityCreationEvent.
 func (EntityCreationEventBase) AZEntityCreationEvent() {}
 
 // EntityCreationInputContext is the abstraction for all entity creation
@@ -32,7 +36,7 @@ type EntityCreationInputContext interface {
 // EntityCreationInputContextBase is the base implementation
 // for EntityCreationInputContext.
 type EntityCreationInputContextBase struct {
-	MethodCallInputContextBase
+	MethodRequestContextBase
 }
 
 var _ EntityCreationInputContext = EntityCreationInputContextBase{}
@@ -52,7 +56,7 @@ type EntityCreationOutputContext interface {
 // EntityCreationOutputContextBase is the base implementation
 // for EntityCreationOutputContext.
 type EntityCreationOutputContextBase struct {
-	MethodCallOutputContextBase
+	MethodResponseContextBase
 }
 
 var _ EntityCreationOutputContext = EntityCreationOutputContextBase{}

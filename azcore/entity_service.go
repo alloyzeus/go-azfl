@@ -12,14 +12,14 @@ type EntityMethodCallContext interface {
 // input contexts.
 type EntityMethodCallInputContext interface {
 	EntityMethodCallContext
-	MethodCallInputContext
+	MethodRequestContext
 }
 
 // EntityMethodCallOutputContext is an abstraction for all method call
 // output contexts.
 type EntityMethodCallOutputContext interface {
 	EntityMethodCallContext
-	MethodCallOutputContext
+	MethodResponseContext
 }
 
 //endregion
