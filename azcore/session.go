@@ -15,8 +15,16 @@ type Session interface {
 	Subject() Subject
 }
 
-// A SessionRefKey is a reference to a Session.
+// SessionID abstracts the identifiers of Session entity instances.
+type SessionID interface {
+	EID
+	AZSessionID()
+}
+
+// SessionRefKey is used to refer to a Session entity instance.
 type SessionRefKey interface {
 	RefKey
-	AZSessionRefKey()
+
+	// SessionID returns only the ID part of this ref-key.
+	SessionID() SessionID
 }

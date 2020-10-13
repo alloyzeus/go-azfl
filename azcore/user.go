@@ -1,7 +1,15 @@
 package azcore
 
-// UserRefKey represents a reference to a User.
+// UserID abstracts the identifiers of User entity instances.
+type UserID interface {
+	EID
+	AZUserID()
+}
+
+// UserRefKey is used to refer to a User entity instance.
 type UserRefKey interface {
 	RefKey
-	AZUserRefKey()
+
+	// UserID returns only the ID part of this ref-key.
+	UserID() UserID
 }
