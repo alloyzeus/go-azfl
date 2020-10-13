@@ -1,5 +1,7 @@
 package azcore
 
+import "time"
+
 //region MethodError
 
 // MethodError abstracts all method-related errors.
@@ -64,6 +66,23 @@ type MethodContext interface {
 	Context
 
 	AZMethodContext()
+}
+
+//endregion
+
+//region MethodCallInfo
+
+// A MethodCallInfo describes a method call.
+type MethodCallInfo interface {
+	AZMethodCallInfo()
+
+	CallID() MethodCallID
+
+	// RequestTime is the time assigned by the terminal which made the
+	// request for the method call.
+	//
+	// The value is untrusted.
+	RequestTime() *time.Time
 }
 
 //endregion

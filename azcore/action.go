@@ -1,5 +1,7 @@
 package azcore
 
+import "time"
+
 // ActionInfo holds information about an action.
 type ActionInfo interface {
 	// MethodCallID returns the ID of the method call this action initiated through.
@@ -16,6 +18,19 @@ type ActionInfo interface {
 	// DelegationInfo returns the information about the delegation if this
 	// action was delegated to other subject or session.
 	DelegationInfo() DelegationInfo
+
+	// Timestamp returns the time when the action made the effect. This should
+	// be obtained from the lowest level, e.g., database or file system.
+	//
+	// An analogy: in ordering process in a restaurant, the
+	// timestamp is the time when the cook declared that the food is ready
+	// to be served.
+	Timestamp() *time.Time
+
+	// // BeginTime returns the time when the action was initiated.
+	// BeginTime() *time.Time
+	// // EndTime return the time when the action was ended.
+	// EndTime() *time.Time
 }
 
 // DelegationInfo holds information about delegation for an action if that
