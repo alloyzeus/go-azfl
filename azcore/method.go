@@ -153,18 +153,29 @@ type MethodRequestContext interface {
 	MethodContext
 
 	AZMethodRequestContext()
+
+	// Session returns the session for this context.
+	Session() Session
 }
 
 //endregion
 
 //region MethodRequestContextError
 
-// MethodRequestContextError provides request-context-related error
-// information. It is a sub-class of MethodRequestError.
+// MethodRequestContextError provides information for
+// request-context-related error. It is a sub-class of MethodRequestError.
 type MethodRequestContextError interface {
 	MethodRequestError
 
 	AZMethodRequestContextError()
+}
+
+// MethodRequestSessionError is a sub-class of
+// MethodRequestContextError specialized for indicating error in the session.
+type MethodRequestSessionError interface {
+	MethodRequestContextError
+
+	AZMethodRequestSessionError()
 }
 
 //endregion
@@ -173,7 +184,9 @@ type MethodRequestContextError interface {
 
 // MethodRequestContextBase is a partial implementation
 // of MethodRequestContext.
-type MethodRequestContextBase struct{}
+type MethodRequestContextBase struct {
+	session Session
+}
 
 var _ MethodContext = MethodRequestContextBase{}
 var _ MethodRequestContext = MethodRequestContextBase{}
@@ -189,6 +202,10 @@ func (MethodRequestContextBase) AZMethodContext() {}
 // AZMethodRequestContext is required
 // for conformance with MethodRequestContext.
 func (MethodRequestContextBase) AZMethodRequestContext() {}
+
+// Session is required
+// for conformance with MethodRequestContext.
+func (ctx MethodRequestContextBase) Session() Session { return ctx.session }
 
 //endregion
 
@@ -209,8 +226,8 @@ type MethodResponse interface {
 // in method call outputs.
 //
 //TODO: listing of affected states with their respective revision ID.
-//TODO: directive: done/end, retry (on failure; optionally with timing and
-// retry count parameters or exponentially back-off parameters), redirect
+//TODO: directive: done/end, redirect, retry (on failure; optionally with
+// timing and retry count parameters or exponentially back-off parameters)
 type MethodResponseContext interface {
 	MethodContext
 
