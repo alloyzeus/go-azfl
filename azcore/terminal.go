@@ -1,5 +1,15 @@
 package azcore
 
+// A Terminal is an object which could act within the system, i.e., an agent.
+type Terminal interface {
+	// RefKey returns the identifier of this Terminal instance.
+	RefKey() TerminalRefKey
+
+	// PrincipalUser returns the ref-key of the User, if any, who authorized
+	// this instance of Terminal.
+	PrincipalUser() UserRefKey
+}
+
 // TerminalID abstracts the identifiers of Terminal entity instances.
 type TerminalID interface {
 	EID

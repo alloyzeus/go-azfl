@@ -4,8 +4,8 @@ package azcore
 // only be performed with an active session. A session is obtained through
 // authorization, or authentication, of a Terminal.
 type Session interface {
-	// SessionRefKey returns the identifier of this session.
-	SessionRefKey() SessionRefKey
+	// RefKey returns the identifier of this Session instance.
+	RefKey() SessionRefKey
 
 	// ParentSessionRefKey returns the identifier of the session which
 	// was used to create this session.
