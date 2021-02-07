@@ -6,21 +6,27 @@ package azcore
 //
 //     https://example.com/stores/12345/items/456789
 //
-// The part `/stores/12345/items/456789` is item's ref-key while 456789 is the
-// id.
+// The part `/stores/12345/items/456789` is item's ref-key, while 456789 is the
+// ID.
 //
-// An ID is always scoped, while a ref-key is always unique system-wide.
+// An ID is always scoped, while a ref-key could be used to distinctively
+// identify an instance of an entity system-wide.
 //
-//     https://example.com/stores/StoreA/items/456789
-//     https://example.com/stores/StoreB/items/456789
+//     https://example.com/stores/StoreABC/items/456789
+//     https://example.com/stores/StoreXYZ/items/456789
 //
 // In above example, two items from two different stores have the same ID but
 // their ref-keys will not be the same. This system allows each store to scale
-// independently without significantly affection each others.
+// independently without significantly affecting each others.
+//
+//TODO: RefKey is ValueObject.
 type RefKey interface {
 	Equatable
 
 	AZRefKey()
+
+	// // Returns an array of the hosts' ref-keys.
+	// Hosts() []RefKey
 
 	// ID returns only the ID-part of this ref-key.
 	ID() EID

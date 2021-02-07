@@ -17,10 +17,27 @@ type ServiceServer interface {
 // client.
 type ServiceServerModule struct {
 	ServiceServerConfigSkeleton func() ServiceServerConfig
-	NewServiceServer            func(ServiceServerConfig) (ServiceServer, Error)
+	NewServiceServer            func(ServiceServerConfig) (ServiceServer, ServiceServerError)
 }
 
 var _ ServiceModule = ServiceServerModule{}
 
 // AZServiceModule is required for conformance with ServiceModule.
 func (ServiceServerModule) AZServiceModule() {}
+
+// ServiceServerError is an abstraction for all errors emitted by a
+// service server.
+type ServiceServerError interface {
+	ServiceError
+
+	AZServiceServerError()
+}
+
+// ServiceServerMethodError is a specialization of ServiceServerError
+// which focuses on method-related errors.
+type ServiceServerMethodError interface {
+	ServiceServerError
+	ServiceMethodError
+
+	AZServiceServerMethodError()
+}

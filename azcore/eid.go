@@ -5,4 +5,9 @@ type EID interface {
 	Equatable
 
 	AZEID()
+
+	// AZEIDString returns a string representation of the instance.
+	//
+	//TODO: define what this is for.
+	AZEIDString() string
 }

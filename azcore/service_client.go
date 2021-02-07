@@ -17,7 +17,7 @@ type ServiceClient interface {
 // client.
 type ServiceClientModule struct {
 	ServiceClientConfigSkeleton func() ServiceClientConfig
-	NewServiceClient            func(ServiceClientConfig) (ServiceClient, Error)
+	NewServiceClient            func(ServiceClientConfig) (ServiceClient, ServiceError)
 }
 
 var _ ServiceModule = ServiceClientModule{}
