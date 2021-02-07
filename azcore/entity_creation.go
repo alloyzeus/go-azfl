@@ -36,7 +36,7 @@ type EntityCreationRequestContext interface {
 // EntityCreationRequestContextBase is the base implementation
 // for EntityCreationRequestContext.
 type EntityCreationRequestContextBase struct {
-	MethodRequestContextBase
+	ServiceMethodRequestContextBase
 }
 
 var _ EntityCreationRequestContext = EntityCreationRequestContextBase{}
@@ -56,7 +56,7 @@ type EntityCreationResponseContext interface {
 // EntityCreationResponseContextBase is the base implementation
 // for EntityCreationResponseContext.
 type EntityCreationResponseContextBase struct {
-	MethodResponseContextBase
+	ServiceMethodResponseContextBase
 }
 
 var _ EntityCreationResponseContext = EntityCreationResponseContextBase{}

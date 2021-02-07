@@ -15,17 +15,16 @@ type ServiceModule interface {
 	AZServiceModule()
 }
 
+// ServiceContext is an abstraction for service-related contexts.
+type ServiceContext interface {
+	Context
+
+	AZServiceContext()
+}
+
 // ServiceError is an abstraction for all errors emitted by a service.
 type ServiceError interface {
 	Error
 
 	AZServiceError()
-}
-
-// ServiceMethodError is a specialization of ServiceError which focuses
-// on method-related errors.
-type ServiceMethodError interface {
-	ServiceError
-
-	AZServiceMethodError()
 }

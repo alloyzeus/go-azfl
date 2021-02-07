@@ -32,12 +32,3 @@ type ServiceServerError interface {
 
 	AZServiceServerError()
 }
-
-// ServiceServerMethodError is a specialization of ServiceServerError
-// which focuses on method-related errors.
-type ServiceServerMethodError interface {
-	ServiceServerError
-	ServiceMethodError
-
-	AZServiceServerMethodError()
-}

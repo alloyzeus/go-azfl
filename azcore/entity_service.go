@@ -4,14 +4,14 @@ package azcore
 
 // EntityMethodMessage abstracts the messages, i.e., requests and responses.
 type EntityMethodMessage interface {
-	MethodMessage
+	ServiceMethodMessage
 
 	EntityMethodContext() EntityMethodContext
 }
 
 // EntityMethodRequest abstracts all entity method requests messages.
 type EntityMethodRequest interface {
-	MethodRequest
+	ServiceMethodRequest
 	EntityMethodMessage
 
 	EntityMethodRequestContext() EntityMethodRequestContext
@@ -19,7 +19,7 @@ type EntityMethodRequest interface {
 
 // EntityMethodResponse abstracts all entity method response messages.
 type EntityMethodResponse interface {
-	MethodResponse
+	ServiceMethodResponse
 	EntityMethodMessage
 
 	EntityMethodResponseContext() EntityMethodResponseContext
@@ -32,21 +32,21 @@ type EntityMethodResponse interface {
 // EntityMethodContext provides an abstraction for all operations which
 // apply to entity instances.
 type EntityMethodContext interface {
-	MethodContext
+	ServiceMethodContext
 }
 
 // EntityMethodRequestContext is an abstraction for all method call
 // input contexts.
 type EntityMethodRequestContext interface {
 	EntityMethodContext
-	MethodRequestContext
+	ServiceMethodRequestContext
 }
 
 // EntityMethodResponseContext is an abstraction for all method call
 // output contexts.
 type EntityMethodResponseContext interface {
 	EntityMethodContext
-	MethodResponseContext
+	ServiceMethodResponseContext
 }
 
 //endregion
@@ -57,7 +57,7 @@ type EntityMethodResponseContext interface {
 // is used for operations which make any change to the entity.
 type EntityMutatingContext interface {
 	EntityMethodContext
-	MutatingContext
+	ServiceMutatingMethodContext
 }
 
 // EntityMutatingRequestContext provides an abstraction for input contexts
@@ -65,7 +65,7 @@ type EntityMutatingContext interface {
 type EntityMutatingRequestContext interface {
 	EntityMutatingContext
 	EntityMethodRequestContext
-	MutatingRequestContext
+	ServiceMutatingMethodRequestContext
 }
 
 // EntityMutatingResponseContext provides an abstraction for output contexts
@@ -73,13 +73,13 @@ type EntityMutatingRequestContext interface {
 type EntityMutatingResponseContext interface {
 	EntityMutatingContext
 	EntityMethodResponseContext
-	MutatingResponseContext
+	ServiceMutatingMethodResponseContext
 }
 
 // EntityMutatingMessage abstracts entity mutating method requests and responses.
 type EntityMutatingMessage interface {
 	EntityMethodMessage
-	MutatingMessage
+	ServiceMutatingMethodMessage
 
 	EntityMutatingContext() EntityMutatingContext
 }
@@ -87,7 +87,7 @@ type EntityMutatingMessage interface {
 // EntityMutatingRequest abstracts entity mutating requests.
 type EntityMutatingRequest interface {
 	EntityMutatingMessage
-	MutatingRequest
+	ServiceMutatingMethodRequest
 
 	EntityMutatingRequestContext() EntityMutatingRequestContext
 }
@@ -95,7 +95,7 @@ type EntityMutatingRequest interface {
 // EntityMutatingResponse abstracts entity mutating responses.
 type EntityMutatingResponse interface {
 	EntityMutatingMessage
-	MutatingResponse
+	ServiceMutatingMethodResponse
 
 	EntityMutatingResponseContext() EntityMutatingResponseContext
 }
