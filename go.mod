@@ -2,4 +2,8 @@ module github.com/alloyzeus/go-azcore
 
 go 1.15
 
-require golang.org/x/text v0.3.3
+require (
+	github.com/rez-go/crock32 v0.0.0-20200519153512-7e09d352e310
+	github.com/richardlehane/crock32 v1.0.1
+	golang.org/x/text v0.3.5
+)
