@@ -8,8 +8,7 @@ type EID interface {
 
 	AZEID()
 
-	// AZWire returns a wire-encoded respresentation of the instance.
-	AZWire() []byte
+	AZWireObject
 
 	// AZString returns a string representation of the instance.
 	//
