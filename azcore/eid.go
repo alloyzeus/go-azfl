@@ -8,12 +8,11 @@ type EID interface {
 
 	AZEID()
 
-	// AZEIDBinary returns a binary respresentation of the instance.
-	// The encoding must be protobuf-compatible.
-	AZEIDBinary() []byte
+	// AZWire returns a wire-encoded respresentation of the instance.
+	AZWire() []byte
 
-	// AZEIDString returns a string representation of the instance.
+	// AZString returns a string representation of the instance.
 	//
 	//TODO: define what this is for.
-	AZEIDString() string
+	AZString() string
 }

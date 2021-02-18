@@ -31,8 +31,11 @@ type RefKey interface {
 	// ID returns only the ID-part of this ref-key.
 	ID() EID
 
-	// RefKeyString returns a string representation of the instance.
-	RefKeyString() string
+	// AZWire returns a wire-encoded representation of the instance.
+	AZWire() []byte
+
+	// AZString returns a string representation of the instance.
+	AZString() string
 }
 
 // RefKeyFromString is a function which creates an instance of RefKey
