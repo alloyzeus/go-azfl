@@ -5,11 +5,6 @@ type AdjunctEntityID interface {
 	EID
 
 	AZAdjunctEntityID()
-
-	// AZAdjunctEntityIDString returns a string representation of the instance.
-	//
-	//TODO: define what this is for.
-	AZAdjunctEntityIDString() string
 }
 
 // AdjunctEntityRefKey abstracts adjunct entity ref keys.
