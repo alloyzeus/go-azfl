@@ -9,9 +9,4 @@ type EID interface {
 	AZEID()
 
 	AZWireObject
-
-	// AZString returns a string representation of the instance.
-	//
-	//TODO: define what this is for.
-	AZString() string
 }
