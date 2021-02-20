@@ -15,3 +15,9 @@ type AZISObject interface {
 type AZISMarshalable interface {
 	AZIS() string
 }
+
+// An AZISUnmarshalable is an object which could load AZIS-encoded
+// string into itself.
+type AZISUnmarshalable interface {
+	UnmarshalAZIS(s string) error
+}
