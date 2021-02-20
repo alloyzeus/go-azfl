@@ -27,14 +27,13 @@ type RefKey interface {
 
 	AZWireObject
 
+	AZISObject
+
 	// // Returns an array of the hosts' ref-keys.
 	// Hosts() []RefKey
 
 	// ID returns only the ID-part of this ref-key.
 	ID() EID
-
-	// AZString returns a string representation of the instance.
-	AZString() string
 }
 
 // RefKeyFromString is a function which creates an instance of RefKey

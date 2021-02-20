@@ -1,6 +1,6 @@
 package azcore
 
-// AZWire is protowire-conformance encoding.
+// AZWire is a protowire-compatible encoding.
 
 // AZWireObject provides an interface for objects which could be encoded
 // to / decoded from azwire encoding.
