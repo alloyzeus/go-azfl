@@ -23,5 +23,5 @@ type AZWireMarshalable interface {
 type AZWireUnmarshalable interface {
 	// UnmarshalAZWire modifies the instance with data from
 	// azwire-encoded bytes.
-	UnmarshalAZWire(b []byte) error
+	UnmarshalAZWire(b []byte) (readLen int, err error)
 }
