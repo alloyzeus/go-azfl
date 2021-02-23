@@ -1,5 +1,9 @@
 package azcore
 
+import (
+	"github.com/rez-go/crock32"
+)
+
 // AZRS, which could be interpreted as AZ Reference String, is a rule for
 // text-based encoding for identifiers within AZ framework. It limits the
 // characters which can be used in encoded texts.
@@ -23,3 +27,10 @@ type AZRSMarshalable interface {
 type AZRSUnmarshalable interface {
 	UnmarshalAZRS(s string) error
 }
+
+var (
+	// AZRSEncode encodes azwire-encoded ref-key.
+	AZRSEncode = crock32.Encode
+	// AZRSDecode decodes azwire-encoded ref-key from a string.
+	AZRSDecode = crock32.Decode
+)
