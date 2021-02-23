@@ -27,7 +27,7 @@ type RefKey interface {
 
 	AZWireObject
 
-	AZISObject
+	AZRSObject
 
 	// // Returns an array of the hosts' ref-keys.
 	// Hosts() []RefKey
