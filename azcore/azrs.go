@@ -30,7 +30,28 @@ type AZRSUnmarshalable interface {
 
 var (
 	// AZRSEncode encodes azwire-encoded ref-key.
-	AZRSEncode = crock32.Encode
-	// AZRSDecode decodes azwire-encoded ref-key from a string.
-	AZRSDecode = crock32.Decode
+	AZRSEncode = crock32.EncodeLower
 )
+
+// AZRSDecode decodes azwire-encoded ref-key from a string.
+func AZRSDecode(s string) ([]byte, error) {
+	var encoded []byte
+	b := []byte(s)
+	for i, c := range b {
+		if c == 'U' || c == 'u' {
+			if i+1 < len(b) {
+				if c = b[i+1]; c == 'N' || c == 'n' {
+					encoded = b[:i]
+					break
+				}
+			} else {
+				encoded = b[:i]
+				break
+			}
+		}
+	}
+	if encoded == nil {
+		encoded = []byte(s)
+	}
+	return crock32.Decode(string(encoded))
+}

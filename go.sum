@@ -1,5 +1,5 @@
-github.com/rez-go/crock32 v0.0.0-20200519153512-7e09d352e310 h1:pKNeJZv0Zg+3D/u+Sgecni/wteQYDW4tnJFEvgIdzc0=
-github.com/rez-go/crock32 v0.0.0-20200519153512-7e09d352e310/go.mod h1:wPrw4TQA0f41QE2f1myexirOAA6B/R1i1mI/NtdqX7I=
+github.com/rez-go/crock32 v0.0.0-20210224111353-8fde4331511d h1:l2qiHnQPq6c9jf4hQpkANdu1nACdq0MRjuR27cc4XNM=
+github.com/rez-go/crock32 v0.0.0-20210224111353-8fde4331511d/go.mod h1:rgG3aWE3BAy73pozswKYLc+Va/WraKM393e7yNkbhZ0=
 golang.org/x/text v0.3.5 h1:i6eZZ+zk0SOf0xgBpEpPD18qWcJda6q1sxt3S0kzyUQ=
 golang.org/x/text v0.3.5/go.mod h1:5Zoc/QRtKVWzQhOtBMvqHzDpF6irO9z98xDceosuGiQ=
 golang.org/x/tools v0.0.0-20180917221912-90fa682c2a6e/go.mod h1:n7NCudcB/nEzxVGmLbDWY5pfWTLqBcC2KZ6jyYvM4mQ=
