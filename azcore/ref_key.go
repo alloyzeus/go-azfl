@@ -1,5 +1,7 @@
 package azcore
 
+import "github.com/alloyzeus/go-azcore/azcore/azwire"
+
 // RefKey defines the contract for all its concrete implementations.
 //
 // A RefKey is analogous to path in URL.
@@ -25,7 +27,8 @@ type RefKey interface {
 
 	AZRefKey()
 
-	AZWireObject
+	azwire.FieldMarshalable
+	azwire.Marshalable
 
 	AZRSObject
 

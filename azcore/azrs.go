@@ -35,23 +35,32 @@ var (
 
 // AZRSDecode decodes azwire-encoded ref-key from a string.
 func AZRSDecode(s string) ([]byte, error) {
-	var encoded []byte
-	b := []byte(s)
-	for i, c := range b {
+	var dataEncoded []byte
+	var csEncoded []byte
+	inAsBytes := []byte(s)
+	for i, c := range inAsBytes {
 		if c == 'U' || c == 'u' {
-			if i+1 < len(b) {
-				if c = b[i+1]; c == 'N' || c == 'n' {
-					encoded = b[:i]
+			if i+1 < len(inAsBytes) {
+				if c = inAsBytes[i+1]; c == 'N' || c == 'n' {
+					dataEncoded = inAsBytes[:i]
+					csEncoded = inAsBytes[i+2 : i+4]
 					break
 				}
 			} else {
-				encoded = b[:i]
+				dataEncoded = inAsBytes[:i]
 				break
 			}
 		}
 	}
-	if encoded == nil {
-		encoded = []byte(s)
+	if dataEncoded == nil {
+		dataEncoded = []byte(s)
 	}
-	return crock32.Decode(string(encoded))
+	dataBytes, err := crock32.Decode(string(dataEncoded))
+	if err != nil {
+		return nil, err //TODO: wrap/translate
+	}
+	if len(csEncoded) == 2 {
+		//TODO: checksum
+	}
+	return dataBytes, err
 }
