@@ -1,19 +1,29 @@
 package azer
 
-import "github.com/rez-go/crock32"
+import (
+	"github.com/rez-go/crock32"
 
-// TextMarshalable provides an interface definition for objects which able to
-// provide an azer-text-encoded representation of itself.
+	"github.com/alloyzeus/go-azcore/azcore/errors"
+)
+
+// TextMarshalable is an interface definition for objects which able to
+// provide an azer-text representation of itself.
 type TextMarshalable interface {
 	AZERText() string
 }
 
+// A TextUnmarshalable is an object which able to load an
+// azer-text representation into itself.
+type TextUnmarshalable interface {
+	UnmarshalAZERText(s string) error
+}
+
 var (
-	// TextEncode encodes azer-bin-encoded ref-key.
+	// TextEncode encodes azer-bin ref-key.
 	TextEncode = crock32.EncodeLower
 )
 
-// TextDecode decodes azer-bin-encoded ref-key from a string.
+// TextDecode decodes azer-bin ref-key from a string.
 func TextDecode(s string) ([]byte, error) {
 	var dataEncoded []byte
 	var csEncoded []byte
@@ -37,10 +47,10 @@ func TextDecode(s string) ([]byte, error) {
 	}
 	dataBytes, err := crock32.Decode(string(dataEncoded))
 	if err != nil {
-		return nil, err //TODO: wrap/translate
+		return nil, errors.ArgWrap("", "data decoding", err)
 	}
 	if len(csEncoded) == 2 {
 		//TODO: checksum
 	}
-	return dataBytes, err
+	return dataBytes, nil
 }

@@ -5,6 +5,7 @@ package errors
 // has the similar concept as 4xx status codes in HTTP, and thus can
 // be mapped into one of these code when used in HTTP request handlers.
 type ArgumentError interface {
+	CallError
 	ArgumentName() string
 }
 

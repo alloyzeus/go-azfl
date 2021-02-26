@@ -19,12 +19,20 @@ func (id int32ID) AZERBinField() ([]byte, azer.BinDataType) {
 	return b, azer.BinDataTypeInt32
 }
 
+func (id *int32ID) UnmarshalAZERBinField(b []byte, typeHint azer.BinDataType) (readLen int, err error) {
+	i, readLen, err := int32IDFromAZERBinField(b, typeHint)
+	if err == nil {
+		*id = i
+	}
+	return readLen, err
+}
+
 func int32IDFromAZERBinField(
 	b []byte, typeHint azer.BinDataType,
 ) (id int32ID, readLen int, err error) {
 	if typeHint != azer.BinDataTypeUnspecified && typeHint != azer.BinDataTypeInt32 {
 		return int32ID(0), 0,
-			errors.Msg("unsupported parsing from the buffer with the specified type")
+			errors.ArgMsg("typeHint", "unsupported")
 	}
 	i := binary.BigEndian.Uint32(b)
 	return int32ID(i), 4, nil
@@ -52,6 +60,26 @@ func (refKey int32RefKey) AZERBin() []byte {
 	return b
 }
 
+func int32RefKeyFromAZERBin(b []byte) (refKey int32RefKey, readLen int, err error) {
+	typ, err := azer.BinDataTypeFromByte(b[0])
+	if err != nil {
+		return int32RefKey(0), 0,
+			errors.ArgWrap("", "type parsing", err)
+	}
+	if typ != azer.BinDataTypeInt32 {
+		return int32RefKey(0), 0,
+			errors.Arg("", errors.EntMsg("type", "unsupported"))
+	}
+
+	i, readLen, err := int32IDFromAZERBinField(b[1:], typ)
+	if err != nil {
+		return int32RefKey(0), 0,
+			errors.ArgWrap("", "id data parsing", err)
+	}
+
+	return int32RefKey(i), 1 + readLen, nil
+}
+
 func (refKey int32RefKey) AZERBinField() ([]byte, azer.BinDataType) {
 	return int32ID(refKey).AZERBinField()
 }
@@ -63,7 +91,7 @@ func adjunctIDFromAZERBinField(
 ) (id adjunctID, readLen int, err error) {
 	if typeHint != azer.BinDataTypeUnspecified && typeHint != azer.BinDataTypeInt16 {
 		return adjunctID(0), 0,
-			azer.BinUnmarshalArgumentErrorMsg("typeHint", "unsupported")
+			errors.ArgMsg("typeHint", "unsupported")
 	}
 	i := binary.BigEndian.Uint16(b)
 	return adjunctID(i), 2, nil
@@ -80,48 +108,57 @@ type adjunctRefKey struct {
 	id     adjunctID
 }
 
+const adjunctRefKeyFieldCount = 2
+
 func adjunctRefKeyFromAZERBin(
 	b []byte,
 ) (refKey adjunctRefKey, readLen int, err error) {
 	typ, err := azer.BinDataTypeFromByte(b[0])
 	if err != nil {
 		return adjunctRefKey{}, 0,
-			azer.BinUnmarshalArgumentErrorWrap("", "type parsing", err)
+			errors.ArgWrap("", "type parsing", err)
 	}
 	if typ != azer.BinDataTypeArray {
 		return adjunctRefKey{}, 0,
-			azer.BinUnmarshalArgumentErrorMsg("", "type unsupported")
+			errors.Arg("", errors.EntMsg("type", "unsupported"))
 	}
 
 	arrayLen := int(b[1])
-	if arrayLen != 2 {
+	if arrayLen != adjunctRefKeyFieldCount {
 		return adjunctRefKey{}, 0,
-			azer.BinUnmarshalArgumentErrorMsg("", "number of fields invalid")
+			errors.Arg("", errors.EntMsg("field count", "mismatch"))
 	}
 
-	parentType, err := azer.BinDataTypeFromByte(b[2])
-	if err != nil {
-		return adjunctRefKey{}, 0,
-			azer.BinUnmarshalArgumentErrorWrap("", "parent type parsing", err)
-	}
-	parentRefKey, _, err := int32RefKeyFromAZERBinField(b[4:], parentType)
-	if err != nil {
-		return adjunctRefKey{}, 0,
-			azer.BinUnmarshalArgumentErrorWrap("", "parent data parsing", err)
-	}
+	typeCursor := 2
+	dataCursor := typeCursor + arrayLen
 
-	idType, err := azer.BinDataTypeFromByte(b[3])
+	parentType, err := azer.BinDataTypeFromByte(b[typeCursor])
 	if err != nil {
 		return adjunctRefKey{}, 0,
-			azer.BinUnmarshalArgumentErrorWrap("", "id type parsing", err)
+			errors.ArgWrap("", "parent type parsing", err)
 	}
-	id, _, err := adjunctIDFromAZERBinField(b[8:], idType)
+	typeCursor++
+	parentRefKey, readLen, err := int32RefKeyFromAZERBinField(b[dataCursor:], parentType)
 	if err != nil {
 		return adjunctRefKey{}, 0,
-			azer.BinUnmarshalArgumentErrorWrap("", "id data parsing", err)
+			errors.ArgWrap("", "parent data parsing", err)
 	}
+	dataCursor += readLen
 
-	return adjunctRefKey{parentRefKey, id}, 10, nil
+	idType, err := azer.BinDataTypeFromByte(b[typeCursor])
+	if err != nil {
+		return adjunctRefKey{}, 0,
+			errors.ArgWrap("", "id type parsing", err)
+	}
+	typeCursor++
+	id, readLen, err := adjunctIDFromAZERBinField(b[dataCursor:], idType)
+	if err != nil {
+		return adjunctRefKey{}, 0,
+			errors.ArgWrap("", "id data parsing", err)
+	}
+	dataCursor += readLen
+
+	return adjunctRefKey{parentRefKey, id}, dataCursor, nil
 }
 
 func (refKey adjunctRefKey) AZERBin() []byte {
