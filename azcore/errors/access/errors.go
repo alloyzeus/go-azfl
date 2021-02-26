@@ -37,18 +37,15 @@ type errorWrap struct {
 }
 
 func (e *errorWrap) Error() string {
-	if e != nil && e.innerErr != nil {
+	if e.innerErr != nil {
 		return e.innerErr.Error()
 	}
 	return "access error"
 }
 
 func (e *errorWrap) Unwrap() error {
-	if e != nil {
-		return e.innerErr
-	}
-	return nil
+	return e.innerErr
 }
 
-func (e errorWrap) AccessError() Error { return &e }
-func (e errorWrap) CallError()         {}
+func (e *errorWrap) AccessError() Error { return e }
+func (*errorWrap) CallError()           {}

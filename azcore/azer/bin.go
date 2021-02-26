@@ -92,7 +92,7 @@ func BinUnmarshalArgumentErrorMsg(
 	errMsg string,
 	fields ...errors.EntityError,
 ) BinUnmarshalArgumentError {
-	return binUnmarshalArgumentError{
+	return &binUnmarshalArgumentError{
 		argName: argName,
 		err:     errors.Msg(errMsg),
 		fields:  fields,
@@ -106,7 +106,7 @@ func BinUnmarshalArgumentErrorWrap(
 	err error,
 	fields ...errors.EntityError,
 ) BinUnmarshalArgumentError {
-	return binUnmarshalArgumentError{
+	return &binUnmarshalArgumentError{
 		argName: argName,
 		err:     errors.Wrap(contextMessage, err),
 		fields:  fields,
@@ -120,22 +120,22 @@ type binUnmarshalArgumentError struct {
 }
 
 var (
-	_ error                = binUnmarshalArgumentError{}
-	_ errors.Unwrappable   = binUnmarshalArgumentError{}
-	_ errors.CallError     = binUnmarshalArgumentError{}
-	_ errors.EntityError   = binUnmarshalArgumentError{}
-	_ errors.ArgumentError = binUnmarshalArgumentError{}
+	_ error                = &binUnmarshalArgumentError{}
+	_ errors.Unwrappable   = &binUnmarshalArgumentError{}
+	_ errors.CallError     = &binUnmarshalArgumentError{}
+	_ errors.EntityError   = &binUnmarshalArgumentError{}
+	_ errors.ArgumentError = &binUnmarshalArgumentError{}
 )
 
-func (e binUnmarshalArgumentError) EntityIdentifier() string { return e.argName }
+func (e *binUnmarshalArgumentError) EntityIdentifier() string { return e.argName }
 
-func (e binUnmarshalArgumentError) ArgumentName() string {
+func (e *binUnmarshalArgumentError) ArgumentName() string {
 	return e.argName
 }
 
-func (binUnmarshalArgumentError) CallError() {}
+func (*binUnmarshalArgumentError) CallError() {}
 
-func (e binUnmarshalArgumentError) Error() string {
+func (e *binUnmarshalArgumentError) Error() string {
 	if e.argName != "" {
 		if errMsg := e.err.Error(); errMsg != "" {
 			return "arg " + e.argName + ": " + errMsg
@@ -148,6 +148,6 @@ func (e binUnmarshalArgumentError) Error() string {
 	return "arg invalid"
 }
 
-func (e binUnmarshalArgumentError) Unwrap() error {
+func (e *binUnmarshalArgumentError) Unwrap() error {
 	return e.err
 }

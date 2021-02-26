@@ -1,7 +1,10 @@
 package errors
 
+// EntityError is a class of errors describing errors in entities.
+// An entity here is defined as anything which has identifier associated to it.
+// For example, a web page is an entity which its URL is the identifier.
 type EntityError interface {
-	error
+	Unwrappable
 	EntityIdentifier() string
 }
 
@@ -34,6 +37,7 @@ func EntMsg(entityIdentifier string, errMsg string) EntityError {
 type entityError struct {
 	identifier string
 	err        error
+	fields     []EntityError
 }
 
 var (
@@ -42,19 +46,25 @@ var (
 	_ EntityError = &entityError{}
 )
 
-func (e entityError) Error() string {
-	errMsg := e.err.Error()
+func (e *entityError) Error() string {
 	if e.identifier != "" {
-		if errMsg != "" {
+		if errMsg := e.innerMsg(); errMsg != "" {
 			return e.identifier + ": " + errMsg
 		}
 		return e.identifier + " invalid"
 	}
-	if errMsg != "" {
+	if errMsg := e.innerMsg(); errMsg != "" {
 		return "entity " + errMsg
 	}
 	return "entity invalid"
 }
 
-func (e entityError) Unwrap() error            { return &e }
-func (e entityError) EntityIdentifier() string { return e.identifier }
+func (e *entityError) innerMsg() string {
+	if e.err != nil {
+		return e.err.Error()
+	}
+	return ""
+}
+
+func (e *entityError) Unwrap() error            { return e.err }
+func (e *entityError) EntityIdentifier() string { return e.identifier }

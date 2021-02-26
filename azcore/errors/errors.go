@@ -16,11 +16,13 @@ import (
 var (
 	As     = errors.As
 	Is     = errors.Is
-	New    = errors.New // Prefer Msg instead of New as it has better semantic
+	New    = errors.New // Prefer Msg instead as it has better semantic
 	Msg    = errors.New
 	Unwrap = errors.Unwrap
 )
 
+// Unwrappable is an error which holds inner error, which usually
+// provides the cause if this error.
 type Unwrappable interface {
 	error
 	Unwrap() error
@@ -33,7 +35,7 @@ type Unwrappable interface {
 //     err := fetchData(...)
 //     if err != nil { return errors.Wrap("fetching data", err) }
 //
-func Wrap(contextMessage string, causeErr error) error {
+func Wrap(contextMessage string, causeErr error) Unwrappable {
 	return &errorWrap{contextMessage, causeErr}
 }
 
@@ -44,7 +46,7 @@ type errorWrap struct {
 	err error
 }
 
-func (e errorWrap) Error() string {
+func (e *errorWrap) Error() string {
 	if e.msg != "" {
 		if e.err != nil {
 			return e.msg + ": " + e.err.Error()
@@ -53,7 +55,7 @@ func (e errorWrap) Error() string {
 	return e.msg
 }
 
-func (e errorWrap) Unwrap() error {
+func (e *errorWrap) Unwrap() error {
 	return e.err
 }
 
