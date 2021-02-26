@@ -63,7 +63,7 @@ func adjunctIDFromAZERBinField(
 ) (id adjunctID, readLen int, err error) {
 	if typeHint != azer.BinDataTypeUnspecified && typeHint != azer.BinDataTypeInt16 {
 		return adjunctID(0), 0,
-			errors.Msg("unsupported parsing from the buffer with the specified type")
+			azer.BinUnmarshalArgumentErrorMsg("typeHint", "unsupported")
 	}
 	i := binary.BigEndian.Uint16(b)
 	return adjunctID(i), 2, nil
@@ -85,37 +85,40 @@ func adjunctRefKeyFromAZERBin(
 ) (refKey adjunctRefKey, readLen int, err error) {
 	typ, err := azer.BinDataTypeFromByte(b[0])
 	if err != nil {
-		return adjunctRefKey{}, 0, err
+		return adjunctRefKey{}, 0,
+			azer.BinUnmarshalArgumentErrorWrap("", "type parsing", err)
 	}
 	if typ != azer.BinDataTypeArray {
 		return adjunctRefKey{}, 0,
-			errors.Msg("unsupported parsing from the buffer with the specified type")
+			azer.BinUnmarshalArgumentErrorMsg("", "type unsupported")
 	}
 
 	arrayLen := int(b[1])
 	if arrayLen != 2 {
 		return adjunctRefKey{}, 0,
-			errors.Msg("unexpected number of array length")
+			azer.BinUnmarshalArgumentErrorMsg("", "number of fields invalid")
 	}
 
 	parentType, err := azer.BinDataTypeFromByte(b[2])
 	if err != nil {
-		return adjunctRefKey{}, 0, err
+		return adjunctRefKey{}, 0,
+			azer.BinUnmarshalArgumentErrorWrap("", "parent type parsing", err)
 	}
 	parentRefKey, _, err := int32RefKeyFromAZERBinField(b[4:], parentType)
 	if err != nil {
 		return adjunctRefKey{}, 0,
-			errors.Msg("unable to parse")
+			azer.BinUnmarshalArgumentErrorWrap("", "parent data parsing", err)
 	}
 
 	idType, err := azer.BinDataTypeFromByte(b[3])
 	if err != nil {
-		return adjunctRefKey{}, 0, err
+		return adjunctRefKey{}, 0,
+			azer.BinUnmarshalArgumentErrorWrap("", "id type parsing", err)
 	}
 	id, _, err := adjunctIDFromAZERBinField(b[8:], idType)
 	if err != nil {
 		return adjunctRefKey{}, 0,
-			errors.Msg("unable to parse")
+			azer.BinUnmarshalArgumentErrorWrap("", "id data parsing", err)
 	}
 
 	return adjunctRefKey{parentRefKey, id}, 10, nil
