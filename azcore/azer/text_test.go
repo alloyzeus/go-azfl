@@ -1,13 +1,39 @@
-package azcore_test
+package azer_test
 
 import (
 	"bytes"
 	"testing"
 
-	"github.com/alloyzeus/go-azcore/azcore"
+	"github.com/alloyzeus/go-azcore/azcore/azer"
 )
 
-func TestAZRSDecode(t *testing.T) {
+var _ azer.TextMarshalable = adjunctRefKey{}
+
+func (refKey adjunctRefKey) AZERText() string {
+	bin := refKey.AZERBin()
+	return azer.TextEncode(bin)
+}
+
+func TestAZERTextAdjunctRefKeyEncode(t *testing.T) {
+	testCases := []struct {
+		in  adjunctRefKey
+		out string
+	}{
+		{adjunctRefKey{}, "801164g000000000"},
+		{adjunctRefKey{0, 1}, "801164g000000001"},
+		{adjunctRefKey{1, 0}, "801164g000002000"},
+		{adjunctRefKey{1, 1}, "801164g000002001"},
+	}
+
+	for _, testCase := range testCases {
+		s := testCase.in.AZERText()
+		if s != testCase.out {
+			t.Errorf("Expected: %#v, got: %#v", testCase.out, s)
+		}
+	}
+}
+
+func TestAZERTextDecode(t *testing.T) {
 	testCases := []struct {
 		in  string
 		out []byte
@@ -25,7 +51,7 @@ func TestAZRSDecode(t *testing.T) {
 	}
 
 	for _, testCase := range testCases {
-		r, err := azcore.AZRSDecode(testCase.in)
+		r, err := azer.TextDecode(testCase.in)
 		if err != testCase.err {
 			t.Errorf("Expected: %#v, got: %#v", testCase.err, err)
 		}

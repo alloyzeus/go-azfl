@@ -1,28 +1,28 @@
-package azwire_test
+package azer_test
 
 import (
 	"bytes"
 	"encoding/binary"
 	"testing"
 
-	"github.com/alloyzeus/go-azcore/azcore/azwire"
+	"github.com/alloyzeus/go-azcore/azcore/azer"
 	"github.com/alloyzeus/go-azcore/azcore/errors"
 )
 
 type int32ID int32
 
-var _ azwire.FieldMarshalable = int32ID(0)
+var _ azer.BinFieldMarshalable = int32ID(0)
 
-func (id int32ID) AZWireField() ([]byte, azwire.DataType) {
+func (id int32ID) AZERBinField() ([]byte, azer.BinDataType) {
 	b := make([]byte, 4)
 	binary.BigEndian.PutUint32(b, uint32(id))
-	return b, azwire.DataTypeInt32
+	return b, azer.BinDataTypeInt32
 }
 
-func int32IDFromAZWireField(
-	b []byte, typeHint azwire.DataType,
+func int32IDFromAZERBinField(
+	b []byte, typeHint azer.BinDataType,
 ) (id int32ID, readLen int, err error) {
-	if typeHint != azwire.DataTypeUnspecified && typeHint != azwire.DataTypeInt32 {
+	if typeHint != azer.BinDataTypeUnspecified && typeHint != azer.BinDataTypeInt32 {
 		return int32ID(0), 0,
 			errors.Msg("unsupported parsing from the buffer with the specified type")
 	}
@@ -32,36 +32,36 @@ func int32IDFromAZWireField(
 
 type int32RefKey int32ID
 
-var _ azwire.Marshalable = int32RefKey(0)
-var _ azwire.FieldMarshalable = int32RefKey(0)
+var _ azer.BinMarshalable = int32RefKey(0)
+var _ azer.BinFieldMarshalable = int32RefKey(0)
 
-func int32RefKeyFromAZWireField(
-	b []byte, typeHint azwire.DataType,
+func int32RefKeyFromAZERBinField(
+	b []byte, typeHint azer.BinDataType,
 ) (refKey int32RefKey, readLen int, err error) {
-	id, n, err := int32IDFromAZWireField(b, typeHint)
+	id, n, err := int32IDFromAZERBinField(b, typeHint)
 	if err != nil {
 		return int32RefKey(0), n, err
 	}
 	return int32RefKey(id), n, nil
 }
 
-func (refKey int32RefKey) AZWire() []byte {
+func (refKey int32RefKey) AZERBin() []byte {
 	b := make([]byte, 5)
-	b[0] = azwire.DataTypeInt32.Byte()
+	b[0] = azer.BinDataTypeInt32.Byte()
 	binary.BigEndian.PutUint32(b[1:], uint32(refKey))
 	return b
 }
 
-func (refKey int32RefKey) AZWireField() ([]byte, azwire.DataType) {
-	return int32ID(refKey).AZWireField()
+func (refKey int32RefKey) AZERBinField() ([]byte, azer.BinDataType) {
+	return int32ID(refKey).AZERBinField()
 }
 
 type adjunctID int16
 
-func adjunctIDFromAZWireField(
-	b []byte, typeHint azwire.DataType,
+func adjunctIDFromAZERBinField(
+	b []byte, typeHint azer.BinDataType,
 ) (id adjunctID, readLen int, err error) {
-	if typeHint != azwire.DataTypeUnspecified && typeHint != azwire.DataTypeInt16 {
+	if typeHint != azer.BinDataTypeUnspecified && typeHint != azer.BinDataTypeInt16 {
 		return adjunctID(0), 0,
 			errors.Msg("unsupported parsing from the buffer with the specified type")
 	}
@@ -69,10 +69,10 @@ func adjunctIDFromAZWireField(
 	return adjunctID(i), 2, nil
 }
 
-func (id adjunctID) AZWireField() ([]byte, azwire.DataType) {
+func (id adjunctID) AZERBinField() ([]byte, azer.BinDataType) {
 	b := make([]byte, 2)
 	binary.BigEndian.PutUint16(b, uint16(id))
-	return b, azwire.DataTypeInt16
+	return b, azer.BinDataTypeInt16
 }
 
 type adjunctRefKey struct {
@@ -80,14 +80,14 @@ type adjunctRefKey struct {
 	id     adjunctID
 }
 
-func adjunctRefKeyFromAZWire(
+func adjunctRefKeyFromAZERBin(
 	b []byte,
 ) (refKey adjunctRefKey, readLen int, err error) {
-	typ, err := azwire.DataTypeFromByte(b[0])
+	typ, err := azer.BinDataTypeFromByte(b[0])
 	if err != nil {
 		return adjunctRefKey{}, 0, err
 	}
-	if typ != azwire.DataTypeArray {
+	if typ != azer.BinDataTypeArray {
 		return adjunctRefKey{}, 0,
 			errors.Msg("unsupported parsing from the buffer with the specified type")
 	}
@@ -98,21 +98,21 @@ func adjunctRefKeyFromAZWire(
 			errors.Msg("unexpected number of array length")
 	}
 
-	parentType, err := azwire.DataTypeFromByte(b[2])
+	parentType, err := azer.BinDataTypeFromByte(b[2])
 	if err != nil {
 		return adjunctRefKey{}, 0, err
 	}
-	parentRefKey, _, err := int32RefKeyFromAZWireField(b[4:], parentType)
+	parentRefKey, _, err := int32RefKeyFromAZERBinField(b[4:], parentType)
 	if err != nil {
 		return adjunctRefKey{}, 0,
 			errors.Msg("unable to parse")
 	}
 
-	idType, err := azwire.DataTypeFromByte(b[3])
+	idType, err := azer.BinDataTypeFromByte(b[3])
 	if err != nil {
 		return adjunctRefKey{}, 0, err
 	}
-	id, _, err := adjunctIDFromAZWireField(b[8:], idType)
+	id, _, err := adjunctIDFromAZERBinField(b[8:], idType)
 	if err != nil {
 		return adjunctRefKey{}, 0,
 			errors.Msg("unable to parse")
@@ -121,19 +121,19 @@ func adjunctRefKeyFromAZWire(
 	return adjunctRefKey{parentRefKey, id}, 10, nil
 }
 
-func (refKey adjunctRefKey) AZWire() []byte {
+func (refKey adjunctRefKey) AZERBin() []byte {
 	var fieldTypes []byte
 	var fieldData []byte
 
-	b, t := refKey.parent.AZWireField()
+	b, t := refKey.parent.AZERBinField()
 	fieldTypes = append(fieldTypes, t.Byte())
 	fieldData = append(fieldData, b...)
 
-	b, t = refKey.id.AZWireField()
+	b, t = refKey.id.AZERBinField()
 	fieldTypes = append(fieldTypes, t.Byte())
 	fieldData = append(fieldData, b...)
 
-	var out = []byte{azwire.DataTypeArray.Byte(), byte(len(fieldTypes))}
+	var out = []byte{azer.BinDataTypeArray.Byte(), byte(len(fieldTypes))}
 	out = append(out, fieldTypes...)
 	out = append(out, fieldData...)
 	return out
@@ -143,15 +143,15 @@ func TestEncodeField(t *testing.T) {
 	testCases := []struct {
 		in      int32ID
 		outData []byte
-		outType azwire.DataType
+		outType azer.BinDataType
 	}{
-		{int32ID(0), []byte{0, 0, 0, 0}, azwire.DataTypeInt32},
-		{int32ID(1), []byte{0, 0, 0, 1}, azwire.DataTypeInt32},
-		{int32ID(1 << 24), []byte{1, 0, 0, 0}, azwire.DataTypeInt32},
+		{int32ID(0), []byte{0, 0, 0, 0}, azer.BinDataTypeInt32},
+		{int32ID(1), []byte{0, 0, 0, 1}, azer.BinDataTypeInt32},
+		{int32ID(1 << 24), []byte{1, 0, 0, 0}, azer.BinDataTypeInt32},
 	}
 
 	for _, testCase := range testCases {
-		outData, outType := testCase.in.AZWireField()
+		outData, outType := testCase.in.AZERBinField()
 		if !bytes.Equal(outData, testCase.outData) {
 			t.Errorf("Expected: %#v, actual: %#v", testCase.outData, outData)
 		}
@@ -172,7 +172,7 @@ func TestEncodeRefKey(t *testing.T) {
 	}
 
 	for _, testCase := range testCases {
-		outData := testCase.in.AZWire()
+		outData := testCase.in.AZERBin()
 		if !bytes.Equal(outData, testCase.outData) {
 			t.Errorf("Expected: %#v, actual: %#v", testCase.outData, outData)
 		}
@@ -193,7 +193,7 @@ func TestEncodeAdjunct(t *testing.T) {
 	}
 
 	for _, testCase := range testCases {
-		outData := testCase.in.AZWire()
+		outData := testCase.in.AZERBin()
 		if !bytes.Equal(outData, testCase.outData) {
 			t.Errorf("Expected: %#v, actual: %#v", testCase.outData, outData)
 		}
@@ -216,7 +216,7 @@ func TestDecodeToAdjunct(t *testing.T) {
 	}
 
 	for _, testCase := range testCases {
-		refKey, readLen, err := adjunctRefKeyFromAZWire(testCase.in)
+		refKey, readLen, err := adjunctRefKeyFromAZERBin(testCase.in)
 		if err != testCase.err {
 			t.Errorf("Expected: %#v, actual: %#v", testCase.err, err)
 		}

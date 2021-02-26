@@ -1,6 +1,8 @@
 package azcore
 
-import "github.com/alloyzeus/go-azcore/azcore/azwire"
+import (
+	"github.com/alloyzeus/go-azcore/azcore/azer"
+)
 
 // EID abstracts entity and entity-like object IDs.
 //
@@ -10,7 +12,7 @@ type EID interface {
 
 	AZEID()
 
-	// An EID must be azwire-marshalable as a field. It never need to be
+	// An EID must be azer-bin-marshalable as a field. It never need to be
 	// marshalable as a top-level object.
-	azwire.FieldMarshalable
+	azer.BinFieldMarshalable
 }

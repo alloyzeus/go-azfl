@@ -1,6 +1,8 @@
 package azcore
 
-import "github.com/alloyzeus/go-azcore/azcore/azwire"
+import (
+	"github.com/alloyzeus/go-azcore/azcore/azer"
+)
 
 // RefKey defines the contract for all its concrete implementations.
 //
@@ -27,10 +29,9 @@ type RefKey interface {
 
 	AZRefKey()
 
-	azwire.FieldMarshalable
-	azwire.Marshalable
-
-	AZRSObject
+	azer.BinFieldMarshalable
+	azer.BinMarshalable
+	azer.TextMarshalable
 
 	// // Returns an array of the hosts' ref-keys.
 	// Hosts() []RefKey
