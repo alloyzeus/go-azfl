@@ -110,26 +110,21 @@ type adjunctRefKey struct {
 
 const adjunctRefKeyFieldCount = 2
 
-func adjunctRefKeyFromAZERBin(
-	b []byte,
+func adjunctRefKeyFromAZERBinField(
+	b []byte, typeHint azer.BinDataType,
 ) (refKey adjunctRefKey, readLen int, err error) {
-	typ, err := azer.BinDataTypeFromByte(b[0])
-	if err != nil {
-		return adjunctRefKey{}, 0,
-			errors.ArgWrap("", "type parsing", err)
-	}
-	if typ != azer.BinDataTypeArray {
+	if typeHint != azer.BinDataTypeArray {
 		return adjunctRefKey{}, 0,
 			errors.Arg("", errors.EntMsg("type", "unsupported"))
 	}
 
-	arrayLen := int(b[1])
+	arrayLen := int(b[0])
 	if arrayLen != adjunctRefKeyFieldCount {
 		return adjunctRefKey{}, 0,
 			errors.Arg("", errors.EntMsg("field count", "mismatch"))
 	}
 
-	typeCursor := 2
+	typeCursor := 1
 	dataCursor := typeCursor + arrayLen
 
 	parentType, err := azer.BinDataTypeFromByte(b[typeCursor])
@@ -161,22 +156,47 @@ func adjunctRefKeyFromAZERBin(
 	return adjunctRefKey{parentRefKey, id}, dataCursor, nil
 }
 
+func adjunctRefKeyFromAZERBin(
+	b []byte,
+) (refKey adjunctRefKey, readLen int, err error) {
+	typ, err := azer.BinDataTypeFromByte(b[0])
+	if err != nil {
+		return adjunctRefKey{}, 0,
+			errors.ArgWrap("", "type parsing", err)
+	}
+	if typ != azer.BinDataTypeArray {
+		return adjunctRefKey{}, 0,
+			errors.Arg("", errors.EntMsg("type", "unsupported"))
+	}
+
+	refKey, readLen, err = adjunctRefKeyFromAZERBinField(b[1:], typ)
+	return refKey, readLen + 1, err
+}
+
+func (refKey adjunctRefKey) AZERBinField() ([]byte, azer.BinDataType) {
+	var typesBytes []byte
+	var dataBytes []byte
+	var fieldBytes []byte
+	var fieldType azer.BinDataType
+
+	fieldBytes, fieldType = refKey.parent.AZERBinField()
+	typesBytes = append(typesBytes, fieldType.Byte())
+	dataBytes = append(dataBytes, fieldBytes...)
+
+	fieldBytes, fieldType = refKey.id.AZERBinField()
+	typesBytes = append(typesBytes, fieldType.Byte())
+	dataBytes = append(dataBytes, fieldBytes...)
+
+	var out = []byte{byte(len(typesBytes))}
+	out = append(out, typesBytes...)
+	out = append(out, dataBytes...)
+	return out, azer.BinDataTypeArray
+}
+
 func (refKey adjunctRefKey) AZERBin() []byte {
-	var fieldTypes []byte
-	var fieldData []byte
-
-	b, t := refKey.parent.AZERBinField()
-	fieldTypes = append(fieldTypes, t.Byte())
-	fieldData = append(fieldData, b...)
-
-	b, t = refKey.id.AZERBinField()
-	fieldTypes = append(fieldTypes, t.Byte())
-	fieldData = append(fieldData, b...)
-
-	var out = []byte{azer.BinDataTypeArray.Byte(), byte(len(fieldTypes))}
-	out = append(out, fieldTypes...)
-	out = append(out, fieldData...)
-	return out
+	data, typ := refKey.AZERBinField()
+	out := []byte{typ.Byte()}
+	return append(out, data...)
 }
 
 func TestEncodeField(t *testing.T) {
