@@ -36,8 +36,8 @@ type RefKey interface {
 	// // Returns an array of the hosts' ref-keys.
 	// Hosts() []RefKey
 
-	// ID returns only the ID-part of this ref-key.
-	ID() EID
+	// EID returns only the ID-part of this ref-key.
+	EID() EID
 }
 
 // RefKeyFromString is a function which creates an instance of RefKey
