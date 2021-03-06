@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"testing"
 
-	"github.com/alloyzeus/go-azcore/azcore/azer"
+	"github.com/alloyzeus/go-azfl/azfl/azer"
 )
 
 var _ azer.TextMarshalable = adjunctRefKey{}

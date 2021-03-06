@@ -5,8 +5,8 @@ import (
 	"encoding/binary"
 	"testing"
 
-	"github.com/alloyzeus/go-azcore/azcore/azer"
-	"github.com/alloyzeus/go-azcore/azcore/errors"
+	"github.com/alloyzeus/go-azfl/azfl/azer"
+	"github.com/alloyzeus/go-azfl/azfl/errors"
 )
 
 type int32ID int32

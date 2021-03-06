@@ -1,4 +1,4 @@
-module github.com/alloyzeus/go-azcore
+module github.com/alloyzeus/go-azfl
 
 go 1.15
 

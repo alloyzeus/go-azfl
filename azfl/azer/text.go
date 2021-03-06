@@ -3,7 +3,7 @@ package azer
 import (
 	"github.com/rez-go/crock32"
 
-	"github.com/alloyzeus/go-azcore/azcore/errors"
+	"github.com/alloyzeus/go-azfl/azfl/errors"
 )
 
 // TextMarshalable is an interface definition for objects which able to

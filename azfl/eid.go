@@ -1,7 +1,7 @@
 package azcore
 
 import (
-	"github.com/alloyzeus/go-azcore/azcore/azer"
+	"github.com/alloyzeus/go-azfl/azfl/azer"
 )
 
 // EID abstracts entity and entity-like object IDs.
