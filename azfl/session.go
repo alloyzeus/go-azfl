@@ -17,7 +17,7 @@ type Session interface {
 
 // SessionID abstracts the identifiers of Session entity instances.
 type SessionID interface {
-	EID
+	IDNum
 	AZSessionID()
 }
 

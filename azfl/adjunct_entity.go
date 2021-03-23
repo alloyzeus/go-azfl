@@ -2,7 +2,7 @@ package azcore
 
 // AdjunctEntityID abstracts adjunct entity IDs.
 type AdjunctEntityID interface {
-	EID
+	IDNum
 
 	AZAdjunctEntityID()
 }

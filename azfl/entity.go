@@ -9,7 +9,7 @@ type Entity interface {
 //
 //TODO: this is a value-object.
 type EntityID interface {
-	EID
+	IDNum
 
 	AZEntityID()
 }

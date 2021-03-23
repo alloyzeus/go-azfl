@@ -2,7 +2,7 @@ package azcore
 
 // UserID abstracts the identifiers of User entity instances.
 type UserID interface {
-	EID
+	IDNum
 	AZUserID()
 }
 

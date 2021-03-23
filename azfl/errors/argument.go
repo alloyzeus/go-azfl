@@ -17,6 +17,13 @@ func Arg(argName string, err error, fields ...EntityError) ArgumentError {
 	}}
 }
 
+func ArgFields(argName string, fields ...EntityError) ArgumentError {
+	return &argumentError{entityError{
+		identifier: argName,
+		fields:     fields,
+	}}
+}
+
 func ArgMsg(argName, errMsg string, fields ...EntityError) ArgumentError {
 	return &argumentError{entityError{
 		identifier: argName,

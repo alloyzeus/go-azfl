@@ -12,7 +12,7 @@ type Terminal interface {
 
 // TerminalID abstracts the identifiers of Terminal entity instances.
 type TerminalID interface {
-	EID
+	IDNum
 	AZTerminalID()
 }
 
