@@ -15,16 +15,17 @@ type Session interface {
 	Subject() Subject
 }
 
-// SessionID abstracts the identifiers of Session entity instances.
-type SessionID interface {
+// SessionIDNum abstracts the identifiers of Session entity instances.
+type SessionIDNum interface {
 	IDNum
-	AZSessionID()
+
+	AZSessionIDNum()
 }
 
 // SessionRefKey is used to refer to a Session entity instance.
 type SessionRefKey interface {
 	RefKey
 
-	// SessionID returns only the ID part of this ref-key.
-	SessionID() SessionID
+	// SessionIDNum returns only the ID part of this ref-key.
+	SessionIDNum() SessionIDNum
 }
