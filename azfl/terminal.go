@@ -1,5 +1,7 @@
 package azcore
 
+import "github.com/alloyzeus/go-azfl/azfl/azid"
+
 // A Terminal is an object which could act within the system, i.e., an agent.
 type Terminal interface {
 	// RefKey returns the identifier of this Terminal instance.
@@ -12,14 +14,14 @@ type Terminal interface {
 
 // TerminalIDNum abstracts the identifiers of Terminal entity instances.
 type TerminalIDNum interface {
-	IDNum
+	azid.IDNum
 
 	AZTerminalIDNum()
 }
 
 // TerminalRefKey is used to refer to a Terminal entity instance.
 type TerminalRefKey interface {
-	RefKey
+	azid.RefKey
 
 	// TerminalIDNum returns only the ID part of this ref-key.
 	TerminalIDNum() TerminalIDNum

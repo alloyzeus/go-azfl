@@ -1,20 +1,20 @@
-package azer_test
+package azid_test
 
 import (
 	"bytes"
 	"testing"
 
-	"github.com/alloyzeus/go-azfl/azfl/azer"
+	"github.com/alloyzeus/go-azfl/azfl/azid"
 )
 
-var _ azer.TextMarshalable = adjunctRefKey{}
+var _ azid.TextMarshalable = adjunctRefKey{}
 
-func (refKey adjunctRefKey) AZERText() string {
-	bin := refKey.AZERBin()
-	return azer.TextEncode(bin)
+func (refKey adjunctRefKey) AZIDText() string {
+	bin := refKey.AZIDBin()
+	return azid.TextEncode(bin)
 }
 
-func TestAZERTextAdjunctRefKeyEncode(t *testing.T) {
+func TestAZIDTextAdjunctRefKeyEncode(t *testing.T) {
 	testCases := []struct {
 		in  adjunctRefKey
 		out string
@@ -26,14 +26,14 @@ func TestAZERTextAdjunctRefKeyEncode(t *testing.T) {
 	}
 
 	for _, testCase := range testCases {
-		s := testCase.in.AZERText()
+		s := testCase.in.AZIDText()
 		if s != testCase.out {
 			t.Errorf("Expected: %#v, got: %#v", testCase.out, s)
 		}
 	}
 }
 
-func TestAZERTextDecode(t *testing.T) {
+func TestAZIDTextDecode(t *testing.T) {
 	testCases := []struct {
 		in  string
 		out []byte
@@ -51,7 +51,7 @@ func TestAZERTextDecode(t *testing.T) {
 	}
 
 	for _, testCase := range testCases {
-		r, err := azer.TextDecode(testCase.in)
+		r, err := azid.TextDecode(testCase.in)
 		if err != testCase.err {
 			t.Errorf("Expected: %#v, got: %#v", testCase.err, err)
 		}

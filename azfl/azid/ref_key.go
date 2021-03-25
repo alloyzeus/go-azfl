@@ -1,7 +1,7 @@
-package azcore
+package azid
 
 import (
-	"github.com/alloyzeus/go-azfl/azfl/azer"
+	"github.com/alloyzeus/go-azfl/azfl/azob"
 )
 
 // RefKey defines the contract for all its concrete implementations.
@@ -25,13 +25,13 @@ import (
 //
 //TODO: RefKey is ValueObject.
 type RefKey interface {
-	Equatable
+	azob.Equatable
 
 	AZRefKey()
 
-	azer.BinFieldMarshalable
-	azer.BinMarshalable
-	azer.TextMarshalable
+	BinFieldMarshalable
+	BinMarshalable
+	TextMarshalable
 
 	// // Returns an array of the hosts' ref-keys.
 	// Hosts() []RefKey

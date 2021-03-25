@@ -1,22 +1,24 @@
 package azcore
 
+import "github.com/alloyzeus/go-azfl/azfl/azid"
+
 // Entity defines the contract for all its concrete implementations.
 type Entity interface {
 	AZEntity()
 }
 
-// EntityID defines the contract for all its concrete implementations.
+// EntityIDNum defines the contract for all its concrete implementations.
 //
 //TODO: this is a value-object.
-type EntityID interface {
-	IDNum
+type EntityIDNum interface {
+	azid.IDNum
 
-	AZEntityID()
+	AZEntityIDNum()
 }
 
 // EntityRefKey defines the contract for all its concrete implementations.
 type EntityRefKey interface {
-	RefKey
+	azid.RefKey
 
 	AZEntityRefKey()
 }

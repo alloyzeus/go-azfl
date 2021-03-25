@@ -1,8 +1,10 @@
 package azcore
 
+import "github.com/alloyzeus/go-azfl/azfl/azob"
+
 // Attributes abstracts attributes.
 type Attributes interface {
-	Equatable
+	azob.Equatable
 
 	AZAttributes()
 }

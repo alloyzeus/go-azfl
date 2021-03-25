@@ -1,7 +1,7 @@
-package azcore
+package azob
 
 // Equatable defines the requirements for implementations so that they can
-// be compared for value equality.
+// be compared for value-based equality.
 type Equatable interface {
 	// Equals returns true if the other value matches this object perfectly.
 	//

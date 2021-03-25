@@ -1,15 +1,17 @@
 package azcore
 
-// AdjunctEntityID abstracts adjunct entity IDs.
-type AdjunctEntityID interface {
-	IDNum
+import "github.com/alloyzeus/go-azfl/azfl/azid"
 
-	AZAdjunctEntityID()
+// AdjunctEntityIDNum abstracts adjunct entity IDs.
+type AdjunctEntityIDNum interface {
+	azid.IDNum
+
+	AZAdjunctEntityIDNum()
 }
 
 // AdjunctEntityRefKey abstracts adjunct entity ref keys.
 type AdjunctEntityRefKey interface {
-	RefKey
+	azid.RefKey
 
 	AZAdjunctEntityRefKey()
 }

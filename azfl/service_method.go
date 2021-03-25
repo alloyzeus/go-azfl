@@ -1,6 +1,10 @@
 package azcore
 
-import "time"
+import (
+	"time"
+
+	"github.com/alloyzeus/go-azfl/azfl/azob"
+)
 
 //region ServiceMethodError
 
@@ -100,7 +104,7 @@ type ServiceMethodCallInfo interface {
 // ServiceMethodCallID represents the identifier of a method call. This
 // identifier doubles as idempotency token.
 type ServiceMethodCallID interface {
-	Equatable
+	azob.Equatable
 
 	AZServiceMethodCallID()
 }

@@ -1,42 +1,42 @@
-package azer
+package azid
 
 // BinMarshalable is an interface definition for objects which able to
-// provide an azer-bin representation of itself.
+// provide an azid-bin representation of itself.
 //
 // This interface is for top-level object. If the object is part of other
 // object, i.e., a field, see BinFieldMarshalable.
 type BinMarshalable interface {
-	// AZERBin returns an azer-bin representation of the instance.
-	AZERBin() []byte
+	// AZIDBin returns an azid-bin representation of the instance.
+	AZIDBin() []byte
 }
 
 // BinUnmarshalable is and interface definition for objects which able
-// to load an azer-bin representation into itself.
+// to load an azid-bin representation into itself.
 type BinUnmarshalable interface {
-	UnmarshalAZERBin(b []byte) (readLen int, err error)
+	UnmarshalAZIDBin(b []byte) (readLen int, err error)
 }
 
 // BinFieldMarshalable is an interface definition for objects which
-// able to provide an azer-bin representation of itself as a field
-// of other azer object.
+// able to provide an azid-bin representation of itself as a field
+// of other azid object.
 type BinFieldMarshalable interface {
-	// AZERBinField returns an azer-bin representation of the instance
+	// AZIDBinField returns an azid-bin representation of the instance
 	// which was designed to be part of the larger object.
 	// The data type is returned along with the data bytes instead of included
-	// in them as this method was designed for constructing an azer-bin
+	// in them as this method was designed for constructing an azid-bin
 	// structure where this object is part of.
-	AZERBinField() ([]byte, BinDataType)
+	AZIDBinField() ([]byte, BinDataType)
 }
 
 // BinFieldUnmarshalable is and interface definition for objects which able
-// to load an azer-bin representation into itself.
+// to load an azid-bin representation into itself.
 type BinFieldUnmarshalable interface {
-	UnmarshalAZERBinField(b []byte, typeHint BinDataType) (readLen int, err error)
+	UnmarshalAZIDBinField(b []byte, typeHint BinDataType) (readLen int, err error)
 }
 
 //region BinDataType
 
-// BinDataType represents a type supported by azer-bin.
+// BinDataType represents a type supported by azid-bin.
 type BinDataType uint8
 
 // Supported data types.

@@ -1,4 +1,4 @@
-package azer
+package azid
 
 import (
 	"github.com/rez-go/crock32"
@@ -7,23 +7,23 @@ import (
 )
 
 // TextMarshalable is an interface definition for objects which able to
-// provide an azer-text representation of itself.
+// provide an azid-text representation of itself.
 type TextMarshalable interface {
-	AZERText() string
+	AZIDText() string
 }
 
 // A TextUnmarshalable is an object which able to load an
-// azer-text representation into itself.
+// azid-text representation into itself.
 type TextUnmarshalable interface {
-	UnmarshalAZERText(s string) error
+	UnmarshalAZIDText(s string) error
 }
 
 var (
-	// TextEncode encodes azer-bin ref-key.
+	// TextEncode encodes azid-bin ref-key.
 	TextEncode = crock32.EncodeLower
 )
 
-// TextDecode decodes azer-bin ref-key from a string.
+// TextDecode decodes azid-bin ref-key from a string.
 func TextDecode(s string) ([]byte, error) {
 	var dataEncoded []byte
 	var csEncoded []byte

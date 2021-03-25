@@ -1,5 +1,7 @@
 package azcore
 
+import "github.com/alloyzeus/go-azfl/azfl/azid"
+
 // Session represents information about a session. Every action can
 // only be performed with an active session. A session is obtained through
 // authorization, or authentication, of a Terminal.
@@ -17,14 +19,14 @@ type Session interface {
 
 // SessionIDNum abstracts the identifiers of Session entity instances.
 type SessionIDNum interface {
-	IDNum
+	azid.IDNum
 
 	AZSessionIDNum()
 }
 
 // SessionRefKey is used to refer to a Session entity instance.
 type SessionRefKey interface {
-	RefKey
+	azid.RefKey
 
 	// SessionIDNum returns only the ID part of this ref-key.
 	SessionIDNum() SessionIDNum
