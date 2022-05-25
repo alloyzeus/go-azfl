@@ -45,12 +45,13 @@ type BinDataType uint8
 const (
 	// BinDataTypeUnspecified is used for the zero value of BinDataType.
 	BinDataTypeUnspecified BinDataType = 0b0
-	// BinDataTypeArray is used to indicate an array data type.
-	BinDataTypeArray BinDataType = 0b01000000
 
-	BinDataTypeInt16 BinDataType = 0b00010010
-	BinDataTypeInt32 BinDataType = 0b00010011
-	BinDataTypeInt64 BinDataType = 0b00010100
+	BinDataTypeInt16 BinDataType = 0b_0001_0010
+	BinDataTypeInt32 BinDataType = 0b_0001_0011
+	BinDataTypeInt64 BinDataType = 0b_0001_0100
+
+	// BinDataTypeArray is used to indicate an array data type.
+	BinDataTypeArray BinDataType = 0b_0100_0000
 )
 
 // BinDataTypeFromByte parses a byte to its respective BinDataType.

@@ -65,7 +65,7 @@ type EntityMutatingContext interface {
 type EntityMutatingRequestContext interface {
 	EntityMutatingContext
 	EntityMethodRequestContext
-	ServiceMutatingMethodRequestContext
+	ServiceMutatingOpRequestContext
 }
 
 // EntityMutatingResponseContext provides an abstraction for output contexts

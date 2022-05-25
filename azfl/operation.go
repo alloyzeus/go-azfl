@@ -2,10 +2,10 @@ package azcore
 
 import "time"
 
-// ActionInfo holds information about an action.
-type ActionInfo interface {
-	// MethodCallID returns the ID of the method call this action initiated through.
-	MethodCallID() ServiceMethodCallID
+// OperationInfo holds information about an action.
+type OperationInfo interface {
+	// MethodOpID returns the ID of the method call this action initiated through.
+	MethodOpID() ServiceMethodOpID
 
 	// Actor returns the subject who executed the action. Must not be empty
 	// in server, might be empty in clients, might be queryable.

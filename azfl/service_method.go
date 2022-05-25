@@ -88,7 +88,8 @@ type ServiceMethodContext interface {
 type ServiceMethodCallInfo interface {
 	AZServiceMethodCallInfo()
 
-	CallID() ServiceMethodCallID
+	//TODO: only on mutating operation
+	OpID() ServiceMethodOpID
 
 	// RequestOriginTime is the time assigned by the terminal which made the
 	// request for the method call.
@@ -99,14 +100,14 @@ type ServiceMethodCallInfo interface {
 
 //endregion
 
-//region ServiceMethodCallID
+//region ServiceMethodOpID
 
-// ServiceMethodCallID represents the identifier of a method call. This
+// ServiceMethodOpID represents the identifier of a method call. This
 // identifier doubles as idempotency token.
-type ServiceMethodCallID interface {
+type ServiceMethodOpID interface {
 	azob.Equatable
 
-	AZServiceMethodCallID()
+	AZServiceMethodOpID()
 }
 
 //endregion
@@ -329,11 +330,11 @@ type ServiceMutatingMethodRequest interface {
 	ServiceMutatingMethodMessage
 	ServiceMethodRequest
 
-	MutatingMethodRequestContext() ServiceMutatingMethodRequestContext
+	MutatingOpRequestContext() ServiceMutatingOpRequestContext
 }
 
-// ServiceMutatingMethodRequestContext abstracts mutating method request contexts.
-type ServiceMutatingMethodRequestContext interface {
+// ServiceMutatingOpRequestContext abstracts mutating method request contexts.
+type ServiceMutatingOpRequestContext interface {
 	ServiceMutatingMethodContext
 	ServiceMethodRequestContext
 }
