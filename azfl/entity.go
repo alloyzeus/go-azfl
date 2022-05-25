@@ -7,18 +7,22 @@ type Entity interface {
 	AZEntity()
 }
 
+type EntityIDNumMethods interface {
+	AZEntityIDNum()
+}
+
 // EntityIDNum defines the contract for all its concrete implementations.
 //
 //TODO: this is a value-object.
 type EntityIDNum interface {
 	azid.IDNum
 
-	AZEntityIDNum()
+	EntityIDNumMethods
 }
 
 // EntityRefKey defines the contract for all its concrete implementations.
-type EntityRefKey interface {
-	azid.RefKey
+type EntityRefKey[IDNumT EntityIDNum] interface {
+	azid.RefKey[IDNumT]
 
 	AZEntityRefKey()
 }

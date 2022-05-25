@@ -22,7 +22,7 @@ import (
 // In above example, two items from two different stores have the same id-num
 // but their respective ref-keys will not be the same. This system allows each
 // store to scale independently without significantly affecting each others.
-type RefKey interface {
+type RefKey[IDNumT IDNum] interface {
 	azob.Equatable
 
 	AZRefKey()
@@ -35,9 +35,9 @@ type RefKey interface {
 	// Hosts() []RefKey
 
 	// AZIDNum returns only the id-num-part of this ref-key.
-	AZIDNum() IDNum
+	AZIDNum() IDNumT
 }
 
 // RefKeyFromString is a function which creates an instance of RefKey
 // from an input string.
-type RefKeyFromString[T RefKey] func(refKeyString string) (T, Error)
+type RefKeyFromString[IDNumT IDNum] func(refKeyString string) (RefKey[IDNumT], Error)

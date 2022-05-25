@@ -1,11 +1,11 @@
 package azcore
 
 // Subject is an object which could be involved in an action.
-type Subject interface {
+type Subject[TerminalIDNumT TerminalIDNum, UserIDNumT UserIDNum] interface {
 	AZSubject()
 
 	// TerminalRefKey returns the ref-key of the terminal for this subject.
-	TerminalRefKey() TerminalRefKey
+	TerminalRefKey() TerminalRefKey[TerminalIDNumT]
 
 	// IsRepresentingAUser returns true if this subject is representing
 	// a user, i.e., the application is a user-agent, not a service application.
@@ -15,5 +15,5 @@ type Subject interface {
 	IsRepresentingAUser() bool
 
 	// UserRefKey returns the ref-key of the user this subject represents.
-	UserRefKey() UserRefKey
+	UserRefKey() UserRefKey[UserIDNumT]
 }

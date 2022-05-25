@@ -4,10 +4,7 @@ import (
 	"github.com/alloyzeus/go-azfl/azfl/azob"
 )
 
-// IDNum abstracts entity and entity-like object IDs.
-//
-//TODO: define that an IDNum must be of a primitive type.
-type IDNum interface {
+type IDNumMethods interface {
 	azob.Equatable
 
 	AZIDNum()
@@ -15,4 +12,13 @@ type IDNum interface {
 	// An IDNum must be azid-bin-marshalable as a field. It never need to be
 	// marshalable as a top-level object.
 	BinFieldMarshalable
+}
+
+// IDNum abstracts entity and entity-like object IDs.
+//
+//TODO: define that an IDNum must be of a primitive type.
+type IDNum interface {
+	~int16 | ~int32 | ~int64
+
+	IDNumMethods
 }

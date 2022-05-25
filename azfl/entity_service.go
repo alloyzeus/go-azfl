@@ -10,11 +10,13 @@ type EntityMethodMessage interface {
 }
 
 // EntityMethodRequest abstracts all entity method requests messages.
-type EntityMethodRequest interface {
-	ServiceMethodRequest
+type EntityMethodRequest[
+	SessionIDNumT SessionIDNum, TerminalIDNumT TerminalIDNum, UserIDNumT UserIDNum,
+] interface {
+	ServiceMethodRequest[SessionIDNumT, TerminalIDNumT, UserIDNumT]
 	EntityMethodMessage
 
-	EntityMethodRequestContext() EntityMethodRequestContext
+	EntityMethodRequestContext() EntityMethodRequestContext[SessionIDNumT, TerminalIDNumT, UserIDNumT]
 }
 
 // EntityMethodResponse abstracts all entity method response messages.
@@ -37,9 +39,11 @@ type EntityMethodContext interface {
 
 // EntityMethodRequestContext is an abstraction for all method call
 // input contexts.
-type EntityMethodRequestContext interface {
+type EntityMethodRequestContext[
+	SessionIDNumT SessionIDNum, TerminalIDNumT TerminalIDNum, UserIDNumT UserIDNum,
+] interface {
 	EntityMethodContext
-	ServiceMethodRequestContext
+	ServiceMethodRequestContext[SessionIDNumT, TerminalIDNumT, UserIDNumT]
 }
 
 // EntityMethodResponseContext is an abstraction for all method call
@@ -62,10 +66,12 @@ type EntityMutatingContext interface {
 
 // EntityMutatingRequestContext provides an abstraction for input contexts
 // for mutating method calls.
-type EntityMutatingRequestContext interface {
+type EntityMutatingRequestContext[
+	SessionIDNumT SessionIDNum, TerminalIDNumT TerminalIDNum, UserIDNumT UserIDNum,
+] interface {
 	EntityMutatingContext
-	EntityMethodRequestContext
-	ServiceMutatingOpRequestContext
+	EntityMethodRequestContext[SessionIDNumT, TerminalIDNumT, UserIDNumT]
+	ServiceMutatingOpRequestContext[SessionIDNumT, TerminalIDNumT, UserIDNumT]
 }
 
 // EntityMutatingResponseContext provides an abstraction for output contexts
@@ -85,11 +91,13 @@ type EntityMutatingMessage interface {
 }
 
 // EntityMutatingRequest abstracts entity mutating requests.
-type EntityMutatingRequest interface {
+type EntityMutatingRequest[
+	SessionIDNumT SessionIDNum, TerminalIDNumT TerminalIDNum, UserIDNumT UserIDNum,
+] interface {
 	EntityMutatingMessage
-	ServiceMutatingMethodRequest
+	ServiceMutatingMethodRequest[SessionIDNumT, TerminalIDNumT, UserIDNumT]
 
-	EntityMutatingRequestContext() EntityMutatingRequestContext
+	EntityMutatingRequestContext() EntityMutatingRequestContext[SessionIDNumT, TerminalIDNumT, UserIDNumT]
 }
 
 // EntityMutatingResponse abstracts entity mutating responses.

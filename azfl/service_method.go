@@ -129,10 +129,12 @@ type ServiceMethodMessage interface {
 //region ServiceMethodRequest
 
 // ServiceMethodRequest abstracts method request messages.
-type ServiceMethodRequest interface {
+type ServiceMethodRequest[
+	SessionIDNumT SessionIDNum, TerminalIDNumT TerminalIDNum, UserIDNumT UserIDNum,
+] interface {
 	ServiceMethodMessage
 
-	MethodRequestContext() ServiceMethodRequestContext
+	MethodRequestContext() ServiceMethodRequestContext[SessionIDNumT, TerminalIDNumT, UserIDNumT]
 }
 
 // type ServiceMethodRequestBase struct {
@@ -162,13 +164,15 @@ type ServiceMethodRequestError interface {
 
 // ServiceMethodRequestContext provides an abstraction for all input contexts
 // in method call inputs.
-type ServiceMethodRequestContext interface {
+type ServiceMethodRequestContext[
+	SessionIDNumT SessionIDNum, TerminalIDNumT TerminalIDNum, UserIDNumT UserIDNum,
+] interface {
 	ServiceMethodContext
 
 	AZServiceMethodRequestContext()
 
 	// Session returns the session for this context.
-	Session() Session
+	Session() Session[SessionIDNumT, TerminalIDNumT, UserIDNumT]
 }
 
 //endregion
@@ -192,39 +196,6 @@ type ServiceMethodRequestSessionError interface {
 
 	AZServiceMethodRequestSessionError()
 }
-
-//endregion
-
-//region ServiceMethodRequestContextBase
-
-// ServiceMethodRequestContextBase is a partial implementation
-// of ServiceMethodRequestContext.
-type ServiceMethodRequestContextBase struct {
-	session Session
-}
-
-var _ ServiceMethodContext = ServiceMethodRequestContextBase{}
-var _ ServiceMethodRequestContext = ServiceMethodRequestContextBase{}
-
-// AZContext is required
-// for conformance with Context.
-func (ServiceMethodRequestContextBase) AZContext() {}
-
-// AZServiceContext is required
-// for conformance with ServiceContext.
-func (ServiceMethodRequestContextBase) AZServiceContext() {}
-
-// AZServiceMethodContext is required
-// for conformance with ServiceMethodContext.
-func (ServiceMethodRequestContextBase) AZServiceMethodContext() {}
-
-// AZServiceMethodRequestContext is required
-// for conformance with ServiceMethodRequestContext.
-func (ServiceMethodRequestContextBase) AZServiceMethodRequestContext() {}
-
-// Session is required
-// for conformance with ServiceMethodRequestContext.
-func (ctx ServiceMethodRequestContextBase) Session() Session { return ctx.session }
 
 //endregion
 
@@ -326,17 +297,21 @@ type ServiceMutatingMethodContext interface {
 }
 
 // ServiceMutatingMethodRequest abstracts mutating method requests.
-type ServiceMutatingMethodRequest interface {
+type ServiceMutatingMethodRequest[
+	SessionIDNumT SessionIDNum, TerminalIDNumT TerminalIDNum, UserIDNumT UserIDNum,
+] interface {
 	ServiceMutatingMethodMessage
-	ServiceMethodRequest
+	ServiceMethodRequest[SessionIDNumT, TerminalIDNumT, UserIDNumT]
 
-	MutatingOpRequestContext() ServiceMutatingOpRequestContext
+	MutatingOpRequestContext() ServiceMutatingOpRequestContext[SessionIDNumT, TerminalIDNumT, UserIDNumT]
 }
 
 // ServiceMutatingOpRequestContext abstracts mutating method request contexts.
-type ServiceMutatingOpRequestContext interface {
+type ServiceMutatingOpRequestContext[
+	SessionIDNumT SessionIDNum, TerminalIDNumT TerminalIDNum, UserIDNumT UserIDNum,
+] interface {
 	ServiceMutatingMethodContext
-	ServiceMethodRequestContext
+	ServiceMethodRequestContext[SessionIDNumT, TerminalIDNumT, UserIDNumT]
 }
 
 // ServiceMutatingMethodResponse abstracts mutating method responses.

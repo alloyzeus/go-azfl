@@ -3,17 +3,19 @@ package azcore
 import "time"
 
 // OperationInfo holds information about an action.
-type OperationInfo interface {
+type OperationInfo[
+	SessionIDNumT SessionIDNum, TerminalIDNumT TerminalIDNum, UserIDNumT UserIDNum,
+] interface {
 	// MethodOpID returns the ID of the method call this action initiated through.
 	MethodOpID() ServiceMethodOpID
 
 	// Actor returns the subject who executed the action. Must not be empty
 	// in server, might be empty in clients, might be queryable.
-	Actor() Subject
+	Actor() Subject[TerminalIDNumT, UserIDNumT]
 
 	// Session returns the session by the actor to perform the action.
 	// Must not be empty in server, might be empty in clients.
-	Session() Session
+	Session() Session[SessionIDNumT, TerminalIDNumT, UserIDNumT]
 
 	// DelegationInfo returns the information about the delegation if this
 	// action was delegated to other subject or session.
@@ -35,6 +37,8 @@ type OperationInfo interface {
 
 // DelegationInfo holds information about delegation for an action if that
 // action was delegated.
+//
+//TODO: actual info
 type DelegationInfo interface {
 	// ParentDelegationInfo returns the delegation parent of this delegation.
 	ParentDelegationInfo() DelegationInfo

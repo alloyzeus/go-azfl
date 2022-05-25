@@ -2,6 +2,8 @@ package azob
 
 // Equatable defines the requirements for implementations so that they can
 // be compared for value-based equality.
+//
+//TODO: generics
 type Equatable interface {
 	// Equals returns true if the other value matches this object perfectly.
 	//
