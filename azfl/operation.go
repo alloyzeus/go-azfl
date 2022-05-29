@@ -19,7 +19,7 @@ type OperationInfo[
 
 	// DelegationInfo returns the information about the delegation if this
 	// action was delegated to other subject or session.
-	DelegationInfo() DelegationInfo
+	DelegationInfo() DelegationInfo[SessionIDNumT, TerminalIDNumT, UserIDNumT]
 
 	// Timestamp returns the time when the action made the effect. This should
 	// be obtained from the lowest level, e.g., database or file system.
@@ -39,7 +39,17 @@ type OperationInfo[
 // action was delegated.
 //
 //TODO: actual info
-type DelegationInfo interface {
+type DelegationInfo[
+	SessionIDNumT SessionIDNum, TerminalIDNumT TerminalIDNum, UserIDNumT UserIDNum,
+] interface {
 	// ParentDelegationInfo returns the delegation parent of this delegation.
-	ParentDelegationInfo() DelegationInfo
+	ParentDelegationInfo() DelegationInfo[SessionIDNumT, TerminalIDNumT, UserIDNumT]
+
+	// Actor returns the subject who delegated the action. Must not be empty
+	// in server, might be empty in clients, might be queryable.
+	Actor() Subject[TerminalIDNumT, UserIDNumT]
+
+	// Session returns the session by the actor to delegate the action.
+	// Must not be empty in server, might be empty in clients.
+	Session() Session[SessionIDNumT, TerminalIDNumT, UserIDNumT]
 }

@@ -19,11 +19,15 @@ type Session[
 	Subject() Subject[TerminalIDNumT, UserIDNumT]
 }
 
+type SessionIDNumMethods interface {
+	AZSessionIDNum()
+}
+
 // SessionIDNum abstracts the identifiers of Session entity instances.
 type SessionIDNum interface {
 	azid.IDNum
 
-	AZSessionIDNum()
+	SessionIDNumMethods
 }
 
 // SessionRefKey is used to refer to a Session entity instance.
