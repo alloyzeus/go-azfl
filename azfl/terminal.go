@@ -3,13 +3,16 @@ package azcore
 import "github.com/alloyzeus/go-azfl/azfl/azid"
 
 // A Terminal is an object which could act within the system, i.e., an agent.
-type Terminal[TerminalIDNumT TerminalIDNum, UserIDNumT UserIDNum] interface {
+type Terminal[
+	TerminalIDNumT TerminalIDNum, TerminalRefKeyT TerminalRefKey[TerminalIDNumT],
+	UserIDNumT UserIDNum, UserRefKeyT UserRefKey[UserIDNumT],
+] interface {
 	// RefKey returns the identifier of this Terminal instance.
-	RefKey() TerminalRefKey[TerminalIDNumT]
+	RefKey() TerminalRefKeyT
 
 	// PrincipalUser returns the ref-key of the User, if any, who authorized
 	// this instance of Terminal.
-	PrincipalUser() UserRefKey[UserIDNumT]
+	PrincipalUser() UserRefKeyT
 }
 
 type TerminalIDNumMethods interface {

@@ -4,12 +4,18 @@ package azcore
 type EntityCreationInfo[
 	SessionIDNumT SessionIDNum, TerminalIDNumT TerminalIDNum, UserIDNumT UserIDNum,
 ] interface {
-	OperationInfo[SessionIDNumT, TerminalIDNumT, UserIDNumT,
-		Subject[TerminalIDNumT, UserIDNumT], Session[
+	OperationInfo[
+		SessionIDNumT, TerminalIDNumT, UserIDNumT,
+		Subject[
+			TerminalIDNumT, TerminalRefKey[TerminalIDNumT],
+			UserIDNumT, UserRefKey[UserIDNumT]],
+		Session[
 			SessionIDNumT, SessionRefKey[SessionIDNumT],
 			TerminalIDNumT, TerminalRefKey[TerminalIDNumT],
 			UserIDNumT, UserRefKey[UserIDNumT],
-			Subject[TerminalIDNumT, UserIDNumT],
+			Subject[
+				TerminalIDNumT, TerminalRefKey[TerminalIDNumT],
+				UserIDNumT, UserRefKey[UserIDNumT]],
 		]]
 }
 
@@ -19,10 +25,11 @@ type EntityCreationInfoBase struct{}
 // EntityCreationEvent is the abstraction for all entity creation events.
 type EntityCreationEvent[
 	SessionIDNumT SessionIDNum, TerminalIDNumT TerminalIDNum, UserIDNumT UserIDNum,
+	EntityCreationInfoT EntityCreationInfo[SessionIDNumT, TerminalIDNumT, UserIDNumT],
 ] interface {
 	AZEntityCreationEvent()
 
-	CreationInfo() EntityCreationInfo[SessionIDNumT, TerminalIDNumT, UserIDNumT]
+	CreationInfo() EntityCreationInfoT
 }
 
 // EntityCreationEventBase is the base implementation of EntityCreationEvent.

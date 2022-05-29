@@ -5,13 +5,14 @@ import "time"
 // OperationInfo holds information about an action.
 type OperationInfo[
 	SessionIDNumT SessionIDNum, TerminalIDNumT TerminalIDNum, UserIDNumT UserIDNum,
-	SubjectT Subject[TerminalIDNumT, UserIDNumT],
+	SubjectT Subject[
+		TerminalIDNumT, TerminalRefKey[TerminalIDNumT],
+		UserIDNumT, UserRefKey[UserIDNumT]],
 	SessionT Session[
 		SessionIDNumT, SessionRefKey[SessionIDNumT],
 		TerminalIDNumT, TerminalRefKey[TerminalIDNumT],
 		UserIDNumT, UserRefKey[UserIDNumT],
-		SubjectT,
-	],
+		SubjectT],
 ] interface {
 	// MethodOpID returns the ID of the method call this action initiated through.
 	MethodOpID() ServiceMethodOpID
@@ -49,7 +50,9 @@ type OperationInfo[
 //TODO: actual info
 type DelegationInfo[
 	SessionIDNumT SessionIDNum, TerminalIDNumT TerminalIDNum, UserIDNumT UserIDNum,
-	SubjectT Subject[TerminalIDNumT, UserIDNumT],
+	SubjectT Subject[
+		TerminalIDNumT, TerminalRefKey[TerminalIDNumT],
+		UserIDNumT, UserRefKey[UserIDNumT]],
 	SessionT Session[
 		SessionIDNumT, SessionRefKey[SessionIDNumT],
 		TerminalIDNumT, TerminalRefKey[TerminalIDNumT],

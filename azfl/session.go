@@ -6,12 +6,12 @@ import "github.com/alloyzeus/go-azfl/azfl/azid"
 // only be performed with an active session. A session is obtained through
 // authorization, or authentication, of a Terminal.
 //
-//TODO: scope, expiry
+//TODO: scope, expiry, access to parent session instance.
 type Session[
 	SessionIDNumT SessionIDNum, SessionRefKeyT SessionRefKey[SessionIDNumT],
 	TerminalIDNumT TerminalIDNum, TerminalRefKeyT TerminalRefKey[TerminalIDNumT],
 	UserIDNumT UserIDNum, UserRefKeyT UserRefKey[UserIDNumT],
-	SubjectT Subject[TerminalIDNumT, UserIDNumT],
+	SubjectT Subject[TerminalIDNumT, TerminalRefKeyT, UserIDNumT, UserRefKeyT],
 ] interface {
 	// RefKey returns the identifier of this Session instance.
 	RefKey() SessionRefKeyT

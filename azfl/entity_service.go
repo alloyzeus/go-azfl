@@ -12,11 +12,12 @@ type EntityMethodMessage interface {
 // EntityMethodRequest abstracts all entity method requests messages.
 type EntityMethodRequest[
 	SessionIDNumT SessionIDNum, TerminalIDNumT TerminalIDNum, UserIDNumT UserIDNum,
+	EntityMethodRequestContextT EntityMethodRequestContext[SessionIDNumT, TerminalIDNumT, UserIDNumT],
 ] interface {
 	ServiceMethodRequest[SessionIDNumT, TerminalIDNumT, UserIDNumT]
 	EntityMethodMessage
 
-	EntityMethodRequestContext() EntityMethodRequestContext[SessionIDNumT, TerminalIDNumT, UserIDNumT]
+	EntityMethodRequestContext() EntityMethodRequestContextT
 }
 
 // EntityMethodResponse abstracts all entity method response messages.
@@ -48,7 +49,9 @@ type EntityMethodRequestContext[
 			SessionIDNumT, SessionRefKey[SessionIDNumT],
 			TerminalIDNumT, TerminalRefKey[TerminalIDNumT],
 			UserIDNumT, UserRefKey[UserIDNumT],
-			Subject[TerminalIDNumT, UserIDNumT],
+			Subject[
+				TerminalIDNumT, TerminalRefKey[TerminalIDNumT],
+				UserIDNumT, UserRefKey[UserIDNumT]],
 		],
 	]
 }
@@ -100,11 +103,12 @@ type EntityMutatingMessage interface {
 // EntityMutatingRequest abstracts entity mutating requests.
 type EntityMutatingRequest[
 	SessionIDNumT SessionIDNum, TerminalIDNumT TerminalIDNum, UserIDNumT UserIDNum,
+	EntityMutatingRequestContextT EntityMutatingRequestContext[SessionIDNumT, TerminalIDNumT, UserIDNumT],
 ] interface {
 	EntityMutatingMessage
 	ServiceMutatingMethodRequest[SessionIDNumT, TerminalIDNumT, UserIDNumT]
 
-	EntityMutatingRequestContext() EntityMutatingRequestContext[SessionIDNumT, TerminalIDNumT, UserIDNumT]
+	EntityMutatingRequestContext() EntityMutatingRequestContextT
 }
 
 // EntityMutatingResponse abstracts entity mutating responses.
