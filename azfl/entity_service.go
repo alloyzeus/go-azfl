@@ -43,7 +43,14 @@ type EntityMethodRequestContext[
 	SessionIDNumT SessionIDNum, TerminalIDNumT TerminalIDNum, UserIDNumT UserIDNum,
 ] interface {
 	EntityMethodContext
-	ServiceMethodRequestContext[SessionIDNumT, TerminalIDNumT, UserIDNumT]
+	ServiceMethodRequestContext[
+		SessionIDNumT, TerminalIDNumT, UserIDNumT, Session[
+			SessionIDNumT, SessionRefKey[SessionIDNumT],
+			TerminalIDNumT, TerminalRefKey[TerminalIDNumT],
+			UserIDNumT, UserRefKey[UserIDNumT],
+			Subject[TerminalIDNumT, UserIDNumT],
+		],
+	]
 }
 
 // EntityMethodResponseContext is an abstraction for all method call

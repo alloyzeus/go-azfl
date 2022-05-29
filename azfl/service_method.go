@@ -134,7 +134,14 @@ type ServiceMethodRequest[
 ] interface {
 	ServiceMethodMessage
 
-	MethodRequestContext() ServiceMethodRequestContext[SessionIDNumT, TerminalIDNumT, UserIDNumT]
+	MethodRequestContext() ServiceMethodRequestContext[
+		SessionIDNumT, TerminalIDNumT, UserIDNumT, Session[
+			SessionIDNumT, SessionRefKey[SessionIDNumT],
+			TerminalIDNumT, TerminalRefKey[TerminalIDNumT],
+			UserIDNumT, UserRefKey[UserIDNumT],
+			Subject[TerminalIDNumT, UserIDNumT],
+		],
+	]
 }
 
 // type ServiceMethodRequestBase struct {
@@ -166,13 +173,19 @@ type ServiceMethodRequestError interface {
 // in method call inputs.
 type ServiceMethodRequestContext[
 	SessionIDNumT SessionIDNum, TerminalIDNumT TerminalIDNum, UserIDNumT UserIDNum,
+	SessionT Session[
+		SessionIDNumT, SessionRefKey[SessionIDNumT],
+		TerminalIDNumT, TerminalRefKey[TerminalIDNumT],
+		UserIDNumT, UserRefKey[UserIDNumT],
+		Subject[TerminalIDNumT, UserIDNumT],
+	],
 ] interface {
 	ServiceMethodContext
 
 	AZServiceMethodRequestContext()
 
 	// Session returns the session for this context.
-	Session() Session[SessionIDNumT, TerminalIDNumT, UserIDNumT]
+	Session() SessionT
 }
 
 //endregion
@@ -311,7 +324,14 @@ type ServiceMutatingOpRequestContext[
 	SessionIDNumT SessionIDNum, TerminalIDNumT TerminalIDNum, UserIDNumT UserIDNum,
 ] interface {
 	ServiceMutatingMethodContext
-	ServiceMethodRequestContext[SessionIDNumT, TerminalIDNumT, UserIDNumT]
+	ServiceMethodRequestContext[
+		SessionIDNumT, TerminalIDNumT, UserIDNumT, Session[
+			SessionIDNumT, SessionRefKey[SessionIDNumT],
+			TerminalIDNumT, TerminalRefKey[TerminalIDNumT],
+			UserIDNumT, UserRefKey[UserIDNumT],
+			Subject[TerminalIDNumT, UserIDNumT],
+		],
+	]
 }
 
 // ServiceMutatingMethodResponse abstracts mutating method responses.

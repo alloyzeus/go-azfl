@@ -8,24 +8,30 @@ import "github.com/alloyzeus/go-azfl/azfl/azid"
 //
 //TODO: scope, expiry
 type Session[
-	SessionIDNumT SessionIDNum, TerminalIDNumT TerminalIDNum, UserIDNumT UserIDNum,
+	SessionIDNumT SessionIDNum, SessionRefKeyT SessionRefKey[SessionIDNumT],
+	TerminalIDNumT TerminalIDNum, TerminalRefKeyT TerminalRefKey[TerminalIDNumT],
+	UserIDNumT UserIDNum, UserRefKeyT UserRefKey[UserIDNumT],
+	SubjectT Subject[TerminalIDNumT, UserIDNumT],
 ] interface {
 	// RefKey returns the identifier of this Session instance.
-	RefKey() SessionRefKey[SessionIDNumT]
+	RefKey() SessionRefKeyT
 
 	// ParentSessionRefKey returns the identifier of the session which
 	// was used to create this session.
-	ParentSessionRefKey() SessionRefKey[SessionIDNumT]
+	ParentSessionRefKey() SessionRefKeyT
 
 	// Subject returns the subject this session is for.
-	Subject() Subject[TerminalIDNumT, UserIDNumT]
+	Subject() SubjectT
+
+	// IsTerminal returns true if the authorized terminal is the same as termRef.
+	IsTerminal(termRef TerminalRefKeyT) bool
 
 	// IsUserSubject returns true if the subject is a user instead of
 	// a service application.
 	IsUserSubject() bool
 
 	// IsUser checks if this session is represeting a particular user.
-	IsUser(userRef UserRefKey[UserIDNumT]) bool
+	IsUser(userRef UserRefKeyT) bool
 }
 
 type SessionIDNumMethods interface {

@@ -4,7 +4,13 @@ package azcore
 type EntityCreationInfo[
 	SessionIDNumT SessionIDNum, TerminalIDNumT TerminalIDNum, UserIDNumT UserIDNum,
 ] interface {
-	OperationInfo[SessionIDNumT, TerminalIDNumT, UserIDNumT]
+	OperationInfo[SessionIDNumT, TerminalIDNumT, UserIDNumT,
+		Subject[TerminalIDNumT, UserIDNumT], Session[
+			SessionIDNumT, SessionRefKey[SessionIDNumT],
+			TerminalIDNumT, TerminalRefKey[TerminalIDNumT],
+			UserIDNumT, UserRefKey[UserIDNumT],
+			Subject[TerminalIDNumT, UserIDNumT],
+		]]
 }
 
 // EntityCreationInfoBase is the base for all entity creation info.
