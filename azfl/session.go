@@ -5,6 +5,8 @@ import "github.com/alloyzeus/go-azfl/azfl/azid"
 // Session represents information about a session. Every action can
 // only be performed with an active session. A session is obtained through
 // authorization, or authentication, of a Terminal.
+//
+//TODO: scope, expiry
 type Session[
 	SessionIDNumT SessionIDNum, TerminalIDNumT TerminalIDNum, UserIDNumT UserIDNum,
 ] interface {
@@ -17,6 +19,13 @@ type Session[
 
 	// Subject returns the subject this session is for.
 	Subject() Subject[TerminalIDNumT, UserIDNumT]
+
+	// IsUserSubject returns true if the subject is a user instead of
+	// a service application.
+	IsUserSubject() bool
+
+	// IsUser checks if this session is represeting a particular user.
+	IsUser(userRef UserRefKey[UserIDNumT]) bool
 }
 
 type SessionIDNumMethods interface {
