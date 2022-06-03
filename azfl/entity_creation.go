@@ -6,14 +6,14 @@ type EntityCreationInfo[
 ] interface {
 	OperationInfo[
 		SessionIDNumT, TerminalIDNumT, UserIDNumT,
-		Subject[
+		SessionSubject[
 			TerminalIDNumT, TerminalRefKey[TerminalIDNumT],
 			UserIDNumT, UserRefKey[UserIDNumT]],
 		Session[
 			SessionIDNumT, SessionRefKey[SessionIDNumT],
 			TerminalIDNumT, TerminalRefKey[TerminalIDNumT],
 			UserIDNumT, UserRefKey[UserIDNumT],
-			Subject[
+			SessionSubject[
 				TerminalIDNumT, TerminalRefKey[TerminalIDNumT],
 				UserIDNumT, UserRefKey[UserIDNumT]],
 		]]

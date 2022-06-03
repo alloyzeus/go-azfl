@@ -5,21 +5,21 @@ import "time"
 // OperationInfo holds information about an action.
 type OperationInfo[
 	SessionIDNumT SessionIDNum, TerminalIDNumT TerminalIDNum, UserIDNumT UserIDNum,
-	SubjectT Subject[
+	SessionSubjectT SessionSubject[
 		TerminalIDNumT, TerminalRefKey[TerminalIDNumT],
 		UserIDNumT, UserRefKey[UserIDNumT]],
 	SessionT Session[
 		SessionIDNumT, SessionRefKey[SessionIDNumT],
 		TerminalIDNumT, TerminalRefKey[TerminalIDNumT],
 		UserIDNumT, UserRefKey[UserIDNumT],
-		SubjectT],
+		SessionSubjectT],
 ] interface {
 	// MethodOpID returns the ID of the method call this action initiated through.
 	MethodOpID() ServiceMethodOpID
 
 	// Actor returns the subject who executed the action. Must not be empty
 	// in server, might be empty in clients, might be queryable.
-	Actor() SubjectT
+	Actor() SessionSubjectT
 
 	// Session returns the session by the actor to perform the action.
 	// Must not be empty in server, might be empty in clients.
@@ -27,8 +27,8 @@ type OperationInfo[
 
 	// DelegationInfo returns the information about the delegation if this
 	// action was delegated to other subject or session.
-	DelegationInfo() DelegationInfo[
-		SessionIDNumT, TerminalIDNumT, UserIDNumT, SubjectT, SessionT]
+	DelegationInfo() OperationDelegationInfo[
+		SessionIDNumT, TerminalIDNumT, UserIDNumT, SessionSubjectT, SessionT]
 
 	// Timestamp returns the time when the action made the effect. This should
 	// be obtained from the lowest level, e.g., database or file system.
@@ -44,29 +44,29 @@ type OperationInfo[
 	// EndTime() *time.Time
 }
 
-// DelegationInfo holds information about delegation for an action if that
-// action was delegated.
+// OperationDelegationInfo holds information about delegation for an action
+// if that action was delegated.
 //
 //TODO: actual info
-type DelegationInfo[
+type OperationDelegationInfo[
 	SessionIDNumT SessionIDNum, TerminalIDNumT TerminalIDNum, UserIDNumT UserIDNum,
-	SubjectT Subject[
+	SessionSubjectT SessionSubject[
 		TerminalIDNumT, TerminalRefKey[TerminalIDNumT],
 		UserIDNumT, UserRefKey[UserIDNumT]],
 	SessionT Session[
 		SessionIDNumT, SessionRefKey[SessionIDNumT],
 		TerminalIDNumT, TerminalRefKey[TerminalIDNumT],
 		UserIDNumT, UserRefKey[UserIDNumT],
-		SubjectT,
+		SessionSubjectT,
 	],
 ] interface {
 	// ParentDelegationInfo returns the delegation parent of this delegation.
-	ParentDelegationInfo() DelegationInfo[
-		SessionIDNumT, TerminalIDNumT, UserIDNumT, SubjectT, SessionT]
+	ParentDelegationInfo() OperationDelegationInfo[
+		SessionIDNumT, TerminalIDNumT, UserIDNumT, SessionSubjectT, SessionT]
 
 	// Actor returns the subject who delegated the action. Must not be empty
 	// in server, might be empty in clients, might be queryable.
-	Actor() SubjectT
+	Actor() SessionSubjectT
 
 	// Session returns the session by the actor to delegate the action.
 	// Must not be empty in server, might be empty in clients.

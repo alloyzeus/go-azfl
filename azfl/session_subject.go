@@ -1,11 +1,11 @@
 package azcore
 
-// Subject is an object which could be involved in an action.
-type Subject[
+// SessionSubject is an object which could be involved in an action.
+type SessionSubject[
 	TerminalIDNumT TerminalIDNum, TerminalRefKeyT TerminalRefKey[TerminalIDNumT],
 	UserIDNumT UserIDNum, UserRefKeyT UserRefKey[UserIDNumT],
 ] interface {
-	AZSubject()
+	AZSessionSubject()
 
 	// TerminalRefKey returns the ref-key of the terminal for this subject.
 	TerminalRefKey() TerminalRefKeyT

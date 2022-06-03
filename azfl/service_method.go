@@ -139,7 +139,7 @@ type ServiceMethodRequest[
 			SessionIDNumT, SessionRefKey[SessionIDNumT],
 			TerminalIDNumT, TerminalRefKey[TerminalIDNumT],
 			UserIDNumT, UserRefKey[UserIDNumT],
-			Subject[
+			SessionSubject[
 				TerminalIDNumT, TerminalRefKey[TerminalIDNumT],
 				UserIDNumT, UserRefKey[UserIDNumT],
 			],
@@ -180,7 +180,7 @@ type ServiceMethodRequestContext[
 		SessionIDNumT, SessionRefKey[SessionIDNumT],
 		TerminalIDNumT, TerminalRefKey[TerminalIDNumT],
 		UserIDNumT, UserRefKey[UserIDNumT],
-		Subject[
+		SessionSubject[
 			TerminalIDNumT, TerminalRefKey[TerminalIDNumT],
 			UserIDNumT, UserRefKey[UserIDNumT],
 		],
@@ -335,7 +335,7 @@ type ServiceMutatingOpRequestContext[
 			SessionIDNumT, SessionRefKey[SessionIDNumT],
 			TerminalIDNumT, TerminalRefKey[TerminalIDNumT],
 			UserIDNumT, UserRefKey[UserIDNumT],
-			Subject[
+			SessionSubject[
 				TerminalIDNumT, TerminalRefKey[TerminalIDNumT],
 				UserIDNumT, UserRefKey[UserIDNumT],
 			],
