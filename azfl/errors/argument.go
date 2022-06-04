@@ -6,6 +6,7 @@ package errors
 // be mapped into one of these code when used in HTTP request handlers.
 type ArgumentError interface {
 	CallError
+	Unwrappable
 	ArgumentName() string
 }
 
