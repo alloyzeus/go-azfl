@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/alloyzeus/go-azfl/azfl/azob"
+	"golang.org/x/text/language"
 )
 
 //region ServiceMethodError
@@ -83,6 +84,16 @@ type ServiceMethodContext interface {
 
 //endregion
 
+//region ServiceMethodCallContext
+
+type ServiceMethodCallContext interface {
+	ServiceMethodContext
+
+	AZServiceMethodCallContext()
+}
+
+//endregion
+
 //region ServiceMethodCallInfo
 
 // A ServiceMethodCallInfo describes a method call.
@@ -97,6 +108,36 @@ type ServiceMethodCallInfo interface {
 	//
 	// The value is untrusted.
 	RequestOriginTime() *time.Time
+}
+
+//endregion
+
+//region ServiceMethodCallOriginInfo
+
+type ServiceMethodCallOriginInfo struct {
+	// Address returns the IP address or hostname where this call was initiated
+	// from. This field might be empty if it's not possible to resolve
+	// the address (e.g., the server is behind a proxy or a load-balancer and
+	// they didn't forward the the origin IP).
+	Address string
+
+	// EnvironmentString returns some details of the environment,
+	// might include application's version information, where the application
+	// which made the request runs on. For web app, this method usually
+	// returns the browser's user-agent string.
+	EnvironmentString string
+
+	// AcceptLanguage is analogous to HTTP Accept-Language header field. The
+	// languages must be ordered by the human's preference.
+	// If the languages comes as weighted, as found in HTTP Accept-Language,
+	// sort the languages by their weights then drop the weights.
+	AcceptLanguage []language.Tag
+
+	// DateTime is the time of the device where this operation was initiated
+	// from at the time the operation was posted.
+	//
+	// Analogous to HTTP Date header field.
+	DateTime *time.Time
 }
 
 //endregion
@@ -127,15 +168,15 @@ type ServiceMethodMessage interface {
 
 //endregion
 
-//region ServiceMethodRequest
+//region ServiceMethodCallInput
 
-// ServiceMethodRequest abstracts method request messages.
-type ServiceMethodRequest[
+// ServiceMethodCallInput abstracts method request messages.
+type ServiceMethodCallInput[
 	SessionIDNumT SessionIDNum, TerminalIDNumT TerminalIDNum, UserIDNumT UserIDNum,
 ] interface {
 	ServiceMethodMessage
 
-	MethodRequestContext() ServiceMethodRequestContext[
+	CallInputContext() ServiceMethodCallInputContext[
 		SessionIDNumT, TerminalIDNumT, UserIDNumT, Session[
 			SessionIDNumT, SessionRefKey[SessionIDNumT],
 			TerminalIDNumT, TerminalRefKey[TerminalIDNumT],
@@ -148,34 +189,29 @@ type ServiceMethodRequest[
 	]
 }
 
-// type ServiceMethodRequestBase struct {
-// 	context ServiceMethodRequestContext
-// 	parameters ServiceMethodRequestParameters
-// }
-
 //endregion
 
-//region ServiceMethodRequestError
+//region ServiceMethodCallInvocationError
 
-// ServiceMethodRequestError is a sub-class of ServiceMethodError which
+// ServiceMethodCallInvocationError is a sub-class of ServiceMethodError which
 // indicates that there's an error in the request.
 //
 // This error class is analogous to HTTP's 4xx status codes.
 //
 //TODO: sub-classes: acces, parameters, context
-type ServiceMethodRequestError interface {
+type ServiceMethodCallInvocationError interface {
 	ServiceMethodError
 
-	AZServiceMethodRequestError()
+	AZServiceMethodCallInvocationError()
 }
 
 //endregion
 
-//region ServiceMethodRequestContext
+//region ServiceMethodCallInputContext
 
-// ServiceMethodRequestContext provides an abstraction for all input contexts
+// ServiceMethodCallInputContext provides an abstraction for all input contexts
 // in method call inputs.
-type ServiceMethodRequestContext[
+type ServiceMethodCallInputContext[
 	SessionIDNumT SessionIDNum, TerminalIDNumT TerminalIDNum, UserIDNumT UserIDNum,
 	SessionT Session[
 		SessionIDNumT, SessionRefKey[SessionIDNumT],
@@ -187,61 +223,63 @@ type ServiceMethodRequestContext[
 		],
 	],
 ] interface {
-	ServiceMethodContext
+	ServiceMethodCallContext
 
-	AZServiceMethodRequestContext()
+	AZServiceMethodCallInputContext()
 
 	// Session returns the session for this context.
 	Session() SessionT
+
+	CallOriginInfo() ServiceMethodCallOriginInfo
 }
 
 //endregion
 
-//region ServiceMethodRequestContextError
+//region ServiceMethodCallInputContextError
 
-// ServiceMethodRequestContextError provides information for
+// ServiceMethodCallInputContextError provides information for
 // request-context-related error. It is a sub-class of
-// ServiceMethodRequestError.
-type ServiceMethodRequestContextError interface {
-	ServiceMethodRequestError
+// ServiceMethodCallInputError.
+type ServiceMethodCallInputContextError interface {
+	ServiceMethodCallInvocationError
 
-	AZServiceMethodRequestContextError()
+	AZServiceMethodCallInputContextError()
 }
 
-// ServiceMethodRequestSessionError is a sub-class of
-// ServiceMethodRequestContextError specialized for indicating error
+// ServiceMethodCallSessionError is a sub-class of
+// ServiceMethodCallInputContextError specialized for indicating error
 // in the session.
-type ServiceMethodRequestSessionError interface {
-	ServiceMethodRequestContextError
+type ServiceMethodCallSessionError interface {
+	ServiceMethodCallInputContextError
 
-	AZServiceMethodRequestSessionError()
+	AZServiceMethodCallSessionError()
 }
 
 //endregion
 
-//region ServiceMethodResponse
+//region ServiceMethodCallOutput
 
-// ServiceMethodResponse abstracts method response messages.
-type ServiceMethodResponse interface {
+// ServiceMethodCallOutput abstracts method response messages.
+type ServiceMethodCallOutput interface {
 	ServiceMethodMessage
 
-	MethodResponseContext() ServiceMethodResponseContext
+	MethodCallOutputContext() ServiceMethodCallOutputContext
 }
 
 //endregion
 
-//region ServiceMethodResponseContext
+//region ServiceMethodCallOutputContext
 
-// ServiceMethodResponseContext provides an abstraction for all output contexts
+// ServiceMethodCallOutputContext provides an abstraction for all output contexts
 // in method call outputs.
 //
 //TODO: listing of affected states with their respective revision ID.
 //TODO: directive: done/end, redirect, retry (on failure; optionally with
 // timing and retry count parameters or exponentially back-off parameters)
-type ServiceMethodResponseContext interface {
+type ServiceMethodCallOutputContext interface {
 	ServiceMethodContext
 
-	AZServiceMethodResponseContext()
+	AZServiceMethodCallOutputContext()
 
 	// // Succeed returns true when the method achieved its objective.
 	// Succeed() bool
@@ -258,47 +296,47 @@ type ServiceMethodResponseContext interface {
 
 //endregion
 
-//region ServiceMethodResponseContextBase
+//region ServiceMethodCallOutputContextBase
 
-// ServiceMethodResponseContextBase is a base
-// for ServiceMethodResponseContext implementations.
-type ServiceMethodResponseContextBase struct {
+// ServiceMethodCallOutputContextBase is a base
+// for ServiceMethodCallOutputContext implementations.
+type ServiceMethodCallOutputContextBase struct {
 	context.Context
 
 	err     ServiceMethodError
 	mutated bool
 }
 
-var _ ServiceMethodResponseContext = ServiceMethodResponseContextBase{}
+var _ ServiceMethodCallOutputContext = ServiceMethodCallOutputContextBase{}
 
-// NewMethodResponseContext creates a new instance
-// of ServiceMethodResponseContext.
-func NewMethodResponseContext(
+// NewMethodCallOutputContext creates a new instance
+// of ServiceMethodCallOutputContext.
+func NewMethodCallOutputContext(
 	err ServiceMethodError,
 	mutated bool,
-) ServiceMethodResponseContextBase {
-	return ServiceMethodResponseContextBase{err: err, mutated: mutated}
+) ServiceMethodCallOutputContextBase {
+	return ServiceMethodCallOutputContextBase{err: err, mutated: mutated}
 }
 
 // AZContext is required for conformance with Context.
-func (ServiceMethodResponseContextBase) AZContext() {}
+func (ServiceMethodCallOutputContextBase) AZContext() {}
 
 // AZServiceContext is required for conformance with ServiceContext.
-func (ServiceMethodResponseContextBase) AZServiceContext() {}
+func (ServiceMethodCallOutputContextBase) AZServiceContext() {}
 
 // AZServiceMethodContext is required
 // for conformance with ServiceMethodContext.
-func (ServiceMethodResponseContextBase) AZServiceMethodContext() {}
+func (ServiceMethodCallOutputContextBase) AZServiceMethodContext() {}
 
-// AZServiceMethodResponseContext is required
-// for conformance with ServiceMethodResponseContext.
-func (ServiceMethodResponseContextBase) AZServiceMethodResponseContext() {}
+// AZServiceMethodCallOutputContext is required
+// for conformance with ServiceMethodCallOutputContext.
+func (ServiceMethodCallOutputContextBase) AZServiceMethodCallOutputContext() {}
 
-// ServiceMethodErr is required for conformance with ServiceMethodResponseContext.
-func (ctx ServiceMethodResponseContextBase) ServiceMethodErr() ServiceMethodError { return ctx.err }
+// ServiceMethodErr is required for conformance with ServiceMethodCallOutputContext.
+func (ctx ServiceMethodCallOutputContextBase) ServiceMethodErr() ServiceMethodError { return ctx.err }
 
-// Mutated is required for conformance with ServiceMethodResponseContext.
-func (ctx ServiceMethodResponseContextBase) Mutated() bool { return ctx.mutated }
+// Mutated is required for conformance with ServiceMethodCallOutputContext.
+func (ctx ServiceMethodCallOutputContextBase) Mutated() bool { return ctx.mutated }
 
 //endregion
 
@@ -318,22 +356,22 @@ type ServiceMutatingMethodContext interface {
 	ServiceMethodContext
 }
 
-// ServiceMutatingMethodRequest abstracts mutating method requests.
-type ServiceMutatingMethodRequest[
+// ServiceMutatingMethodCallInput abstracts mutating method requests.
+type ServiceMutatingMethodCallInput[
 	SessionIDNumT SessionIDNum, TerminalIDNumT TerminalIDNum, UserIDNumT UserIDNum,
 ] interface {
 	ServiceMutatingMethodMessage
-	ServiceMethodRequest[SessionIDNumT, TerminalIDNumT, UserIDNumT]
+	ServiceMethodCallInput[SessionIDNumT, TerminalIDNumT, UserIDNumT]
 
-	MutatingOpRequestContext() ServiceMutatingOpRequestContext[SessionIDNumT, TerminalIDNumT, UserIDNumT]
+	MutatingOpCallInputContext() ServiceMutatingOpCallInputContext[SessionIDNumT, TerminalIDNumT, UserIDNumT]
 }
 
-// ServiceMutatingOpRequestContext abstracts mutating method request contexts.
-type ServiceMutatingOpRequestContext[
+// ServiceMutatingOpCallInputContext abstracts mutating method request contexts.
+type ServiceMutatingOpCallInputContext[
 	SessionIDNumT SessionIDNum, TerminalIDNumT TerminalIDNum, UserIDNumT UserIDNum,
 ] interface {
 	ServiceMutatingMethodContext
-	ServiceMethodRequestContext[
+	ServiceMethodCallInputContext[
 		SessionIDNumT, TerminalIDNumT, UserIDNumT, Session[
 			SessionIDNumT, SessionRefKey[SessionIDNumT],
 			TerminalIDNumT, TerminalRefKey[TerminalIDNumT],
@@ -346,19 +384,19 @@ type ServiceMutatingOpRequestContext[
 	]
 }
 
-// ServiceMutatingMethodResponse abstracts mutating method responses.
-type ServiceMutatingMethodResponse interface {
+// ServiceMutatingMethodCallOutput abstracts mutating method responses.
+type ServiceMutatingMethodCallOutput interface {
 	ServiceMutatingMethodMessage
-	ServiceMethodResponse
+	ServiceMethodCallOutput
 
-	MutatingMethodResponseContext() ServiceMutatingMethodResponseContext
+	MutatingMethodCallOutputContext() ServiceMutatingMethodCallOutputContext
 }
 
-// ServiceMutatingMethodResponseContext abstracts mutating
+// ServiceMutatingMethodCallOutputContext abstracts mutating
 // method response contexts.
-type ServiceMutatingMethodResponseContext interface {
+type ServiceMutatingMethodCallOutputContext interface {
 	ServiceMutatingMethodContext
-	ServiceMethodResponseContext
+	ServiceMethodCallOutputContext
 }
 
 //endregion

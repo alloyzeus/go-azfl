@@ -14,7 +14,7 @@ type EntityMethodRequest[
 	SessionIDNumT SessionIDNum, TerminalIDNumT TerminalIDNum, UserIDNumT UserIDNum,
 	EntityMethodRequestContextT EntityMethodRequestContext[SessionIDNumT, TerminalIDNumT, UserIDNumT],
 ] interface {
-	ServiceMethodRequest[SessionIDNumT, TerminalIDNumT, UserIDNumT]
+	ServiceMethodCallInput[SessionIDNumT, TerminalIDNumT, UserIDNumT]
 	EntityMethodMessage
 
 	EntityMethodRequestContext() EntityMethodRequestContextT
@@ -22,7 +22,7 @@ type EntityMethodRequest[
 
 // EntityMethodResponse abstracts all entity method response messages.
 type EntityMethodResponse interface {
-	ServiceMethodResponse
+	ServiceMethodCallOutput
 	EntityMethodMessage
 
 	EntityMethodResponseContext() EntityMethodResponseContext
@@ -44,7 +44,7 @@ type EntityMethodRequestContext[
 	SessionIDNumT SessionIDNum, TerminalIDNumT TerminalIDNum, UserIDNumT UserIDNum,
 ] interface {
 	EntityMethodContext
-	ServiceMethodRequestContext[
+	ServiceMethodCallInputContext[
 		SessionIDNumT, TerminalIDNumT, UserIDNumT, Session[
 			SessionIDNumT, SessionRefKey[SessionIDNumT],
 			TerminalIDNumT, TerminalRefKey[TerminalIDNumT],
@@ -60,7 +60,7 @@ type EntityMethodRequestContext[
 // output contexts.
 type EntityMethodResponseContext interface {
 	EntityMethodContext
-	ServiceMethodResponseContext
+	ServiceMethodCallOutputContext
 }
 
 //endregion
@@ -81,7 +81,7 @@ type EntityMutatingRequestContext[
 ] interface {
 	EntityMutatingContext
 	EntityMethodRequestContext[SessionIDNumT, TerminalIDNumT, UserIDNumT]
-	ServiceMutatingOpRequestContext[SessionIDNumT, TerminalIDNumT, UserIDNumT]
+	ServiceMutatingOpCallInputContext[SessionIDNumT, TerminalIDNumT, UserIDNumT]
 }
 
 // EntityMutatingResponseContext provides an abstraction for output contexts
@@ -89,7 +89,7 @@ type EntityMutatingRequestContext[
 type EntityMutatingResponseContext interface {
 	EntityMutatingContext
 	EntityMethodResponseContext
-	ServiceMutatingMethodResponseContext
+	ServiceMutatingMethodCallOutputContext
 }
 
 // EntityMutatingMessage abstracts entity mutating method requests and responses.
@@ -106,7 +106,7 @@ type EntityMutatingRequest[
 	EntityMutatingRequestContextT EntityMutatingRequestContext[SessionIDNumT, TerminalIDNumT, UserIDNumT],
 ] interface {
 	EntityMutatingMessage
-	ServiceMutatingMethodRequest[SessionIDNumT, TerminalIDNumT, UserIDNumT]
+	ServiceMutatingMethodCallInput[SessionIDNumT, TerminalIDNumT, UserIDNumT]
 
 	EntityMutatingRequestContext() EntityMutatingRequestContextT
 }
@@ -114,7 +114,7 @@ type EntityMutatingRequest[
 // EntityMutatingResponse abstracts entity mutating responses.
 type EntityMutatingResponse interface {
 	EntityMutatingMessage
-	ServiceMutatingMethodResponse
+	ServiceMutatingMethodCallOutput
 
 	EntityMutatingResponseContext() EntityMutatingResponseContext
 }
