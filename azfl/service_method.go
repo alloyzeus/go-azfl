@@ -1,6 +1,7 @@
 package azcore
 
 import (
+	"context"
 	"time"
 
 	"github.com/alloyzeus/go-azfl/azfl/azob"
@@ -246,7 +247,7 @@ type ServiceMethodResponseContext interface {
 	// Succeed() bool
 
 	// Returns the error, if any.
-	Err() ServiceMethodError
+	ServiceMethodErr() ServiceMethodError
 
 	// Mutated returns true if the method made any changes to any state in the
 	// server, even when the method did not succeed. It should not
@@ -262,6 +263,8 @@ type ServiceMethodResponseContext interface {
 // ServiceMethodResponseContextBase is a base
 // for ServiceMethodResponseContext implementations.
 type ServiceMethodResponseContextBase struct {
+	context.Context
+
 	err     ServiceMethodError
 	mutated bool
 }
@@ -291,8 +294,8 @@ func (ServiceMethodResponseContextBase) AZServiceMethodContext() {}
 // for conformance with ServiceMethodResponseContext.
 func (ServiceMethodResponseContextBase) AZServiceMethodResponseContext() {}
 
-// Err is required for conformance with ServiceMethodResponseContext.
-func (ctx ServiceMethodResponseContextBase) Err() ServiceMethodError { return ctx.err }
+// ServiceMethodErr is required for conformance with ServiceMethodResponseContext.
+func (ctx ServiceMethodResponseContextBase) ServiceMethodErr() ServiceMethodError { return ctx.err }
 
 // Mutated is required for conformance with ServiceMethodResponseContext.
 func (ctx ServiceMethodResponseContextBase) Mutated() bool { return ctx.mutated }

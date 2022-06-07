@@ -1,11 +1,15 @@
 package azcore
 
 import (
+	"context"
+
 	"golang.org/x/text/language"
 )
 
 // Context is a generalized context for all service methods.
 type Context interface {
+	context.Context
+
 	AZContext()
 }
 
