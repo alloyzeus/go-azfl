@@ -48,10 +48,28 @@ type EntityCreationRequestContext[
 	SessionIDNumT SessionIDNum, SessionRefKeyT SessionRefKey[SessionIDNumT],
 	TerminalIDNumT TerminalIDNum, TerminalRefKeyT TerminalRefKey[TerminalIDNumT],
 	UserIDNumT UserIDNum, UserRefKeyT UserRefKey[UserIDNumT],
+	SessionSubjectT SessionSubject[
+		TerminalIDNumT, TerminalRefKeyT,
+		UserIDNumT, UserRefKeyT,
+	],
+	SessionT Session[
+		SessionIDNumT, SessionRefKeyT,
+		TerminalIDNumT, TerminalRefKeyT,
+		UserIDNumT, UserRefKeyT,
+		SessionSubjectT,
+	],
+	ServiceMethodCallInputContextT ServiceMethodCallInputContext[
+		SessionIDNumT, SessionRefKeyT,
+		TerminalIDNumT, TerminalRefKeyT,
+		UserIDNumT, UserRefKeyT,
+		SessionSubjectT,
+		SessionT,
+	],
 ] interface {
 	EntityMutatingRequestContext[
 		SessionIDNumT, SessionRefKeyT, TerminalIDNumT, TerminalRefKeyT,
-		UserIDNumT, UserRefKeyT]
+		UserIDNumT, UserRefKeyT, SessionSubjectT, SessionT,
+		ServiceMethodCallInputContextT]
 
 	AZEntityCreationRequestContext()
 }
