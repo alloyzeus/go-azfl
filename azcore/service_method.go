@@ -90,12 +90,25 @@ type ServiceMethodCallContext interface {
 	ServiceMethodContext
 
 	AZServiceMethodCallContext()
+
+	// MethodName returns the name of the method or the endpoint.
+	//
+	// For HTTP, this method returns the value as "<HTTP_METHOD> <URL>", e.g.,
+	// GET /users/me
+	//
+	MethodName() string
 }
 
 //endregion
 
-//region ServiceMethodCallOriginInfo
+type ServiceMethodCallInputMetadata interface {
+	//TODO: request id / correlation id / idemptotency key, receive time by
+	// the handler.
+}
 
+// ServiceMethodCallOriginInfo holds information about a call's origin.
+//
+//TODO: key-value custom data
 type ServiceMethodCallOriginInfo struct {
 	// Address returns the IP address or hostname where this call was initiated
 	// from. This field might be empty if it's not possible to resolve
@@ -115,14 +128,11 @@ type ServiceMethodCallOriginInfo struct {
 	// sort the languages by their weights then drop the weights.
 	AcceptLanguage []language.Tag
 
-	// DateTime is the time of the device where this operation was initiated
-	// from at the time the operation was posted.
+	// DateTime is the time of the caller device when the call was initiated.
 	//
 	// Analogous to HTTP Date header field.
 	DateTime *time.Time
 }
-
-//endregion
 
 //region ServiceMethodOpID
 
@@ -265,6 +275,8 @@ type ServiceMethodCallOutput interface {
 //TODO: directive: done/end, redirect, retry (on failure; optionally with
 // timing and retry count parameters or exponentially back-off parameters)
 type ServiceMethodCallOutputContext interface {
+	//TODO: ServiceMethodCallContext, or keep it like this and
+	// add a method to access the input context: MethodCallInputContext()
 	ServiceMethodContext
 
 	AZServiceMethodCallOutputContext()
