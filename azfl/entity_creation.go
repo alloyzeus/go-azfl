@@ -45,9 +45,13 @@ func (EntityCreationEventBase) AZEntityCreationEvent() {}
 // EntityCreationRequestContext is the abstraction for all entity creation
 // call input contexts.
 type EntityCreationRequestContext[
-	SessionIDNumT SessionIDNum, TerminalIDNumT TerminalIDNum, UserIDNumT UserIDNum,
+	SessionIDNumT SessionIDNum, SessionRefKeyT SessionRefKey[SessionIDNumT],
+	TerminalIDNumT TerminalIDNum, TerminalRefKeyT TerminalRefKey[TerminalIDNumT],
+	UserIDNumT UserIDNum, UserRefKeyT UserRefKey[UserIDNumT],
 ] interface {
-	EntityMutatingRequestContext[SessionIDNumT, TerminalIDNumT, UserIDNumT]
+	EntityMutatingRequestContext[
+		SessionIDNumT, SessionRefKeyT, TerminalIDNumT, TerminalRefKeyT,
+		UserIDNumT, UserRefKeyT]
 
 	AZEntityCreationRequestContext()
 }

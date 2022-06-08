@@ -11,10 +11,18 @@ type EntityMethodMessage interface {
 
 // EntityMethodRequest abstracts all entity method requests messages.
 type EntityMethodRequest[
-	SessionIDNumT SessionIDNum, TerminalIDNumT TerminalIDNum, UserIDNumT UserIDNum,
-	EntityMethodRequestContextT EntityMethodRequestContext[SessionIDNumT, TerminalIDNumT, UserIDNumT],
+	SessionIDNumT SessionIDNum, SessionRefKeyT SessionRefKey[SessionIDNumT],
+	TerminalIDNumT TerminalIDNum, TerminalRefKeyT TerminalRefKey[TerminalIDNumT],
+	UserIDNumT UserIDNum, UserRefKeyT UserRefKey[UserIDNumT],
+	EntityMethodRequestContextT EntityMethodRequestContext[
+		SessionIDNumT, SessionRefKeyT,
+		TerminalIDNumT, TerminalRefKeyT,
+		UserIDNumT, UserRefKeyT],
 ] interface {
-	ServiceMethodCallInput[SessionIDNumT, TerminalIDNumT, UserIDNumT]
+	ServiceMethodCallInput[
+		SessionIDNumT, SessionRefKeyT,
+		TerminalIDNumT, TerminalRefKeyT,
+		UserIDNumT, UserRefKeyT]
 	EntityMethodMessage
 
 	EntityMethodRequestContext() EntityMethodRequestContextT
@@ -41,17 +49,22 @@ type EntityMethodContext interface {
 // EntityMethodRequestContext is an abstraction for all method call
 // input contexts.
 type EntityMethodRequestContext[
-	SessionIDNumT SessionIDNum, TerminalIDNumT TerminalIDNum, UserIDNumT UserIDNum,
+	SessionIDNumT SessionIDNum, SessionRefKeyT SessionRefKey[SessionIDNumT],
+	TerminalIDNumT TerminalIDNum, TerminalRefKeyT TerminalRefKey[TerminalIDNumT],
+	UserIDNumT UserIDNum, UserRefKeyT UserRefKey[UserIDNumT],
 ] interface {
 	EntityMethodContext
 	ServiceMethodCallInputContext[
-		SessionIDNumT, TerminalIDNumT, UserIDNumT, Session[
-			SessionIDNumT, SessionRefKey[SessionIDNumT],
-			TerminalIDNumT, TerminalRefKey[TerminalIDNumT],
-			UserIDNumT, UserRefKey[UserIDNumT],
+		SessionIDNumT, SessionRefKeyT,
+		TerminalIDNumT, TerminalRefKeyT,
+		UserIDNumT, UserRefKeyT,
+		Session[
+			SessionIDNumT, SessionRefKeyT,
+			TerminalIDNumT, TerminalRefKeyT,
+			UserIDNumT, UserRefKeyT,
 			SessionSubject[
-				TerminalIDNumT, TerminalRefKey[TerminalIDNumT],
-				UserIDNumT, UserRefKey[UserIDNumT]],
+				TerminalIDNumT, TerminalRefKeyT,
+				UserIDNumT, UserRefKeyT],
 		],
 	]
 }
@@ -77,11 +90,17 @@ type EntityMutatingContext interface {
 // EntityMutatingRequestContext provides an abstraction for input contexts
 // for mutating method calls.
 type EntityMutatingRequestContext[
-	SessionIDNumT SessionIDNum, TerminalIDNumT TerminalIDNum, UserIDNumT UserIDNum,
+	SessionIDNumT SessionIDNum, SessionRefKeyT SessionRefKey[SessionIDNumT],
+	TerminalIDNumT TerminalIDNum, TerminalRefKeyT TerminalRefKey[TerminalIDNumT],
+	UserIDNumT UserIDNum, UserRefKeyT UserRefKey[UserIDNumT],
 ] interface {
 	EntityMutatingContext
-	EntityMethodRequestContext[SessionIDNumT, TerminalIDNumT, UserIDNumT]
-	ServiceMutatingOpCallInputContext[SessionIDNumT, TerminalIDNumT, UserIDNumT]
+	EntityMethodRequestContext[
+		SessionIDNumT, SessionRefKeyT, TerminalIDNumT, TerminalRefKeyT,
+		UserIDNumT, UserRefKeyT]
+	ServiceMutatingMethodCallInputContext[
+		SessionIDNumT, SessionRefKeyT, TerminalIDNumT, TerminalRefKeyT,
+		UserIDNumT, UserRefKeyT]
 }
 
 // EntityMutatingResponseContext provides an abstraction for output contexts
@@ -102,11 +121,18 @@ type EntityMutatingMessage interface {
 
 // EntityMutatingRequest abstracts entity mutating requests.
 type EntityMutatingRequest[
-	SessionIDNumT SessionIDNum, TerminalIDNumT TerminalIDNum, UserIDNumT UserIDNum,
-	EntityMutatingRequestContextT EntityMutatingRequestContext[SessionIDNumT, TerminalIDNumT, UserIDNumT],
+	SessionIDNumT SessionIDNum, SessionRefKeyT SessionRefKey[SessionIDNumT],
+	TerminalIDNumT TerminalIDNum, TerminalRefKeyT TerminalRefKey[TerminalIDNumT],
+	UserIDNumT UserIDNum, UserRefKeyT UserRefKey[UserIDNumT],
+	EntityMutatingRequestContextT EntityMutatingRequestContext[
+		SessionIDNumT, SessionRefKeyT,
+		TerminalIDNumT, TerminalRefKeyT,
+		UserIDNumT, UserRefKeyT],
 ] interface {
 	EntityMutatingMessage
-	ServiceMutatingMethodCallInput[SessionIDNumT, TerminalIDNumT, UserIDNumT]
+	ServiceMutatingMethodCallInput[
+		SessionIDNumT, SessionRefKeyT, TerminalIDNumT, TerminalRefKeyT,
+		UserIDNumT, UserRefKeyT, EntityMutatingRequestContextT]
 
 	EntityMutatingRequestContext() EntityMutatingRequestContextT
 }

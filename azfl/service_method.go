@@ -172,18 +172,23 @@ type ServiceMethodMessage interface {
 
 // ServiceMethodCallInput abstracts method request messages.
 type ServiceMethodCallInput[
-	SessionIDNumT SessionIDNum, TerminalIDNumT TerminalIDNum, UserIDNumT UserIDNum,
+	SessionIDNumT SessionIDNum, SessionRefKeyT SessionRefKey[SessionIDNumT],
+	TerminalIDNumT TerminalIDNum, TerminalRefKeyT TerminalRefKey[TerminalIDNumT],
+	UserIDNumT UserIDNum, UserRefKeyT UserRefKey[UserIDNumT],
 ] interface {
 	ServiceMethodMessage
 
 	CallInputContext() ServiceMethodCallInputContext[
-		SessionIDNumT, TerminalIDNumT, UserIDNumT, Session[
-			SessionIDNumT, SessionRefKey[SessionIDNumT],
-			TerminalIDNumT, TerminalRefKey[TerminalIDNumT],
-			UserIDNumT, UserRefKey[UserIDNumT],
+		SessionIDNumT, SessionRefKeyT,
+		TerminalIDNumT, TerminalRefKeyT,
+		UserIDNumT, UserRefKeyT,
+		Session[
+			SessionIDNumT, SessionRefKeyT,
+			TerminalIDNumT, TerminalRefKeyT,
+			UserIDNumT, UserRefKeyT,
 			SessionSubject[
-				TerminalIDNumT, TerminalRefKey[TerminalIDNumT],
-				UserIDNumT, UserRefKey[UserIDNumT],
+				TerminalIDNumT, TerminalRefKeyT,
+				UserIDNumT, UserRefKeyT,
 			],
 		],
 	]
@@ -212,14 +217,16 @@ type ServiceMethodCallInvocationError interface {
 // ServiceMethodCallInputContext provides an abstraction for all input contexts
 // in method call inputs.
 type ServiceMethodCallInputContext[
-	SessionIDNumT SessionIDNum, TerminalIDNumT TerminalIDNum, UserIDNumT UserIDNum,
+	SessionIDNumT SessionIDNum, SessionRefKeyT SessionRefKey[SessionIDNumT],
+	TerminalIDNumT TerminalIDNum, TerminalRefKeyT TerminalRefKey[TerminalIDNumT],
+	UserIDNumT UserIDNum, UserRefKeyT UserRefKey[UserIDNumT],
 	SessionT Session[
-		SessionIDNumT, SessionRefKey[SessionIDNumT],
-		TerminalIDNumT, TerminalRefKey[TerminalIDNumT],
-		UserIDNumT, UserRefKey[UserIDNumT],
+		SessionIDNumT, SessionRefKeyT,
+		TerminalIDNumT, TerminalRefKeyT,
+		UserIDNumT, UserRefKeyT,
 		SessionSubject[
-			TerminalIDNumT, TerminalRefKey[TerminalIDNumT],
-			UserIDNumT, UserRefKey[UserIDNumT],
+			TerminalIDNumT, TerminalRefKeyT,
+			UserIDNumT, UserRefKeyT,
 		],
 	],
 ] interface {
@@ -358,27 +365,40 @@ type ServiceMutatingMethodContext interface {
 
 // ServiceMutatingMethodCallInput abstracts mutating method requests.
 type ServiceMutatingMethodCallInput[
-	SessionIDNumT SessionIDNum, TerminalIDNumT TerminalIDNum, UserIDNumT UserIDNum,
+	SessionIDNumT SessionIDNum, SessionRefKeyT SessionRefKey[SessionIDNumT],
+	TerminalIDNumT TerminalIDNum, TerminalRefKeyT TerminalRefKey[TerminalIDNumT],
+	UserIDNumT UserIDNum, UserRefKeyT UserRefKey[UserIDNumT],
+	ServiceMutatingMethodCallInputContextT ServiceMutatingMethodCallInputContext[
+		SessionIDNumT, SessionRefKeyT, TerminalIDNumT, TerminalRefKeyT,
+		UserIDNumT, UserRefKeyT,
+	],
 ] interface {
 	ServiceMutatingMethodMessage
-	ServiceMethodCallInput[SessionIDNumT, TerminalIDNumT, UserIDNumT]
+	ServiceMethodCallInput[
+		SessionIDNumT, SessionRefKeyT, TerminalIDNumT, TerminalRefKeyT,
+		UserIDNumT, UserRefKeyT]
 
-	MutatingOpCallInputContext() ServiceMutatingOpCallInputContext[SessionIDNumT, TerminalIDNumT, UserIDNumT]
+	MutatingMethodCallInputContext() ServiceMutatingMethodCallInputContextT
 }
 
-// ServiceMutatingOpCallInputContext abstracts mutating method request contexts.
-type ServiceMutatingOpCallInputContext[
-	SessionIDNumT SessionIDNum, TerminalIDNumT TerminalIDNum, UserIDNumT UserIDNum,
+// ServiceMutatingMethodCallInputContext abstracts mutating method request contexts.
+type ServiceMutatingMethodCallInputContext[
+	SessionIDNumT SessionIDNum, SessionRefKeyT SessionRefKey[SessionIDNumT],
+	TerminalIDNumT TerminalIDNum, TerminalRefKeyT TerminalRefKey[TerminalIDNumT],
+	UserIDNumT UserIDNum, UserRefKeyT UserRefKey[UserIDNumT],
 ] interface {
 	ServiceMutatingMethodContext
 	ServiceMethodCallInputContext[
-		SessionIDNumT, TerminalIDNumT, UserIDNumT, Session[
-			SessionIDNumT, SessionRefKey[SessionIDNumT],
-			TerminalIDNumT, TerminalRefKey[TerminalIDNumT],
-			UserIDNumT, UserRefKey[UserIDNumT],
+		SessionIDNumT, SessionRefKeyT,
+		TerminalIDNumT, TerminalRefKeyT,
+		UserIDNumT, UserRefKeyT,
+		Session[
+			SessionIDNumT, SessionRefKeyT,
+			TerminalIDNumT, TerminalRefKeyT,
+			UserIDNumT, UserRefKeyT,
 			SessionSubject[
-				TerminalIDNumT, TerminalRefKey[TerminalIDNumT],
-				UserIDNumT, UserRefKey[UserIDNumT],
+				TerminalIDNumT, TerminalRefKeyT,
+				UserIDNumT, UserRefKeyT,
 			],
 		],
 	]
