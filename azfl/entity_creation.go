@@ -2,21 +2,23 @@ package azcore
 
 // EntityCreationInfo holds information about the creation of an entity.
 type EntityCreationInfo[
-	SessionIDNumT SessionIDNum, TerminalIDNumT TerminalIDNum, UserIDNumT UserIDNum,
+	SessionIDNumT SessionIDNum, SessionRefKeyT SessionRefKey[SessionIDNumT],
+	TerminalIDNumT TerminalIDNum, TerminalRefKeyT TerminalRefKey[TerminalIDNumT],
+	UserIDNumT UserIDNum, UserRefKeyT UserRefKey[UserIDNumT],
+	SessionSubjectT SessionSubject[
+		TerminalIDNumT, TerminalRefKeyT,
+		UserIDNumT, UserRefKeyT],
+	SessionT Session[
+		SessionIDNumT, SessionRefKeyT,
+		TerminalIDNumT, TerminalRefKeyT,
+		UserIDNumT, UserRefKeyT,
+		SessionSubjectT],
 ] interface {
 	OperationInfo[
-		SessionIDNumT, TerminalIDNumT, UserIDNumT,
-		SessionSubject[
-			TerminalIDNumT, TerminalRefKey[TerminalIDNumT],
-			UserIDNumT, UserRefKey[UserIDNumT]],
-		Session[
-			SessionIDNumT, SessionRefKey[SessionIDNumT],
-			TerminalIDNumT, TerminalRefKey[TerminalIDNumT],
-			UserIDNumT, UserRefKey[UserIDNumT],
-			SessionSubject[
-				TerminalIDNumT, TerminalRefKey[TerminalIDNumT],
-				UserIDNumT, UserRefKey[UserIDNumT]],
-		]]
+		SessionIDNumT, SessionRefKeyT, TerminalIDNumT, TerminalRefKeyT,
+		UserIDNumT, UserRefKeyT,
+		SessionSubjectT,
+		SessionT]
 }
 
 // EntityCreationInfoBase is the base for all entity creation info.
@@ -24,8 +26,20 @@ type EntityCreationInfoBase struct{}
 
 // EntityCreationEvent is the abstraction for all entity creation events.
 type EntityCreationEvent[
-	SessionIDNumT SessionIDNum, TerminalIDNumT TerminalIDNum, UserIDNumT UserIDNum,
-	EntityCreationInfoT EntityCreationInfo[SessionIDNumT, TerminalIDNumT, UserIDNumT],
+	SessionIDNumT SessionIDNum, SessionRefKeyT SessionRefKey[SessionIDNumT],
+	TerminalIDNumT TerminalIDNum, TerminalRefKeyT TerminalRefKey[TerminalIDNumT],
+	UserIDNumT UserIDNum, UserRefKeyT UserRefKey[UserIDNumT],
+	SessionSubjectT SessionSubject[
+		TerminalIDNumT, TerminalRefKeyT,
+		UserIDNumT, UserRefKeyT],
+	SessionT Session[
+		SessionIDNumT, SessionRefKeyT,
+		TerminalIDNumT, TerminalRefKeyT,
+		UserIDNumT, UserRefKeyT,
+		SessionSubjectT],
+	EntityCreationInfoT EntityCreationInfo[
+		SessionIDNumT, SessionRefKeyT, TerminalIDNumT, TerminalRefKeyT,
+		UserIDNumT, UserRefKeyT, SessionSubjectT, SessionT],
 ] interface {
 	AZEntityCreationEvent()
 
@@ -42,54 +56,52 @@ type EntityCreationEventBase struct {
 // AZEntityCreationEvent is required for conformance with EntityCreationEvent.
 func (EntityCreationEventBase) AZEntityCreationEvent() {}
 
-// EntityCreationRequestContext is the abstraction for all entity creation
+// EntityCreationInputContext is the abstraction for all entity creation
 // call input contexts.
-type EntityCreationRequestContext[
+type EntityCreationInputContext[
 	SessionIDNumT SessionIDNum, SessionRefKeyT SessionRefKey[SessionIDNumT],
 	TerminalIDNumT TerminalIDNum, TerminalRefKeyT TerminalRefKey[TerminalIDNumT],
 	UserIDNumT UserIDNum, UserRefKeyT UserRefKey[UserIDNumT],
 	SessionSubjectT SessionSubject[
 		TerminalIDNumT, TerminalRefKeyT,
-		UserIDNumT, UserRefKeyT,
-	],
+		UserIDNumT, UserRefKeyT],
 	SessionT Session[
 		SessionIDNumT, SessionRefKeyT,
 		TerminalIDNumT, TerminalRefKeyT,
 		UserIDNumT, UserRefKeyT,
-		SessionSubjectT,
-	],
+		SessionSubjectT],
 	ServiceMethodCallInputContextT ServiceMethodCallInputContext[
 		SessionIDNumT, SessionRefKeyT,
 		TerminalIDNumT, TerminalRefKeyT,
 		UserIDNumT, UserRefKeyT,
 		SessionSubjectT,
-		SessionT,
-	],
+		SessionT],
 ] interface {
-	EntityMutatingRequestContext[
+	//TODO: creation is not mutation
+	EntityMutatingMethodCallContext[
 		SessionIDNumT, SessionRefKeyT, TerminalIDNumT, TerminalRefKeyT,
 		UserIDNumT, UserRefKeyT, SessionSubjectT, SessionT,
 		ServiceMethodCallInputContextT]
 
-	AZEntityCreationRequestContext()
+	AZEntityCreationInputContext()
 }
 
-// EntityCreationResponseContext is the abstraction for all entity creation
+// EntityCreationOutputContext is the abstraction for all entity creation
 // call output contexts.
-type EntityCreationResponseContext interface {
-	EntityMutatingResponseContext
+type EntityCreationOutputContext interface {
+	EntityMutatingMethodCallOutputContext
 
-	AZEntityCreationResponseContext()
+	AZEntityCreationOutputContext()
 }
 
-// EntityCreationResponseContextBase is the base implementation
-// for EntityCreationResponseContext.
-type EntityCreationResponseContextBase struct {
+// EntityCreationOutputContextBase is the base implementation
+// for EntityCreationOutputContext.
+type EntityCreationOutputContextBase struct {
 	ServiceMethodCallOutputContextBase
 }
 
-var _ EntityCreationResponseContext = EntityCreationResponseContextBase{}
+var _ EntityCreationOutputContext = EntityCreationOutputContextBase{}
 
-// AZEntityCreationResponseContext is required for conformance
-// with EntityCreationResponseContext.
-func (EntityCreationResponseContextBase) AZEntityCreationResponseContext() {}
+// AZEntityCreationOutputContext is required for conformance
+// with EntityCreationOutputContext.
+func (EntityCreationOutputContextBase) AZEntityCreationOutputContext() {}

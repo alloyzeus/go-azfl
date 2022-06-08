@@ -94,24 +94,6 @@ type ServiceMethodCallContext interface {
 
 //endregion
 
-//region ServiceMethodCallInfo
-
-// A ServiceMethodCallInfo describes a method call.
-type ServiceMethodCallInfo interface {
-	AZServiceMethodCallInfo()
-
-	//TODO: only on mutating operation
-	OpID() ServiceMethodOpID
-
-	// RequestOriginTime is the time assigned by the terminal which made the
-	// request for the method call.
-	//
-	// The value is untrusted.
-	RequestOriginTime() *time.Time
-}
-
-//endregion
-
 //region ServiceMethodCallOriginInfo
 
 type ServiceMethodCallOriginInfo struct {
@@ -177,21 +159,18 @@ type ServiceMethodCallInput[
 	UserIDNumT UserIDNum, UserRefKeyT UserRefKey[UserIDNumT],
 	SessionSubjectT SessionSubject[
 		TerminalIDNumT, TerminalRefKeyT,
-		UserIDNumT, UserRefKeyT,
-	],
+		UserIDNumT, UserRefKeyT],
 	SessionT Session[
 		SessionIDNumT, SessionRefKeyT,
 		TerminalIDNumT, TerminalRefKeyT,
 		UserIDNumT, UserRefKeyT,
-		SessionSubjectT,
-	],
+		SessionSubjectT],
 	ServiceMethodCallInputContextT ServiceMethodCallInputContext[
 		SessionIDNumT, SessionRefKeyT,
 		TerminalIDNumT, TerminalRefKeyT,
 		UserIDNumT, UserRefKeyT,
 		SessionSubjectT,
-		SessionT,
-	],
+		SessionT],
 ] interface {
 	ServiceMethodMessage
 
@@ -230,8 +209,7 @@ type ServiceMethodCallInputContext[
 		SessionIDNumT, SessionRefKeyT,
 		TerminalIDNumT, TerminalRefKeyT,
 		UserIDNumT, UserRefKeyT,
-		SessionSubjectT,
-	],
+		SessionSubjectT],
 ] interface {
 	ServiceMethodCallContext
 
@@ -240,7 +218,7 @@ type ServiceMethodCallInputContext[
 	// Session returns the session for this context.
 	Session() SessionT
 
-	CallOriginInfo() ServiceMethodCallOriginInfo
+	ServiceMethodCallOriginInfo() ServiceMethodCallOriginInfo
 }
 
 //endregion
@@ -373,26 +351,22 @@ type ServiceMutatingMethodCallInput[
 	UserIDNumT UserIDNum, UserRefKeyT UserRefKey[UserIDNumT],
 	SessionSubjectT SessionSubject[
 		TerminalIDNumT, TerminalRefKeyT,
-		UserIDNumT, UserRefKeyT,
-	],
+		UserIDNumT, UserRefKeyT],
 	SessionT Session[
 		SessionIDNumT, SessionRefKeyT,
 		TerminalIDNumT, TerminalRefKeyT,
 		UserIDNumT, UserRefKeyT,
-		SessionSubjectT,
-	],
+		SessionSubjectT],
 	ServiceMethodCallInputContextT ServiceMethodCallInputContext[
 		SessionIDNumT, SessionRefKeyT,
 		TerminalIDNumT, TerminalRefKeyT,
 		UserIDNumT, UserRefKeyT,
 		SessionSubjectT,
-		SessionT,
-	],
+		SessionT],
 	ServiceMutatingMethodCallInputContextT ServiceMutatingMethodCallInputContext[
 		SessionIDNumT, SessionRefKeyT, TerminalIDNumT, TerminalRefKeyT,
 		UserIDNumT, UserRefKeyT, SessionSubjectT, SessionT,
-		ServiceMethodCallInputContextT,
-	],
+		ServiceMethodCallInputContextT],
 ] interface {
 	ServiceMutatingMethodMessage
 	ServiceMethodCallInput[
@@ -410,21 +384,18 @@ type ServiceMutatingMethodCallInputContext[
 	UserIDNumT UserIDNum, UserRefKeyT UserRefKey[UserIDNumT],
 	SessionSubjectT SessionSubject[
 		TerminalIDNumT, TerminalRefKeyT,
-		UserIDNumT, UserRefKeyT,
-	],
+		UserIDNumT, UserRefKeyT],
 	SessionT Session[
 		SessionIDNumT, SessionRefKeyT,
 		TerminalIDNumT, TerminalRefKeyT,
 		UserIDNumT, UserRefKeyT,
-		SessionSubjectT,
-	],
+		SessionSubjectT],
 	ServiceMethodCallInputContextT ServiceMethodCallInputContext[
 		SessionIDNumT, SessionRefKeyT,
 		TerminalIDNumT, TerminalRefKeyT,
 		UserIDNumT, UserRefKeyT,
 		SessionSubjectT,
-		SessionT,
-	],
+		SessionT],
 ] interface {
 	ServiceMutatingMethodContext
 	ServiceMethodCallInputContext[
@@ -432,8 +403,7 @@ type ServiceMutatingMethodCallInputContext[
 		TerminalIDNumT, TerminalRefKeyT,
 		UserIDNumT, UserRefKeyT,
 		SessionSubjectT,
-		SessionT,
-	]
+		SessionT]
 }
 
 // ServiceMutatingMethodCallOutput abstracts mutating method responses.

@@ -9,8 +9,8 @@ type EntityMethodMessage interface {
 	EntityMethodContext() EntityMethodContext
 }
 
-// EntityMethodRequest abstracts all entity method requests messages.
-type EntityMethodRequest[
+// EntityMethodCallInput abstracts all entity method requests messages.
+type EntityMethodCallInput[
 	SessionIDNumT SessionIDNum, SessionRefKeyT SessionRefKey[SessionIDNumT],
 	TerminalIDNumT TerminalIDNum, TerminalRefKeyT TerminalRefKey[TerminalIDNumT],
 	UserIDNumT UserIDNum, UserRefKeyT UserRefKey[UserIDNumT],
@@ -31,7 +31,7 @@ type EntityMethodRequest[
 		SessionSubjectT,
 		SessionT,
 	],
-	EntityMethodRequestContextT EntityMethodRequestContext[
+	EntityMethodCallInputContextT EntityMethodCallInputContext[
 		SessionIDNumT, SessionRefKeyT,
 		TerminalIDNumT, TerminalRefKeyT,
 		UserIDNumT, UserRefKeyT, SessionSubjectT, SessionT],
@@ -43,15 +43,15 @@ type EntityMethodRequest[
 		ServiceMethodCallInputContextT]
 	EntityMethodMessage
 
-	EntityMethodRequestContext() EntityMethodRequestContextT
+	EntityMethodCallInputContext() EntityMethodCallInputContextT
 }
 
-// EntityMethodResponse abstracts all entity method response messages.
-type EntityMethodResponse interface {
+// EntityMethodCallOutput abstracts all entity method response messages.
+type EntityMethodCallOutput interface {
 	ServiceMethodCallOutput
 	EntityMethodMessage
 
-	EntityMethodResponseContext() EntityMethodResponseContext
+	EntityMethodCallOutputContext() EntityMethodCallOutputContext
 }
 
 //endregion
@@ -64,9 +64,9 @@ type EntityMethodContext interface {
 	ServiceMethodContext
 }
 
-// EntityMethodRequestContext is an abstraction for all method call
+// EntityMethodCallInputContext is an abstraction for all method call
 // input contexts.
-type EntityMethodRequestContext[
+type EntityMethodCallInputContext[
 	SessionIDNumT SessionIDNum, SessionRefKeyT SessionRefKey[SessionIDNumT],
 	TerminalIDNumT TerminalIDNum, TerminalRefKeyT TerminalRefKey[TerminalIDNumT],
 	UserIDNumT UserIDNum, UserRefKeyT UserRefKey[UserIDNumT],
@@ -91,9 +91,9 @@ type EntityMethodRequestContext[
 	]
 }
 
-// EntityMethodResponseContext is an abstraction for all method call
+// EntityMethodCallOutputContext is an abstraction for all method call
 // output contexts.
-type EntityMethodResponseContext interface {
+type EntityMethodCallOutputContext interface {
 	EntityMethodContext
 	ServiceMethodCallOutputContext
 }
@@ -109,9 +109,9 @@ type EntityMutatingContext interface {
 	ServiceMutatingMethodContext
 }
 
-// EntityMutatingRequestContext provides an abstraction for input contexts
+// EntityMutatingMethodCallContext provides an abstraction for input contexts
 // for mutating method calls.
-type EntityMutatingRequestContext[
+type EntityMutatingMethodCallContext[
 	SessionIDNumT SessionIDNum, SessionRefKeyT SessionRefKey[SessionIDNumT],
 	TerminalIDNumT TerminalIDNum, TerminalRefKeyT TerminalRefKey[TerminalIDNumT],
 	UserIDNumT UserIDNum, UserRefKeyT UserRefKey[UserIDNumT],
@@ -134,7 +134,7 @@ type EntityMutatingRequestContext[
 	],
 ] interface {
 	EntityMutatingContext
-	EntityMethodRequestContext[
+	EntityMethodCallInputContext[
 		SessionIDNumT, SessionRefKeyT, TerminalIDNumT, TerminalRefKeyT,
 		UserIDNumT, UserRefKeyT, SessionSubjectT, SessionT]
 	ServiceMutatingMethodCallInputContext[
@@ -143,11 +143,11 @@ type EntityMutatingRequestContext[
 		ServiceMethodCallInputContextT]
 }
 
-// EntityMutatingResponseContext provides an abstraction for output contexts
+// EntityMutatingMethodCallOutputContext provides an abstraction for output contexts
 // for mutating method calls.
-type EntityMutatingResponseContext interface {
+type EntityMutatingMethodCallOutputContext interface {
 	EntityMutatingContext
-	EntityMethodResponseContext
+	EntityMethodCallOutputContext
 	ServiceMutatingMethodCallOutputContext
 }
 
@@ -159,8 +159,8 @@ type EntityMutatingMessage interface {
 	EntityMutatingContext() EntityMutatingContext
 }
 
-// EntityMutatingRequest abstracts entity mutating requests.
-type EntityMutatingRequest[
+// EntityMutatingCallInput abstracts entity mutating requests.
+type EntityMutatingCallInput[
 	SessionIDNumT SessionIDNum, SessionRefKeyT SessionRefKey[SessionIDNumT],
 	TerminalIDNumT TerminalIDNum, TerminalRefKeyT TerminalRefKey[TerminalIDNumT],
 	UserIDNumT UserIDNum, UserRefKeyT UserRefKey[UserIDNumT],
@@ -181,7 +181,7 @@ type EntityMutatingRequest[
 		SessionSubjectT,
 		SessionT,
 	],
-	EntityMutatingRequestContextT EntityMutatingRequestContext[
+	EntityMutatingMethodCallContextT EntityMutatingMethodCallContext[
 		SessionIDNumT, SessionRefKeyT,
 		TerminalIDNumT, TerminalRefKeyT,
 		UserIDNumT, UserRefKeyT, SessionSubjectT, SessionT,
@@ -191,17 +191,17 @@ type EntityMutatingRequest[
 	ServiceMutatingMethodCallInput[
 		SessionIDNumT, SessionRefKeyT, TerminalIDNumT, TerminalRefKeyT,
 		UserIDNumT, UserRefKeyT, SessionSubjectT, SessionT,
-		ServiceMethodCallInputContextT, EntityMutatingRequestContextT]
+		ServiceMethodCallInputContextT, EntityMutatingMethodCallContextT]
 
-	EntityMutatingRequestContext() EntityMutatingRequestContextT
+	EntityMutatingMethodCallContext() EntityMutatingMethodCallContextT
 }
 
-// EntityMutatingResponse abstracts entity mutating responses.
-type EntityMutatingResponse interface {
+// EntityMutatingMethodCallOutput abstracts entity mutating responses.
+type EntityMutatingMethodCallOutput interface {
 	EntityMutatingMessage
 	ServiceMutatingMethodCallOutput
 
-	EntityMutatingResponseContext() EntityMutatingResponseContext
+	EntityMutatingMethodCallOutputContext() EntityMutatingMethodCallOutputContext
 }
 
 //endregion
