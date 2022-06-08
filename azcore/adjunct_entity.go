@@ -1,6 +1,6 @@
 package azcore
 
-import "github.com/alloyzeus/go-azfl/azfl/azid"
+import "github.com/alloyzeus/go-azfl/azid"
 
 type AdjunctEntityIDNumMethods interface {
 	AZAdjunctEntityIDNum()

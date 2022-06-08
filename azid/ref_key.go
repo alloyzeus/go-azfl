@@ -1,7 +1,7 @@
 package azid
 
 import (
-	"github.com/alloyzeus/go-azfl/azfl/azob"
+	"github.com/alloyzeus/go-azfl/azob"
 )
 
 // RefKey defines the contract for all its concrete implementations.

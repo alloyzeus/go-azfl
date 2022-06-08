@@ -1,6 +1,6 @@
 package azcore
 
-import "github.com/alloyzeus/go-azfl/azfl/azid"
+import "github.com/alloyzeus/go-azfl/azid"
 
 // Session represents information about a session. Every action can
 // only be performed with an active session. A session is obtained through

@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/alloyzeus/go-azfl/azfl/azob"
+	"github.com/alloyzeus/go-azfl/azob"
 	"golang.org/x/text/language"
 )
 

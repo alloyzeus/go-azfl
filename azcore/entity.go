@@ -1,6 +1,6 @@
 package azcore
 
-import "github.com/alloyzeus/go-azfl/azfl/azid"
+import "github.com/alloyzeus/go-azfl/azid"
 
 // Entity defines the contract for all its concrete implementations.
 type Entity interface {

@@ -1,6 +1,6 @@
 package azcore
 
-import "github.com/alloyzeus/go-azfl/azfl/azob"
+import "github.com/alloyzeus/go-azfl/azob"
 
 // A ValueObject is a small object that represents a simple entity whose
 // equality is not based on identity, i.e., two value objects are equal when
