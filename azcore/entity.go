@@ -7,6 +7,17 @@ type Entity interface {
 	AZEntity()
 }
 
+// EntityEnvelope is a self-identifying data structure that contains the
+// id of the entity and its representing data.
+type EntityEnvelope[
+	EntityIDNumT EntityIDNum,
+	EntityRefKeyT EntityRefKey[EntityIDNumT],
+	EntityDataT EntityData,
+] struct {
+}
+
+type EntityData interface{}
+
 type EntityIDNumMethods interface {
 	AZEntityIDNum()
 }

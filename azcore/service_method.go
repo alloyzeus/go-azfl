@@ -140,14 +140,14 @@ type ServiceMethodCallOriginInfo struct {
 	DateTime *time.Time
 }
 
-//region ServiceMethodOpID
+//region ServiceMethodIdempotencyKey
 
-// ServiceMethodOpID represents the identifier of a method call. This
+// ServiceMethodIdempotencyKey represents the identifier of a method call. This
 // identifier doubles as idempotency token.
-type ServiceMethodOpID interface {
+type ServiceMethodIdempotencyKey interface {
 	azob.Equatable
 
-	AZServiceMethodOpID()
+	AZServiceMethodIdempotencyKey()
 }
 
 //endregion
@@ -166,31 +166,10 @@ type ServiceMethodMessage interface {
 
 //endregion
 
-//region ServiceMethodCallInput
+//region ServiceMethodCallInputData
 
-// ServiceMethodCallInput abstracts method request messages.
-type ServiceMethodCallInput[
-	SessionIDNumT SessionIDNum, SessionRefKeyT SessionRefKey[SessionIDNumT],
-	TerminalIDNumT TerminalIDNum, TerminalRefKeyT TerminalRefKey[TerminalIDNumT],
-	UserIDNumT UserIDNum, UserRefKeyT UserRefKey[UserIDNumT],
-	SessionSubjectT SessionSubject[
-		TerminalIDNumT, TerminalRefKeyT,
-		UserIDNumT, UserRefKeyT],
-	SessionT Session[
-		SessionIDNumT, SessionRefKeyT,
-		TerminalIDNumT, TerminalRefKeyT,
-		UserIDNumT, UserRefKeyT,
-		SessionSubjectT],
-	ServiceMethodCallInputContextT ServiceMethodCallInputContext[
-		SessionIDNumT, SessionRefKeyT,
-		TerminalIDNumT, TerminalRefKeyT,
-		UserIDNumT, UserRefKeyT,
-		SessionSubjectT,
-		SessionT],
-] interface {
-	ServiceMethodMessage
-
-	CallInputContext() ServiceMethodCallInputContextT
+// ServiceMethodCallInputData abstracts method request body.
+type ServiceMethodCallInputData interface {
 }
 
 //endregion
@@ -226,6 +205,7 @@ type ServiceMethodCallInputContext[
 		TerminalIDNumT, TerminalRefKeyT,
 		UserIDNumT, UserRefKeyT,
 		SessionSubjectT],
+	ServiceMethodIdempotencyKeyT ServiceMethodIdempotencyKey,
 ] interface {
 	ServiceMethodCallContext
 
@@ -234,7 +214,16 @@ type ServiceMethodCallInputContext[
 	// Session returns the session for this context.
 	Session() SessionT
 
-	ServiceMethodCallOriginInfo() ServiceMethodCallOriginInfo
+	// IdempotencyKey is a key used to ensure that a distinct operation is
+	// performed at most once.
+	//
+	// This key is different from request ID, where for the same operation,
+	// there could be more than one requests in attempt to retry in the event
+	// of transit error.
+	IdempotencyKey() ServiceMethodIdempotencyKeyT
+
+	// OriginInfo returns information about the system that made the call.
+	OriginInfo() ServiceMethodCallOriginInfo
 }
 
 //endregion
@@ -362,39 +351,6 @@ type ServiceMutatingMethodContext interface {
 	ServiceMethodContext
 }
 
-// ServiceMutatingMethodCallInput abstracts mutating method requests.
-type ServiceMutatingMethodCallInput[
-	SessionIDNumT SessionIDNum, SessionRefKeyT SessionRefKey[SessionIDNumT],
-	TerminalIDNumT TerminalIDNum, TerminalRefKeyT TerminalRefKey[TerminalIDNumT],
-	UserIDNumT UserIDNum, UserRefKeyT UserRefKey[UserIDNumT],
-	SessionSubjectT SessionSubject[
-		TerminalIDNumT, TerminalRefKeyT,
-		UserIDNumT, UserRefKeyT],
-	SessionT Session[
-		SessionIDNumT, SessionRefKeyT,
-		TerminalIDNumT, TerminalRefKeyT,
-		UserIDNumT, UserRefKeyT,
-		SessionSubjectT],
-	ServiceMethodCallInputContextT ServiceMethodCallInputContext[
-		SessionIDNumT, SessionRefKeyT,
-		TerminalIDNumT, TerminalRefKeyT,
-		UserIDNumT, UserRefKeyT,
-		SessionSubjectT,
-		SessionT],
-	ServiceMutatingMethodCallInputContextT ServiceMutatingMethodCallInputContext[
-		SessionIDNumT, SessionRefKeyT, TerminalIDNumT, TerminalRefKeyT,
-		UserIDNumT, UserRefKeyT, SessionSubjectT, SessionT,
-		ServiceMethodCallInputContextT],
-] interface {
-	ServiceMutatingMethodMessage
-	ServiceMethodCallInput[
-		SessionIDNumT, SessionRefKeyT, TerminalIDNumT, TerminalRefKeyT,
-		UserIDNumT, UserRefKeyT, SessionSubjectT, SessionT,
-		ServiceMethodCallInputContextT]
-
-	MutatingMethodCallInputContext() ServiceMutatingMethodCallInputContextT
-}
-
 // ServiceMutatingMethodCallInputContext abstracts mutating method request contexts.
 type ServiceMutatingMethodCallInputContext[
 	SessionIDNumT SessionIDNum, SessionRefKeyT SessionRefKey[SessionIDNumT],
@@ -413,7 +369,8 @@ type ServiceMutatingMethodCallInputContext[
 		TerminalIDNumT, TerminalRefKeyT,
 		UserIDNumT, UserRefKeyT,
 		SessionSubjectT,
-		SessionT],
+		SessionT, ServiceMethodIdempotencyKeyT],
+	ServiceMethodIdempotencyKeyT ServiceMethodIdempotencyKey,
 ] interface {
 	ServiceMutatingMethodContext
 	ServiceMethodCallInputContext[
@@ -421,7 +378,7 @@ type ServiceMutatingMethodCallInputContext[
 		TerminalIDNumT, TerminalRefKeyT,
 		UserIDNumT, UserRefKeyT,
 		SessionSubjectT,
-		SessionT]
+		SessionT, ServiceMethodIdempotencyKeyT]
 }
 
 // ServiceMutatingMethodCallOutput abstracts mutating method responses.

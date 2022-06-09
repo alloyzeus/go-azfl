@@ -17,7 +17,7 @@ type OperationInfo[
 		SessionSubjectT],
 ] interface {
 	// MethodOpID returns the ID of the method call this action initiated through.
-	MethodOpID() ServiceMethodOpID
+	MethodOpID() ServiceMethodIdempotencyKey
 
 	// Actor returns the subject who executed the action. Must not be empty
 	// in server, might be empty in clients, might be queryable.
