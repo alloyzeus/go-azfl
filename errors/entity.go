@@ -1,5 +1,7 @@
 package errors
 
+import "strings"
+
 // EntityError is a class of errors describing errors in entities.
 // An entity here is defined as anything which has identifier associated to it.
 // For example, a web page is an entity which its URL is the identifier.
@@ -47,16 +49,27 @@ var (
 )
 
 func (e *entityError) Error() string {
+	var suffix string
+	if flen := len(e.fields); flen > 0 {
+		parts := make([]string, 0, flen)
+		for _, sub := range e.fields {
+			parts = append(parts, sub.Error())
+		}
+		suffix = strings.Join(parts, ", ")
+		if suffix != "" {
+			suffix = ": " + suffix
+		}
+	}
 	if e.identifier != "" {
 		if errMsg := e.innerMsg(); errMsg != "" {
-			return e.identifier + ": " + errMsg
+			return e.identifier + ": " + errMsg + suffix
 		}
-		return e.identifier + " invalid"
+		return e.identifier + " invalid" + suffix
 	}
 	if errMsg := e.innerMsg(); errMsg != "" {
-		return "entity " + errMsg
+		return "entity " + errMsg + suffix
 	}
-	return "entity invalid"
+	return "entity invalid" + suffix
 }
 
 func (e *entityError) innerMsg() string {
