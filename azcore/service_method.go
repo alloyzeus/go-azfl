@@ -93,10 +93,16 @@ type ServiceMethodCallContext interface {
 
 	// MethodName returns the name of the method or the endpoint.
 	//
-	// For HTTP, this method returns the value as "<HTTP_METHOD> <URL>", e.g.,
-	// GET /users/me
-	//
+	// For HTTP, this method returns the method. For other protocols, it should
+	// be the name of the method e.g., `getUser`.
 	MethodName() string
+
+	// ResourceID returns the identifier of the resource being accessed by
+	// the call. For HTTP, it's the path. For other protocols, it should
+	// be the identifier (RefKey) of the entity. If there's more than one
+	// resources, e.g., a relationship between two entities, then it returns
+	// the identifiers of the entities separated by commas.
+	ResourceID() string
 }
 
 //endregion
