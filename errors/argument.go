@@ -60,16 +60,21 @@ func (e *argumentError) ArgumentName() string {
 func (*argumentError) CallError() {}
 
 func (e *argumentError) Error() string {
+	suffix := e.fieldErrorsAsString()
+	if suffix != "" {
+		suffix = ": " + suffix
+	}
+
 	if e.identifier != "" {
 		if errMsg := e.innerMsg(); errMsg != "" {
-			return "arg " + e.identifier + ": " + errMsg
+			return "arg " + e.identifier + ": " + errMsg + suffix
 		}
-		return "arg " + e.identifier + " invalid"
+		return "arg " + e.identifier + " invalid" + suffix
 	}
 	if errMsg := e.innerMsg(); errMsg != "" {
-		return "arg " + errMsg
+		return "arg " + errMsg + suffix
 	}
-	return "arg invalid"
+	return "arg invalid" + suffix
 }
 
 func (e *argumentError) Unwrap() error {

@@ -49,17 +49,11 @@ var (
 )
 
 func (e *entityError) Error() string {
-	var suffix string
-	if flen := len(e.fields); flen > 0 {
-		parts := make([]string, 0, flen)
-		for _, sub := range e.fields {
-			parts = append(parts, sub.Error())
-		}
-		suffix = strings.Join(parts, ", ")
-		if suffix != "" {
-			suffix = ": " + suffix
-		}
+	suffix := e.fieldErrorsAsString()
+	if suffix != "" {
+		suffix = ": " + suffix
 	}
+
 	if e.identifier != "" {
 		if errMsg := e.innerMsg(); errMsg != "" {
 			return e.identifier + ": " + errMsg + suffix
@@ -75,6 +69,17 @@ func (e *entityError) Error() string {
 func (e *entityError) innerMsg() string {
 	if e.err != nil {
 		return e.err.Error()
+	}
+	return ""
+}
+
+func (e entityError) fieldErrorsAsString() string {
+	if flen := len(e.fields); flen > 0 {
+		parts := make([]string, 0, flen)
+		for _, sub := range e.fields {
+			parts = append(parts, sub.Error())
+		}
+		return strings.Join(parts, ", ")
 	}
 	return ""
 }
