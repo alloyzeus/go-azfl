@@ -75,13 +75,14 @@ type EntityCreationInputContext[
 		TerminalIDNumT, TerminalRefKeyT,
 		UserIDNumT, UserRefKeyT,
 		SessionSubjectT,
-		SessionT],
+		SessionT, ServiceMethodIdempotencyKeyT],
+	ServiceMethodIdempotencyKeyT ServiceMethodIdempotencyKey,
 ] interface {
 	//TODO: creation is not mutation
 	EntityMutatingMethodCallContext[
 		SessionIDNumT, SessionRefKeyT, TerminalIDNumT, TerminalRefKeyT,
 		UserIDNumT, UserRefKeyT, SessionSubjectT, SessionT,
-		ServiceMethodCallInputContextT]
+		ServiceMethodCallInputContextT, ServiceMethodIdempotencyKeyT]
 
 	AZEntityCreationInputContext()
 }

@@ -9,14 +9,6 @@ type EntityMethodMessage interface {
 	EntityMethodContext() EntityMethodContext
 }
 
-// EntityMethodCallOutput abstracts all entity method response messages.
-type EntityMethodCallOutput interface {
-	ServiceMethodCallOutput
-	EntityMethodMessage
-
-	EntityMethodCallOutputContext() EntityMethodCallOutputContext
-}
-
 //endregion
 
 //region Context
@@ -123,14 +115,6 @@ type EntityMutatingMessage interface {
 	ServiceMutatingMethodMessage
 
 	EntityMutatingContext() EntityMutatingContext
-}
-
-// EntityMutatingMethodCallOutput abstracts entity mutating responses.
-type EntityMutatingMethodCallOutput interface {
-	EntityMutatingMessage
-	ServiceMutatingMethodCallOutput
-
-	EntityMutatingMethodCallOutputContext() EntityMutatingMethodCallOutputContext
 }
 
 //endregion
