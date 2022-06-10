@@ -14,6 +14,8 @@ type EntityEnvelope[
 	EntityIDT EntityID[EntityIDNumT],
 	EntityDataT EntityData,
 ] struct {
+	ID   EntityIDT
+	Data EntityDataT
 }
 
 type EntityData interface{}
