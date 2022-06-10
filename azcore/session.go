@@ -8,32 +8,32 @@ import "github.com/alloyzeus/go-azfl/azid"
 //
 //TODO: scope, expiry, access to parent session instance.
 type Session[
-	SessionIDNumT SessionIDNum, SessionRefKeyT SessionRefKey[SessionIDNumT],
-	TerminalIDNumT TerminalIDNum, TerminalRefKeyT TerminalRefKey[TerminalIDNumT],
-	UserIDNumT UserIDNum, UserRefKeyT UserRefKey[UserIDNumT],
+	SessionIDNumT SessionIDNum, SessionIDT SessionID[SessionIDNumT],
+	TerminalIDNumT TerminalIDNum, TerminalIDT TerminalID[TerminalIDNumT],
+	UserIDNumT UserIDNum, UserIDT UserID[UserIDNumT],
 	SessionSubjectT SessionSubject[
-		TerminalIDNumT, TerminalRefKeyT, UserIDNumT, UserRefKeyT,
+		TerminalIDNumT, TerminalIDT, UserIDNumT, UserIDT,
 	],
 ] interface {
-	// RefKey returns the identifier of this Session instance.
-	RefKey() SessionRefKeyT
+	// ID returns the identifier of this Session instance.
+	ID() SessionIDT
 
-	// ParentSessionRefKey returns the identifier of the session which
+	// ParentSessionID returns the identifier of the session which
 	// was used to create this session.
-	ParentSessionRefKey() SessionRefKeyT
+	ParentSessionID() SessionIDT
 
 	// Subject returns the subject of this session.
 	Subject() SessionSubjectT
 
 	// IsTerminal returns true if the authorized terminal is the same as termRef.
-	IsTerminal(termRef TerminalRefKeyT) bool
+	IsTerminal(termRef TerminalIDT) bool
 
 	// IsUserSubject returns true if the subject is a user instead of
 	// a service application.
 	IsUserSubject() bool
 
 	// IsUser checks if this session is represeting a particular user.
-	IsUser(userRef UserRefKeyT) bool
+	IsUser(userRef UserIDT) bool
 }
 
 type SessionIDNumMethods interface {
@@ -47,9 +47,9 @@ type SessionIDNum interface {
 	SessionIDNumMethods
 }
 
-// SessionRefKey is used to refer to a Session entity instance.
-type SessionRefKey[IDNumT SessionIDNum] interface {
-	azid.RefKey[IDNumT]
+// SessionID is used to refer to a Session entity instance.
+type SessionID[IDNumT SessionIDNum] interface {
+	azid.ID[IDNumT]
 
 	// SessionIDNum returns only the ID part of this ref-key.
 	SessionIDNum() IDNumT

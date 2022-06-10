@@ -2,30 +2,30 @@ package azcore
 
 // ServiceMutatingMethodCallInputContext abstracts mutating method request contexts.
 type ServiceMutatingMethodCallInputContext[
-	SessionIDNumT SessionIDNum, SessionRefKeyT SessionRefKey[SessionIDNumT],
-	TerminalIDNumT TerminalIDNum, TerminalRefKeyT TerminalRefKey[TerminalIDNumT],
-	UserIDNumT UserIDNum, UserRefKeyT UserRefKey[UserIDNumT],
+	SessionIDNumT SessionIDNum, SessionIDT SessionID[SessionIDNumT],
+	TerminalIDNumT TerminalIDNum, TerminalIDT TerminalID[TerminalIDNumT],
+	UserIDNumT UserIDNum, UserIDT UserID[UserIDNumT],
 	SessionSubjectT SessionSubject[
-		TerminalIDNumT, TerminalRefKeyT,
-		UserIDNumT, UserRefKeyT],
+		TerminalIDNumT, TerminalIDT,
+		UserIDNumT, UserIDT],
 	SessionT Session[
-		SessionIDNumT, SessionRefKeyT,
-		TerminalIDNumT, TerminalRefKeyT,
-		UserIDNumT, UserRefKeyT,
+		SessionIDNumT, SessionIDT,
+		TerminalIDNumT, TerminalIDT,
+		UserIDNumT, UserIDT,
 		SessionSubjectT],
 	ServiceMethodCallInputContextT ServiceMethodCallInputContext[
-		SessionIDNumT, SessionRefKeyT,
-		TerminalIDNumT, TerminalRefKeyT,
-		UserIDNumT, UserRefKeyT,
+		SessionIDNumT, SessionIDT,
+		TerminalIDNumT, TerminalIDT,
+		UserIDNumT, UserIDT,
 		SessionSubjectT,
 		SessionT, ServiceMethodIdempotencyKeyT],
 	ServiceMethodIdempotencyKeyT ServiceMethodIdempotencyKey,
 ] interface {
 	ServiceMutatingMethodContext
 	ServiceMethodCallInputContext[
-		SessionIDNumT, SessionRefKeyT,
-		TerminalIDNumT, TerminalRefKeyT,
-		UserIDNumT, UserRefKeyT,
+		SessionIDNumT, SessionIDT,
+		TerminalIDNumT, TerminalIDT,
+		UserIDNumT, UserIDT,
 		SessionSubjectT,
 		SessionT, ServiceMethodIdempotencyKeyT]
 }

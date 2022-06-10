@@ -13,9 +13,9 @@ type UserIDNum interface {
 	UserIDNumMethods
 }
 
-// UserRefKey is used to refer to a User entity instance.
-type UserRefKey[IDNumT UserIDNum] interface {
-	azid.RefKey[IDNumT]
+// UserID is used to refer to a User entity instance.
+type UserID[IDNumT UserIDNum] interface {
+	azid.ID[IDNumT]
 
 	// UserIDNum returns only the ID part of this ref-key.
 	UserIDNum() IDNumT

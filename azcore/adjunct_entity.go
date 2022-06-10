@@ -13,11 +13,11 @@ type AdjunctEntityIDNum interface {
 	AdjunctEntityIDNumMethods
 }
 
-// AdjunctEntityRefKey abstracts adjunct entity ref keys.
-type AdjunctEntityRefKey[IDNumT AdjunctEntityIDNum] interface {
-	azid.RefKey[IDNumT]
+// AdjunctEntityID abstracts adjunct entity ref keys.
+type AdjunctEntityID[IDNumT AdjunctEntityIDNum] interface {
+	azid.ID[IDNumT]
 
-	AZAdjunctEntityRefKey()
+	AZAdjunctEntityID()
 }
 
 // AdjunctEntityAttributes abstracts adjunct entity attributes.

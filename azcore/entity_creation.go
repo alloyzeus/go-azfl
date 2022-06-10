@@ -2,21 +2,21 @@ package azcore
 
 // EntityCreationInfo holds information about the creation of an entity.
 type EntityCreationInfo[
-	SessionIDNumT SessionIDNum, SessionRefKeyT SessionRefKey[SessionIDNumT],
-	TerminalIDNumT TerminalIDNum, TerminalRefKeyT TerminalRefKey[TerminalIDNumT],
-	UserIDNumT UserIDNum, UserRefKeyT UserRefKey[UserIDNumT],
+	SessionIDNumT SessionIDNum, SessionIDT SessionID[SessionIDNumT],
+	TerminalIDNumT TerminalIDNum, TerminalIDT TerminalID[TerminalIDNumT],
+	UserIDNumT UserIDNum, UserIDT UserID[UserIDNumT],
 	SessionSubjectT SessionSubject[
-		TerminalIDNumT, TerminalRefKeyT,
-		UserIDNumT, UserRefKeyT],
+		TerminalIDNumT, TerminalIDT,
+		UserIDNumT, UserIDT],
 	SessionT Session[
-		SessionIDNumT, SessionRefKeyT,
-		TerminalIDNumT, TerminalRefKeyT,
-		UserIDNumT, UserRefKeyT,
+		SessionIDNumT, SessionIDT,
+		TerminalIDNumT, TerminalIDT,
+		UserIDNumT, UserIDT,
 		SessionSubjectT],
 ] interface {
 	OperationInfo[
-		SessionIDNumT, SessionRefKeyT, TerminalIDNumT, TerminalRefKeyT,
-		UserIDNumT, UserRefKeyT,
+		SessionIDNumT, SessionIDT, TerminalIDNumT, TerminalIDT,
+		UserIDNumT, UserIDT,
 		SessionSubjectT,
 		SessionT]
 }
@@ -26,20 +26,20 @@ type EntityCreationInfoBase struct{}
 
 // EntityCreationEvent is the abstraction for all entity creation events.
 type EntityCreationEvent[
-	SessionIDNumT SessionIDNum, SessionRefKeyT SessionRefKey[SessionIDNumT],
-	TerminalIDNumT TerminalIDNum, TerminalRefKeyT TerminalRefKey[TerminalIDNumT],
-	UserIDNumT UserIDNum, UserRefKeyT UserRefKey[UserIDNumT],
+	SessionIDNumT SessionIDNum, SessionIDT SessionID[SessionIDNumT],
+	TerminalIDNumT TerminalIDNum, TerminalIDT TerminalID[TerminalIDNumT],
+	UserIDNumT UserIDNum, UserIDT UserID[UserIDNumT],
 	SessionSubjectT SessionSubject[
-		TerminalIDNumT, TerminalRefKeyT,
-		UserIDNumT, UserRefKeyT],
+		TerminalIDNumT, TerminalIDT,
+		UserIDNumT, UserIDT],
 	SessionT Session[
-		SessionIDNumT, SessionRefKeyT,
-		TerminalIDNumT, TerminalRefKeyT,
-		UserIDNumT, UserRefKeyT,
+		SessionIDNumT, SessionIDT,
+		TerminalIDNumT, TerminalIDT,
+		UserIDNumT, UserIDT,
 		SessionSubjectT],
 	EntityCreationInfoT EntityCreationInfo[
-		SessionIDNumT, SessionRefKeyT, TerminalIDNumT, TerminalRefKeyT,
-		UserIDNumT, UserRefKeyT, SessionSubjectT, SessionT],
+		SessionIDNumT, SessionIDT, TerminalIDNumT, TerminalIDT,
+		UserIDNumT, UserIDT, SessionSubjectT, SessionT],
 ] interface {
 	AZEntityCreationEvent()
 
@@ -59,29 +59,29 @@ func (EntityCreationEventBase) AZEntityCreationEvent() {}
 // EntityCreationInputContext is the abstraction for all entity creation
 // call input contexts.
 type EntityCreationInputContext[
-	SessionIDNumT SessionIDNum, SessionRefKeyT SessionRefKey[SessionIDNumT],
-	TerminalIDNumT TerminalIDNum, TerminalRefKeyT TerminalRefKey[TerminalIDNumT],
-	UserIDNumT UserIDNum, UserRefKeyT UserRefKey[UserIDNumT],
+	SessionIDNumT SessionIDNum, SessionIDT SessionID[SessionIDNumT],
+	TerminalIDNumT TerminalIDNum, TerminalIDT TerminalID[TerminalIDNumT],
+	UserIDNumT UserIDNum, UserIDT UserID[UserIDNumT],
 	SessionSubjectT SessionSubject[
-		TerminalIDNumT, TerminalRefKeyT,
-		UserIDNumT, UserRefKeyT],
+		TerminalIDNumT, TerminalIDT,
+		UserIDNumT, UserIDT],
 	SessionT Session[
-		SessionIDNumT, SessionRefKeyT,
-		TerminalIDNumT, TerminalRefKeyT,
-		UserIDNumT, UserRefKeyT,
+		SessionIDNumT, SessionIDT,
+		TerminalIDNumT, TerminalIDT,
+		UserIDNumT, UserIDT,
 		SessionSubjectT],
 	ServiceMethodCallInputContextT ServiceMethodCallInputContext[
-		SessionIDNumT, SessionRefKeyT,
-		TerminalIDNumT, TerminalRefKeyT,
-		UserIDNumT, UserRefKeyT,
+		SessionIDNumT, SessionIDT,
+		TerminalIDNumT, TerminalIDT,
+		UserIDNumT, UserIDT,
 		SessionSubjectT,
 		SessionT, ServiceMethodIdempotencyKeyT],
 	ServiceMethodIdempotencyKeyT ServiceMethodIdempotencyKey,
 ] interface {
 	//TODO: creation is not mutation
 	EntityMutatingMethodCallContext[
-		SessionIDNumT, SessionRefKeyT, TerminalIDNumT, TerminalRefKeyT,
-		UserIDNumT, UserRefKeyT, SessionSubjectT, SessionT,
+		SessionIDNumT, SessionIDT, TerminalIDNumT, TerminalIDT,
+		UserIDNumT, UserIDT, SessionSubjectT, SessionT,
 		ServiceMethodCallInputContextT, ServiceMethodIdempotencyKeyT]
 
 	AZEntityCreationInputContext()

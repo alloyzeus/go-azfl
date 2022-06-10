@@ -23,7 +23,7 @@ type ServiceMethodCallContext interface {
 
 	// ResourceID returns the identifier of the resource being accessed by
 	// the call. For HTTP, it's the path. For other protocols, it should
-	// be the identifier (RefKey) of the entity. If there's more than one
+	// be the identifier (ID) of the entity. If there's more than one
 	// resources, e.g., a relationship between two entities, then it returns
 	// the identifiers of the entities separated by commas.
 	ResourceID() string
@@ -105,15 +105,15 @@ type ServiceMethodCallInvocationError interface {
 // ServiceMethodCallInputContext provides an abstraction for all input contexts
 // in method call inputs.
 type ServiceMethodCallInputContext[
-	SessionIDNumT SessionIDNum, SessionRefKeyT SessionRefKey[SessionIDNumT],
-	TerminalIDNumT TerminalIDNum, TerminalRefKeyT TerminalRefKey[TerminalIDNumT],
-	UserIDNumT UserIDNum, UserRefKeyT UserRefKey[UserIDNumT],
+	SessionIDNumT SessionIDNum, SessionIDT SessionID[SessionIDNumT],
+	TerminalIDNumT TerminalIDNum, TerminalIDT TerminalID[TerminalIDNumT],
+	UserIDNumT UserIDNum, UserIDT UserID[UserIDNumT],
 	SessionSubjectT SessionSubject[
-		TerminalIDNumT, TerminalRefKeyT, UserIDNumT, UserRefKeyT],
+		TerminalIDNumT, TerminalIDT, UserIDNumT, UserIDT],
 	SessionT Session[
-		SessionIDNumT, SessionRefKeyT,
-		TerminalIDNumT, TerminalRefKeyT,
-		UserIDNumT, UserRefKeyT,
+		SessionIDNumT, SessionIDT,
+		TerminalIDNumT, TerminalIDT,
+		UserIDNumT, UserIDT,
 		SessionSubjectT],
 	ServiceMethodIdempotencyKeyT ServiceMethodIdempotencyKey,
 ] interface {

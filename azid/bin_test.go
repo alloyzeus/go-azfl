@@ -20,14 +20,14 @@ func (id int32IDNum) AZIDBinField() ([]byte, azid.BinDataType) {
 }
 
 func (id *int32IDNum) UnmarshalAZIDBinField(b []byte, typeHint azid.BinDataType) (readLen int, err error) {
-	i, readLen, err := int32IDFromAZIDBinField(b, typeHint)
+	i, readLen, err := int32IDNumFromAZIDBinField(b, typeHint)
 	if err == nil {
 		*id = i
 	}
 	return readLen, err
 }
 
-func int32IDFromAZIDBinField(
+func int32IDNumFromAZIDBinField(
 	b []byte, typeHint azid.BinDataType,
 ) (id int32IDNum, readLen int, err error) {
 	if typeHint != azid.BinDataTypeUnspecified && typeHint != azid.BinDataTypeInt32 {
@@ -38,55 +38,55 @@ func int32IDFromAZIDBinField(
 	return int32IDNum(i), 4, nil
 }
 
-type int32RefKey int32IDNum
+type int32ID int32IDNum
 
-var _ azid.BinMarshalable = int32RefKey(0)
-var _ azid.BinFieldMarshalable = int32RefKey(0)
+var _ azid.BinMarshalable = int32ID(0)
+var _ azid.BinFieldMarshalable = int32ID(0)
 
-func int32RefKeyFromAZIDBinField(
+func int32IDFromAZIDBinField(
 	b []byte, typeHint azid.BinDataType,
-) (refKey int32RefKey, readLen int, err error) {
-	id, n, err := int32IDFromAZIDBinField(b, typeHint)
+) (id int32ID, readLen int, err error) {
+	idNum, n, err := int32IDNumFromAZIDBinField(b, typeHint)
 	if err != nil {
-		return int32RefKey(0), n, err
+		return int32ID(0), n, err
 	}
-	return int32RefKey(id), n, nil
+	return int32ID(idNum), n, nil
 }
 
-func (refKey int32RefKey) AZIDBin() []byte {
+func (id int32ID) AZIDBin() []byte {
 	b := make([]byte, 5)
 	b[0] = azid.BinDataTypeInt32.Byte()
-	binary.BigEndian.PutUint32(b[1:], uint32(refKey))
+	binary.BigEndian.PutUint32(b[1:], uint32(id))
 	return b
 }
 
-func int32RefKeyFromAZIDBin(b []byte) (refKey int32RefKey, readLen int, err error) {
+func int32IDFromAZIDBin(b []byte) (id int32ID, readLen int, err error) {
 	typ, err := azid.BinDataTypeFromByte(b[0])
 	if err != nil {
-		return int32RefKey(0), 0,
+		return int32ID(0), 0,
 			errors.ArgWrap("", "type parsing", err)
 	}
 	if typ != azid.BinDataTypeInt32 {
-		return int32RefKey(0), 0,
+		return int32ID(0), 0,
 			errors.Arg("", errors.EntMsg("type", "unsupported"))
 	}
 
-	i, readLen, err := int32IDFromAZIDBinField(b[1:], typ)
+	i, readLen, err := int32IDNumFromAZIDBinField(b[1:], typ)
 	if err != nil {
-		return int32RefKey(0), 0,
+		return int32ID(0), 0,
 			errors.ArgWrap("", "id data parsing", err)
 	}
 
-	return int32RefKey(i), 1 + readLen, nil
+	return int32ID(i), 1 + readLen, nil
 }
 
-func (refKey int32RefKey) AZIDBinField() ([]byte, azid.BinDataType) {
-	return int32IDNum(refKey).AZIDBinField()
+func (id int32ID) AZIDBinField() ([]byte, azid.BinDataType) {
+	return int32IDNum(id).AZIDBinField()
 }
 
 type adjunctIDNum int16
 
-func adjunctIDFromAZIDBinField(
+func adjunctIDNumFromAZIDBinField(
 	b []byte, typeHint azid.BinDataType,
 ) (id adjunctIDNum, readLen int, err error) {
 	if typeHint != azid.BinDataTypeUnspecified && typeHint != azid.BinDataTypeInt16 {
@@ -103,24 +103,24 @@ func (id adjunctIDNum) AZIDBinField() ([]byte, azid.BinDataType) {
 	return b, azid.BinDataTypeInt16
 }
 
-type adjunctRefKey struct {
-	parent int32RefKey
-	id     adjunctIDNum
+type adjunctID struct {
+	parent int32ID
+	idNum  adjunctIDNum
 }
 
-const adjunctRefKeyFieldCount = 2
+const adjunctIDFieldCount = 2
 
-func adjunctRefKeyFromAZIDBinField(
+func adjunctIDFromAZIDBinField(
 	b []byte, typeHint azid.BinDataType,
-) (refKey adjunctRefKey, readLen int, err error) {
+) (id adjunctID, readLen int, err error) {
 	if typeHint != azid.BinDataTypeArray {
-		return adjunctRefKey{}, 0,
+		return adjunctID{}, 0,
 			errors.Arg("", errors.EntMsg("type", "unsupported"))
 	}
 
 	arrayLen := int(b[0])
-	if arrayLen != adjunctRefKeyFieldCount {
-		return adjunctRefKey{}, 0,
+	if arrayLen != adjunctIDFieldCount {
+		return adjunctID{}, 0,
 			errors.Arg("", errors.EntMsg("field count", "mismatch"))
 	}
 
@@ -129,61 +129,61 @@ func adjunctRefKeyFromAZIDBinField(
 
 	parentType, err := azid.BinDataTypeFromByte(b[typeCursor])
 	if err != nil {
-		return adjunctRefKey{}, 0,
+		return adjunctID{}, 0,
 			errors.ArgWrap("", "parent type parsing", err)
 	}
 	typeCursor++
-	parentRefKey, readLen, err := int32RefKeyFromAZIDBinField(b[dataCursor:], parentType)
+	parentID, readLen, err := int32IDFromAZIDBinField(b[dataCursor:], parentType)
 	if err != nil {
-		return adjunctRefKey{}, 0,
+		return adjunctID{}, 0,
 			errors.ArgWrap("", "parent data parsing", err)
 	}
 	dataCursor += readLen
 
 	idType, err := azid.BinDataTypeFromByte(b[typeCursor])
 	if err != nil {
-		return adjunctRefKey{}, 0,
+		return adjunctID{}, 0,
 			errors.ArgWrap("", "id type parsing", err)
 	}
 	typeCursor++
-	id, readLen, err := adjunctIDFromAZIDBinField(b[dataCursor:], idType)
+	idNum, readLen, err := adjunctIDNumFromAZIDBinField(b[dataCursor:], idType)
 	if err != nil {
-		return adjunctRefKey{}, 0,
+		return adjunctID{}, 0,
 			errors.ArgWrap("", "id data parsing", err)
 	}
 	dataCursor += readLen
 
-	return adjunctRefKey{parentRefKey, id}, dataCursor, nil
+	return adjunctID{parentID, idNum}, dataCursor, nil
 }
 
-func adjunctRefKeyFromAZIDBin(
+func adjunctIDFromAZIDBin(
 	b []byte,
-) (refKey adjunctRefKey, readLen int, err error) {
+) (id adjunctID, readLen int, err error) {
 	typ, err := azid.BinDataTypeFromByte(b[0])
 	if err != nil {
-		return adjunctRefKey{}, 0,
+		return adjunctID{}, 0,
 			errors.ArgWrap("", "type parsing", err)
 	}
 	if typ != azid.BinDataTypeArray {
-		return adjunctRefKey{}, 0,
+		return adjunctID{}, 0,
 			errors.Arg("", errors.EntMsg("type", "unsupported"))
 	}
 
-	refKey, readLen, err = adjunctRefKeyFromAZIDBinField(b[1:], typ)
-	return refKey, readLen + 1, err
+	id, readLen, err = adjunctIDFromAZIDBinField(b[1:], typ)
+	return id, readLen + 1, err
 }
 
-func (refKey adjunctRefKey) AZIDBinField() ([]byte, azid.BinDataType) {
+func (id adjunctID) AZIDBinField() ([]byte, azid.BinDataType) {
 	var typesBytes []byte
 	var dataBytes []byte
 	var fieldBytes []byte
 	var fieldType azid.BinDataType
 
-	fieldBytes, fieldType = refKey.parent.AZIDBinField()
+	fieldBytes, fieldType = id.parent.AZIDBinField()
 	typesBytes = append(typesBytes, fieldType.Byte())
 	dataBytes = append(dataBytes, fieldBytes...)
 
-	fieldBytes, fieldType = refKey.id.AZIDBinField()
+	fieldBytes, fieldType = id.idNum.AZIDBinField()
 	typesBytes = append(typesBytes, fieldType.Byte())
 	dataBytes = append(dataBytes, fieldBytes...)
 
@@ -193,8 +193,8 @@ func (refKey adjunctRefKey) AZIDBinField() ([]byte, azid.BinDataType) {
 	return out, azid.BinDataTypeArray
 }
 
-func (refKey adjunctRefKey) AZIDBin() []byte {
-	data, typ := refKey.AZIDBinField()
+func (id adjunctID) AZIDBin() []byte {
+	data, typ := id.AZIDBinField()
 	out := []byte{typ.Byte()}
 	return append(out, data...)
 }
@@ -221,14 +221,14 @@ func TestEncodeField(t *testing.T) {
 	}
 }
 
-func TestEncodeRefKey(t *testing.T) {
+func TestEncodeID(t *testing.T) {
 	testCases := []struct {
-		in      int32RefKey
+		in      int32ID
 		outData []byte
 	}{
-		{int32RefKey(0), []byte{0x13, 0, 0, 0, 0}},
-		{int32RefKey(1), []byte{0x13, 0, 0, 0, 1}},
-		{int32RefKey(1 << 24), []byte{0x13, 1, 0, 0, 0}},
+		{int32ID(0), []byte{0x13, 0, 0, 0, 0}},
+		{int32ID(1), []byte{0x13, 0, 0, 0, 1}},
+		{int32ID(1 << 24), []byte{0x13, 1, 0, 0, 0}},
 	}
 
 	for _, testCase := range testCases {
@@ -241,14 +241,14 @@ func TestEncodeRefKey(t *testing.T) {
 
 func TestEncodeAdjunct(t *testing.T) {
 	testCases := []struct {
-		in      adjunctRefKey
+		in      adjunctID
 		outData []byte
 	}{
-		{adjunctRefKey{int32RefKey(0), adjunctIDNum(0)},
+		{adjunctID{int32ID(0), adjunctIDNum(0)},
 			[]byte{0x40, 0x2, 0x13, 0x12, 0, 0, 0, 0, 0, 0}},
-		{adjunctRefKey{int32RefKey(0), adjunctIDNum(1)},
+		{adjunctID{int32ID(0), adjunctIDNum(1)},
 			[]byte{0x40, 0x2, 0x13, 0x12, 0, 0, 0, 0, 0, 1}},
-		{adjunctRefKey{int32RefKey(1), adjunctIDNum(0)},
+		{adjunctID{int32ID(1), adjunctIDNum(0)},
 			[]byte{0x40, 0x2, 0x13, 0x12, 0, 0, 0, 1, 0, 0}},
 	}
 
@@ -263,28 +263,28 @@ func TestEncodeAdjunct(t *testing.T) {
 func TestDecodeToAdjunct(t *testing.T) {
 	testCases := []struct {
 		in      []byte
-		out     adjunctRefKey
+		out     adjunctID
 		readLen int
 		err     error
 	}{
 		{[]byte{0x40, 0x2, 0x13, 0x12, 0, 0, 0, 0, 0, 0},
-			adjunctRefKey{int32RefKey(0), adjunctIDNum(0)}, 10, nil},
+			adjunctID{int32ID(0), adjunctIDNum(0)}, 10, nil},
 		{[]byte{0x40, 0x2, 0x13, 0x12, 0, 0, 0, 0, 0, 1},
-			adjunctRefKey{int32RefKey(0), adjunctIDNum(1)}, 10, nil},
+			adjunctID{int32ID(0), adjunctIDNum(1)}, 10, nil},
 		{[]byte{0x40, 0x2, 0x13, 0x12, 0, 0, 0, 1, 0, 0},
-			adjunctRefKey{int32RefKey(1), adjunctIDNum(0)}, 10, nil},
+			adjunctID{int32ID(1), adjunctIDNum(0)}, 10, nil},
 	}
 
 	for _, testCase := range testCases {
-		refKey, readLen, err := adjunctRefKeyFromAZIDBin(testCase.in)
+		id, readLen, err := adjunctIDFromAZIDBin(testCase.in)
 		if err != testCase.err {
 			t.Errorf("Expected: %#v, actual: %#v", testCase.err, err)
 		}
 		if readLen != testCase.readLen || readLen != len(testCase.in) {
 			t.Errorf("Expected: %#v, actual: %#v", testCase.readLen, readLen)
 		}
-		if refKey.parent != testCase.out.parent || refKey.id != testCase.out.id {
-			t.Errorf("Expected: %#v, actual: %#v", testCase.out, refKey)
+		if id.parent != testCase.out.parent || id.idNum != testCase.out.idNum {
+			t.Errorf("Expected: %#v, actual: %#v", testCase.out, id)
 		}
 	}
 }

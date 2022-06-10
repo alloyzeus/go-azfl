@@ -4,15 +4,15 @@ import "github.com/alloyzeus/go-azfl/azid"
 
 // A Terminal is an object which could act within the system, i.e., an agent.
 type Terminal[
-	TerminalIDNumT TerminalIDNum, TerminalRefKeyT TerminalRefKey[TerminalIDNumT],
-	UserIDNumT UserIDNum, UserRefKeyT UserRefKey[UserIDNumT],
+	TerminalIDNumT TerminalIDNum, TerminalIDT TerminalID[TerminalIDNumT],
+	UserIDNumT UserIDNum, UserIDT UserID[UserIDNumT],
 ] interface {
-	// RefKey returns the identifier of this Terminal instance.
-	RefKey() TerminalRefKeyT
+	// ID returns the identifier of this Terminal instance.
+	ID() TerminalIDT
 
 	// PrincipalUser returns the ref-key of the User, if any, who authorized
 	// this instance of Terminal.
-	PrincipalUser() UserRefKeyT
+	PrincipalUser() UserIDT
 }
 
 type TerminalIDNumMethods interface {
@@ -26,9 +26,9 @@ type TerminalIDNum interface {
 	TerminalIDNumMethods
 }
 
-// TerminalRefKey is used to refer to a Terminal entity instance.
-type TerminalRefKey[IDNumT TerminalIDNum] interface {
-	azid.RefKey[IDNumT]
+// TerminalID is used to refer to a Terminal entity instance.
+type TerminalID[IDNumT TerminalIDNum] interface {
+	azid.ID[IDNumT]
 
 	// TerminalIDNum returns only the ID part of this ref-key.
 	TerminalIDNum() IDNumT

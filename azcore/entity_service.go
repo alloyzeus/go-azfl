@@ -22,26 +22,26 @@ type EntityMethodContext interface {
 // EntityMethodCallInputContext is an abstraction for all method call
 // input contexts.
 type EntityMethodCallInputContext[
-	SessionIDNumT SessionIDNum, SessionRefKeyT SessionRefKey[SessionIDNumT],
-	TerminalIDNumT TerminalIDNum, TerminalRefKeyT TerminalRefKey[TerminalIDNumT],
-	UserIDNumT UserIDNum, UserRefKeyT UserRefKey[UserIDNumT],
+	SessionIDNumT SessionIDNum, SessionIDT SessionID[SessionIDNumT],
+	TerminalIDNumT TerminalIDNum, TerminalIDT TerminalID[TerminalIDNumT],
+	UserIDNumT UserIDNum, UserIDT UserID[UserIDNumT],
 	SessionSubjectT SessionSubject[
-		TerminalIDNumT, TerminalRefKeyT,
-		UserIDNumT, UserRefKeyT,
+		TerminalIDNumT, TerminalIDT,
+		UserIDNumT, UserIDT,
 	],
 	SessionT Session[
-		SessionIDNumT, SessionRefKeyT,
-		TerminalIDNumT, TerminalRefKeyT,
-		UserIDNumT, UserRefKeyT,
+		SessionIDNumT, SessionIDT,
+		TerminalIDNumT, TerminalIDT,
+		UserIDNumT, UserIDT,
 		SessionSubjectT,
 	],
 	ServiceMethodIdempotencyKeyT ServiceMethodIdempotencyKey,
 ] interface {
 	EntityMethodContext
 	ServiceMethodCallInputContext[
-		SessionIDNumT, SessionRefKeyT,
-		TerminalIDNumT, TerminalRefKeyT,
-		UserIDNumT, UserRefKeyT,
+		SessionIDNumT, SessionIDT,
+		TerminalIDNumT, TerminalIDT,
+		UserIDNumT, UserIDT,
 		SessionSubjectT,
 		SessionT, ServiceMethodIdempotencyKeyT,
 	]
@@ -68,23 +68,23 @@ type EntityMutatingContext interface {
 // EntityMutatingMethodCallContext provides an abstraction for input contexts
 // for mutating method calls.
 type EntityMutatingMethodCallContext[
-	SessionIDNumT SessionIDNum, SessionRefKeyT SessionRefKey[SessionIDNumT],
-	TerminalIDNumT TerminalIDNum, TerminalRefKeyT TerminalRefKey[TerminalIDNumT],
-	UserIDNumT UserIDNum, UserRefKeyT UserRefKey[UserIDNumT],
+	SessionIDNumT SessionIDNum, SessionIDT SessionID[SessionIDNumT],
+	TerminalIDNumT TerminalIDNum, TerminalIDT TerminalID[TerminalIDNumT],
+	UserIDNumT UserIDNum, UserIDT UserID[UserIDNumT],
 	SessionSubjectT SessionSubject[
-		TerminalIDNumT, TerminalRefKeyT,
-		UserIDNumT, UserRefKeyT,
+		TerminalIDNumT, TerminalIDT,
+		UserIDNumT, UserIDT,
 	],
 	SessionT Session[
-		SessionIDNumT, SessionRefKeyT,
-		TerminalIDNumT, TerminalRefKeyT,
-		UserIDNumT, UserRefKeyT,
+		SessionIDNumT, SessionIDT,
+		TerminalIDNumT, TerminalIDT,
+		UserIDNumT, UserIDT,
 		SessionSubjectT,
 	],
 	ServiceMethodCallInputContextT ServiceMethodCallInputContext[
-		SessionIDNumT, SessionRefKeyT,
-		TerminalIDNumT, TerminalRefKeyT,
-		UserIDNumT, UserRefKeyT,
+		SessionIDNumT, SessionIDT,
+		TerminalIDNumT, TerminalIDT,
+		UserIDNumT, UserIDT,
 		SessionSubjectT,
 		SessionT, ServiceMethodIdempotencyKeyT,
 	],
@@ -92,12 +92,12 @@ type EntityMutatingMethodCallContext[
 ] interface {
 	EntityMutatingContext
 	EntityMethodCallInputContext[
-		SessionIDNumT, SessionRefKeyT, TerminalIDNumT, TerminalRefKeyT,
-		UserIDNumT, UserRefKeyT, SessionSubjectT, SessionT,
+		SessionIDNumT, SessionIDT, TerminalIDNumT, TerminalIDT,
+		UserIDNumT, UserIDT, SessionSubjectT, SessionT,
 		ServiceMethodIdempotencyKeyT]
 	ServiceMutatingMethodCallInputContext[
-		SessionIDNumT, SessionRefKeyT, TerminalIDNumT, TerminalRefKeyT,
-		UserIDNumT, UserRefKeyT, SessionSubjectT, SessionT,
+		SessionIDNumT, SessionIDT, TerminalIDNumT, TerminalIDT,
+		UserIDNumT, UserIDT, SessionSubjectT, SessionT,
 		ServiceMethodCallInputContextT, ServiceMethodIdempotencyKeyT]
 }
 

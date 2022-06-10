@@ -11,7 +11,7 @@ type Entity interface {
 // id of the entity and its representing data.
 type EntityEnvelope[
 	EntityIDNumT EntityIDNum,
-	EntityRefKeyT EntityRefKey[EntityIDNumT],
+	EntityIDT EntityID[EntityIDNumT],
 	EntityDataT EntityData,
 ] struct {
 }
@@ -31,11 +31,11 @@ type EntityIDNum interface {
 	EntityIDNumMethods
 }
 
-// EntityRefKey defines the contract for all its concrete implementations.
-type EntityRefKey[IDNumT EntityIDNum] interface {
-	azid.RefKey[IDNumT]
+// EntityID defines the contract for all its concrete implementations.
+type EntityID[IDNumT EntityIDNum] interface {
+	azid.ID[IDNumT]
 
-	AZEntityRefKey()
+	AZEntityID()
 }
 
 // EntityAttributes abstracts entity attributes.

@@ -7,22 +7,22 @@ import (
 	"github.com/alloyzeus/go-azfl/azid"
 )
 
-var _ azid.TextMarshalable = adjunctRefKey{}
+var _ azid.TextMarshalable = adjunctID{}
 
-func (refKey adjunctRefKey) AZIDText() string {
-	bin := refKey.AZIDBin()
+func (id adjunctID) AZIDText() string {
+	bin := id.AZIDBin()
 	return azid.TextEncode(bin)
 }
 
-func TestAZIDTextAdjunctRefKeyEncode(t *testing.T) {
+func TestAZIDTextAdjunctIDEncode(t *testing.T) {
 	testCases := []struct {
-		in  adjunctRefKey
+		in  adjunctID
 		out string
 	}{
-		{adjunctRefKey{}, "801164g000000000"},
-		{adjunctRefKey{0, 1}, "801164g000000001"},
-		{adjunctRefKey{1, 0}, "801164g000002000"},
-		{adjunctRefKey{1, 1}, "801164g000002001"},
+		{adjunctID{}, "801164g000000000"},
+		{adjunctID{0, 1}, "801164g000000001"},
+		{adjunctID{1, 0}, "801164g000002000"},
+		{adjunctID{1, 1}, "801164g000002001"},
 	}
 
 	for _, testCase := range testCases {
