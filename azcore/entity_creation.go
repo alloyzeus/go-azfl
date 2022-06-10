@@ -1,5 +1,17 @@
 package azcore
 
+type EntityCreationOutput[
+	IDNumT EntityIDNum,
+	IDT EntityID[IDNumT],
+	RevisionNumberT EntityRevisionNumber,
+	DeletionInfoT EntityDeletionInfo,
+	InstanceInfoT EntityInstanceInfo[
+		RevisionNumberT, DeletionInfoT],
+] struct {
+	InstanceID   IDT
+	InitialState InstanceInfoT
+}
+
 // EntityCreationInfo holds information about the creation of an entity.
 type EntityCreationInfo[
 	SessionIDNumT SessionIDNum, SessionIDT SessionID[SessionIDNumT],
@@ -20,9 +32,6 @@ type EntityCreationInfo[
 		SessionSubjectT,
 		SessionT]
 }
-
-// EntityCreationInfoBase is the base for all entity creation info.
-type EntityCreationInfoBase struct{}
 
 // EntityCreationEvent is the abstraction for all entity creation events.
 type EntityCreationEvent[
@@ -46,16 +55,6 @@ type EntityCreationEvent[
 	CreationInfo() EntityCreationInfoT
 }
 
-// EntityCreationEventBase is the base implementation of EntityCreationEvent.
-type EntityCreationEventBase struct {
-}
-
-//TODO: use tests to assert partial interface implementations
-//var _ EntityCreationEvent = EntityCreationEventBase{}
-
-// AZEntityCreationEvent is required for conformance with EntityCreationEvent.
-func (EntityCreationEventBase) AZEntityCreationEvent() {}
-
 // EntityCreationInputContext is the abstraction for all entity creation
 // call input contexts.
 type EntityCreationInputContext[
@@ -70,19 +69,14 @@ type EntityCreationInputContext[
 		TerminalIDNumT, TerminalIDT,
 		UserIDNumT, UserIDT,
 		SessionSubjectT],
-	ServiceMethodCallInputContextT ServiceMethodCallInputContext[
+	ServiceMethodIdempotencyKeyT ServiceMethodIdempotencyKey,
+] interface {
+	ServiceMethodCallInputContext[
 		SessionIDNumT, SessionIDT,
 		TerminalIDNumT, TerminalIDT,
 		UserIDNumT, UserIDT,
 		SessionSubjectT,
-		SessionT, ServiceMethodIdempotencyKeyT],
-	ServiceMethodIdempotencyKeyT ServiceMethodIdempotencyKey,
-] interface {
-	//TODO: creation is not mutation
-	EntityMutatingMethodCallContext[
-		SessionIDNumT, SessionIDT, TerminalIDNumT, TerminalIDT,
-		UserIDNumT, UserIDT, SessionSubjectT, SessionT,
-		ServiceMethodCallInputContextT, ServiceMethodIdempotencyKeyT]
+		SessionT, ServiceMethodIdempotencyKeyT]
 
 	AZEntityCreationInputContext()
 }
@@ -90,19 +84,7 @@ type EntityCreationInputContext[
 // EntityCreationOutputContext is the abstraction for all entity creation
 // call output contexts.
 type EntityCreationOutputContext interface {
-	EntityMutatingMethodCallOutputContext
+	ServiceMethodCallOutputContext
 
 	AZEntityCreationOutputContext()
 }
-
-// EntityCreationOutputContextBase is the base implementation
-// for EntityCreationOutputContext.
-type EntityCreationOutputContextBase struct {
-	ServiceMethodCallOutputContextBase
-}
-
-var _ EntityCreationOutputContext = EntityCreationOutputContextBase{}
-
-// AZEntityCreationOutputContext is required for conformance
-// with EntityCreationOutputContext.
-func (EntityCreationOutputContextBase) AZEntityCreationOutputContext() {}

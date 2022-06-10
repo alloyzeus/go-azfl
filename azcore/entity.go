@@ -46,3 +46,45 @@ type EntityAttributes interface {
 
 	AZEntityAttributes()
 }
+
+// EntityInstanceInfo holds information about an instance of entity, i.e.,
+// metadata of an instance of entity. It doesn't contain the attributes of
+// the instance itself.
+type EntityInstanceInfo[
+	RevisionNumberT EntityRevisionNumber,
+	DeletionInfoT EntityDeletionInfo,
+] interface {
+	RevisionNumber() RevisionNumberT
+
+	// Deletion returns a detailed information about the deletion if
+	// the instance has been deleted.
+	Deletion() *DeletionInfoT
+	// IsDeleted returns true if the instance has been deleted.
+	IsDeleted() bool
+}
+
+type EntityInstanceInfoBase[
+	RevisionNumberT EntityRevisionNumber,
+	DeletionInfoT EntityDeletionInfo,
+] struct {
+	RevisionNumber_ RevisionNumberT
+	Deletion_       *DeletionInfoT
+}
+
+var _ EntityInstanceInfo[int32, EntityDeletionInfoBase] = EntityInstanceInfoBase[int32, EntityDeletionInfoBase]{}
+
+func (instanceInfo EntityInstanceInfoBase[RevisionNumberT, DeletionInfoT]) RevisionNumber() RevisionNumberT {
+	return instanceInfo.RevisionNumber_
+}
+
+func (entityInstanceInfo EntityInstanceInfoBase[RevisionNumberT, DeletionInfoT]) Deletion() *DeletionInfoT {
+	return entityInstanceInfo.Deletion_
+}
+
+func (entityInstanceInfo EntityInstanceInfoBase[RevisionNumberT, DeletionInfoT]) IsDeleted() bool {
+	return entityInstanceInfo.Deletion_ != nil && (*entityInstanceInfo.Deletion_).Deleted()
+}
+
+type EntityRevisionNumber interface {
+	int16 | int32 | int64
+}

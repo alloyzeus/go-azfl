@@ -100,7 +100,27 @@ type ServiceMethodCallInvocationError interface {
 
 //endregion
 
-//region ServiceMethodCallInputContext
+type ServiceMethodCallInput[
+	SessionIDNumT SessionIDNum, SessionIDT SessionID[SessionIDNumT],
+	TerminalIDNumT TerminalIDNum, TerminalIDT TerminalID[TerminalIDNumT],
+	UserIDNumT UserIDNum, UserIDT UserID[UserIDNumT],
+	SessionSubjectT SessionSubject[
+		TerminalIDNumT, TerminalIDT, UserIDNumT, UserIDT],
+	SessionT Session[
+		SessionIDNumT, SessionIDT,
+		TerminalIDNumT, TerminalIDT,
+		UserIDNumT, UserIDT,
+		SessionSubjectT],
+	ServiceMethodIdempotencyKeyT ServiceMethodIdempotencyKey,
+	InputContextT ServiceMethodCallInputContext[
+		SessionIDNumT, SessionIDT, TerminalIDNumT, TerminalIDT,
+		UserIDNumT, UserIDT, SessionSubjectT, SessionT,
+		ServiceMethodIdempotencyKeyT],
+	InputDataT ServiceMethodCallInputData,
+] struct {
+	Context InputContextT
+	Data    InputDataT
+}
 
 // ServiceMethodCallInputContext provides an abstraction for all input contexts
 // in method call inputs.
@@ -136,10 +156,6 @@ type ServiceMethodCallInputContext[
 	OriginInfo() ServiceMethodCallOriginInfo
 }
 
-//endregion
-
-//region ServiceMethodCallInputContextError
-
 // ServiceMethodCallInputContextError provides information for
 // request-context-related error. It is a sub-class of
 // ServiceMethodCallInputError.
@@ -157,8 +173,6 @@ type ServiceMethodCallSessionError interface {
 
 	AZServiceMethodCallSessionError()
 }
-
-//endregion
 
 //region ServiceMethodCallOutputContext
 
