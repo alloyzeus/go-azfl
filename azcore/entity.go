@@ -3,15 +3,37 @@ package azcore
 import "github.com/alloyzeus/go-azfl/azid"
 
 // Entity defines the contract for all its concrete implementations.
+//
+// For now, this is unused.
 type Entity interface {
 	AZEntity()
 }
 
-// EntityEnvelope is a self-identifying data structure that contains the
-// id of the entity and its representing data.
+// An EntityID is an identifier of an entity.
+type EntityID[IDNumT EntityIDNum] interface {
+	azid.ID[IDNumT]
+
+	AZEntityID()
+}
+
+// An EntityAttributes instance contains the actual attributes of an entity.
+// It's on itself is a value object and does not have any identity.
+//
+// An EntityAttributes instance doesn't hold the ID of its entity instance.
+// For the structure that holds both the ID and its attributes, see
+// KeyedEntityAttributes, which pratically contains a pair of attributes --
+// the ID of the entity and the of attributes of the entity.
+type EntityAttributes interface {
+	Attributes
+
+	AZEntityAttributes()
+}
+
+// KeyedEntityAttributes is a self-identifying data structure that contains
+// both the ID of the entity and its representing attributes.
 //
 //TODO: an envelope with EntityInstanceInfo?
-type EntityEnvelope[
+type KeyedEntityAttributes[
 	EntityIDNumT EntityIDNum,
 	EntityIDT EntityID[EntityIDNumT],
 	EntityAttributesT EntityAttributes,
@@ -24,28 +46,13 @@ type EntityIDNumMethods interface {
 	AZEntityIDNum()
 }
 
-// EntityIDNum defines the contract for all its concrete implementations.
+// EntityIDNum is the unique or local part of an entity identifier.
 //
 //TODO: this is a value-object.
 type EntityIDNum interface {
 	azid.IDNum
 
 	EntityIDNumMethods
-}
-
-// EntityID defines the contract for all its concrete implementations.
-type EntityID[IDNumT EntityIDNum] interface {
-	azid.ID[IDNumT]
-
-	AZEntityID()
-}
-
-// An EntityAttributes instance contains the actual attributes of an entity.
-// It's on itself is a value object and does not have any identity.
-type EntityAttributes interface {
-	Attributes
-
-	AZEntityAttributes()
 }
 
 // EntityInstanceInfo holds information about an instance of entity, i.e.,
