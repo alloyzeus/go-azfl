@@ -38,8 +38,8 @@ type KeyedEntityAttributes[
 	EntityIDT EntityID[EntityIDNumT],
 	EntityAttributesT EntityAttributes,
 ] struct {
-	ID   EntityIDT
-	Data EntityAttributesT
+	ID         EntityIDT
+	Attributes EntityAttributesT
 }
 
 type EntityIDNumMethods interface {
