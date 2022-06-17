@@ -41,6 +41,14 @@ func ArgWrap(argName, contextMessage string, err error, fields ...EntityError) A
 	}}
 }
 
+// ArgMissing creates an ArgumentError err is set to ArgErrMissing.
+func ArgMissing(argName string) ArgumentError {
+	return &argumentError{entityError{
+		identifier: argName,
+		err:        ArgErrMissing,
+	}}
+}
+
 type argumentError struct {
 	entityError
 }
@@ -80,3 +88,11 @@ func (e *argumentError) Error() string {
 func (e *argumentError) Unwrap() error {
 	return e.err
 }
+
+const (
+	ArgErrMissing = argDescriptorError("missing")
+)
+
+type argDescriptorError string
+
+func (e argDescriptorError) Error() string { return string(e) }

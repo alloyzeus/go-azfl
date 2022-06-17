@@ -36,6 +36,14 @@ func EntMsg(entityIdentifier string, errMsg string) EntityError {
 	}
 }
 
+// EntInvalid creates an EntityError with err set to EntErrInvalid.
+func EntInvalid(entityIdentifier string) EntityError {
+	return &entityError{
+		identifier: entityIdentifier,
+		err:        EntErrInvalid,
+	}
+}
+
 type entityError struct {
 	identifier string
 	err        error
@@ -86,3 +94,11 @@ func (e entityError) fieldErrorsAsString() string {
 
 func (e *entityError) Unwrap() error            { return e.err }
 func (e *entityError) EntityIdentifier() string { return e.identifier }
+
+const (
+	EntErrInvalid = entDescriptorError("invalid")
+)
+
+type entDescriptorError string
+
+func (e entDescriptorError) Error() string { return string(e) }
