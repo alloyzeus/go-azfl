@@ -55,8 +55,41 @@ func ArgWrap(argName, contextMessage string, err error, fields ...EntityError) A
 func ArgUnspecified(argName string) ArgumentError {
 	return &argumentError{entityError{
 		identifier: argName,
-		err:        DataErrUnspecified,
+		err:        ErrDataUnspecified,
 	}}
+}
+
+func IsArgUnspecifiedError(err error) bool {
+	if !IsArgumentError(err) {
+		return false
+	}
+	if d, ok := err.(hasDescriptor); ok {
+		desc := d.Descriptor()
+		if desc == ErrDataUnspecified {
+			return true
+		}
+	}
+	return false
+}
+
+func IsArgUnspecified(err error, argName string) bool {
+	if err == nil {
+		return false
+	}
+	argErr, ok := err.(ArgumentError)
+	if !ok {
+		return false
+	}
+	if argErr.ArgumentName() != argName {
+		return false
+	}
+	if d, ok := err.(hasDescriptor); ok {
+		desc := d.Descriptor()
+		if desc == ErrDataUnspecified {
+			return true
+		}
+	}
+	return false
 }
 
 type argumentError struct {
@@ -75,7 +108,7 @@ func (e *argumentError) ArgumentName() string {
 	return e.entityError.identifier
 }
 
-func (*argumentError) CallError() {}
+func (e *argumentError) CallError() CallError { return e }
 
 func (e *argumentError) Error() string {
 	suffix := e.fieldErrorsAsString()

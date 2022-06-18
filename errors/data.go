@@ -25,26 +25,26 @@ type DataErrorDescriptor interface {
 
 const (
 	// Data was not provided (nil)
-	DataErrUnspecified = dataErrorConstantDescriptor("unspecified")
+	ErrDataUnspecified = dataErrorConstantDescriptor("unspecified")
 	// Data was provided but empty
-	DataErrEmpty = dataErrorConstantDescriptor("empty")
+	ErrDataEmpty = dataErrorConstantDescriptor("empty")
 
-	DataErrInvalid         = dataErrorConstantDescriptor("invalid")
-	DataErrMalformed       = dataErrorConstantDescriptor("malformed")
-	DataErrTypeUnsupported = dataErrorConstantDescriptor("type unsupported")
+	ErrDataInvalid         = dataErrorConstantDescriptor("invalid")
+	ErrDataMalformed       = dataErrorConstantDescriptor("malformed")
+	ErrDataTypeUnsupported = dataErrorConstantDescriptor("type unsupported")
 )
 
 func DataMalformed(details error) DataError {
-	return &descriptorDetailsError{descriptor: DataErrMalformed, details: details}
+	return &descriptorDetailsError{descriptor: ErrDataMalformed, details: details}
 }
 
-func IsDataMalformed(err error) bool {
-	if err == DataErrMalformed {
+func IsDataMalformedError(err error) bool {
+	if err == ErrDataMalformed {
 		return true
 	}
 	if d, ok := err.(hasDescriptor); ok {
 		desc := d.Descriptor()
-		if desc == DataErrMalformed {
+		if desc == ErrDataMalformed {
 			return true
 		}
 	}
@@ -70,7 +70,10 @@ func (e descriptorDetailsError) Error() string {
 		}
 		return e.descriptor.Error()
 	}
-	return e.details.Error()
+	if e.details != nil {
+		return e.details.Error()
+	}
+	return ""
 }
 
 func (e descriptorDetailsError) Descriptor() ErrorDescriptor { return e.descriptor }

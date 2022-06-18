@@ -1,3 +1,4 @@
+// Package access is deprecated.
 package access
 
 import (
@@ -47,5 +48,5 @@ func (e *errorWrap) Unwrap() error {
 	return e.innerErr
 }
 
-func (e *errorWrap) AccessError() Error { return e }
-func (*errorWrap) CallError()           {}
+func (e *errorWrap) CallError() errors.CallError { return e }
+func (e *errorWrap) AccessError() Error          { return e }

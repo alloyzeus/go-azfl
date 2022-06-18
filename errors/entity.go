@@ -11,6 +11,11 @@ type EntityError interface {
 	EntityIdentifier() string
 }
 
+func IsEntityError(err error) bool {
+	_, ok := err.(EntityError)
+	return ok
+}
+
 // Ent creates an instance of error that conforms EntityError. It takes
 // entityIdentifier which could be the name, key or URL of an entity. The
 // entityIdentifier should describe the 'what' while err describes the 'why'.
@@ -51,46 +56,46 @@ func EntInvalid(entityIdentifier string, details error) EntityError {
 	return &entityError{
 		identifier: entityIdentifier,
 		err: descriptorDetailsError{
-			descriptor: DataErrInvalid,
+			descriptor: ErrDataInvalid,
 			details:    details,
 		},
 	}
 }
 
-func IsEntInvalid(err error) bool {
-	if err == DataErrInvalid {
-		return true
+func IsEntInvalidError(err error) bool {
+	if !IsEntityError(err) {
+		return false
 	}
 	if d, ok := err.(hasDescriptor); ok {
 		desc := d.Descriptor()
-		if desc == DataErrInvalid {
+		if desc == ErrDataInvalid {
 			return true
 		}
 	}
 	return false
 }
 
-// EntErrNotFound is used to describet that the entity with the identifier
+// ErrEntityNotFound is used to describet that the entity with the identifier
 // could not be found in the system.
-const EntErrNotFound = dataErrorConstantDescriptor("not found")
+const ErrEntityNotFound = dataErrorConstantDescriptor("not found")
 
 func EntNotFound(entityIdentifier string, details error) EntityError {
 	return &entityError{
 		identifier: entityIdentifier,
 		err: descriptorDetailsError{
-			descriptor: EntErrNotFound,
+			descriptor: ErrEntityNotFound,
 			details:    details,
 		},
 	}
 }
 
-func IsEntNotFound(err error) bool {
-	if err == EntErrNotFound {
-		return true
+func IsEntNotFoundError(err error) bool {
+	if !IsEntityError(err) {
+		return false
 	}
 	if d, ok := err.(hasDescriptor); ok {
 		desc := d.Descriptor()
-		if desc == EntErrNotFound {
+		if desc == ErrEntityNotFound {
 			return true
 		}
 	}
@@ -157,14 +162,6 @@ func (e *entityError) Descriptor() ErrorDescriptor {
 	}
 	if d, ok := e.err.(hasDescriptor); ok {
 		return d.Descriptor()
-	}
-	if wrap, ok := e.err.(Unwrappable); ok {
-		inner := wrap.Unwrap()
-		if inner != nil {
-			if desc, ok := inner.(ErrorDescriptor); ok {
-				return desc
-			}
-		}
 	}
 	return nil
 }
