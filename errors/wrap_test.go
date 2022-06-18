@@ -11,7 +11,7 @@ func TestWrapEmpty(t *testing.T) {
 		if inner != nil {
 			t.Errorf("inner != nil")
 		}
-		if inner == ErrDataUnspecified {
+		if inner == ErrValueUnspecified {
 			t.Errorf("inner == DataErrUnspecified")
 		}
 	}
@@ -20,7 +20,7 @@ func TestWrapEmpty(t *testing.T) {
 	if inner != nil {
 		t.Errorf("inner != nil")
 	}
-	if inner == ErrDataUnspecified {
+	if inner == ErrValueUnspecified {
 		t.Errorf("inner == DataErrUnspecified")
 	}
 
@@ -30,7 +30,7 @@ func TestWrapEmpty(t *testing.T) {
 }
 
 func TestWrapNoContext(t *testing.T) {
-	var err error = Wrap("", ErrDataUnspecified)
+	var err error = Wrap("", ErrValueUnspecified)
 	if u, ok := err.(Unwrappable); !ok {
 		t.Errorf("err.(Unwrappable)")
 	} else {
@@ -38,7 +38,7 @@ func TestWrapNoContext(t *testing.T) {
 		if inner == nil {
 			t.Errorf("inner == nil")
 		}
-		if inner != ErrDataUnspecified {
+		if inner != ErrValueUnspecified {
 			t.Errorf("inner != DataErrUnspecified")
 		}
 	}
@@ -47,7 +47,7 @@ func TestWrapNoContext(t *testing.T) {
 	if inner == nil {
 		t.Errorf("inner == nil")
 	}
-	if inner != ErrDataUnspecified {
+	if inner != ErrValueUnspecified {
 		t.Errorf("inner != DataErrUnspecified")
 	}
 
@@ -65,7 +65,7 @@ func TestWrapNoErr(t *testing.T) {
 		if inner != nil {
 			t.Errorf("inner != nil")
 		}
-		if inner == ErrDataUnspecified {
+		if inner == ErrValueUnspecified {
 			t.Errorf("inner == DataErrUnspecified")
 		}
 	}
@@ -74,7 +74,7 @@ func TestWrapNoErr(t *testing.T) {
 	if inner != nil {
 		t.Errorf("inner != nil")
 	}
-	if inner == ErrDataUnspecified {
+	if inner == ErrValueUnspecified {
 		t.Errorf("inner == DataErrUnspecified")
 	}
 
@@ -84,7 +84,7 @@ func TestWrapNoErr(t *testing.T) {
 }
 
 func TestWrap(t *testing.T) {
-	var err error = Wrap("launch code", ErrDataUnspecified)
+	var err error = Wrap("launch code", ErrValueUnspecified)
 	if u, ok := err.(Unwrappable); !ok {
 		t.Errorf("err.(Unwrappable)")
 	} else {
@@ -92,7 +92,7 @@ func TestWrap(t *testing.T) {
 		if inner == nil {
 			t.Errorf("inner == nil")
 		}
-		if inner != ErrDataUnspecified {
+		if inner != ErrValueUnspecified {
 			t.Errorf("inner != DataErrUnspecified")
 		}
 	}
@@ -101,7 +101,7 @@ func TestWrap(t *testing.T) {
 	if inner == nil {
 		t.Errorf("inner == nil")
 	}
-	if inner != ErrDataUnspecified {
+	if inner != ErrValueUnspecified {
 		t.Errorf("inner != DataErrUnspecified")
 	}
 

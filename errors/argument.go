@@ -55,7 +55,7 @@ func ArgWrap(argName, contextMessage string, err error, fields ...EntityError) A
 func ArgUnspecified(argName string) ArgumentError {
 	return &argumentError{entityError{
 		identifier: argName,
-		err:        ErrDataUnspecified,
+		err:        ErrValueUnspecified,
 	}}
 }
 
@@ -65,7 +65,7 @@ func IsArgUnspecifiedError(err error) bool {
 	}
 	if d, ok := err.(hasDescriptor); ok {
 		desc := d.Descriptor()
-		if desc == ErrDataUnspecified {
+		if desc == ErrValueUnspecified {
 			return true
 		}
 	}
@@ -85,7 +85,7 @@ func IsArgUnspecified(err error, argName string) bool {
 	}
 	if d, ok := err.(hasDescriptor); ok {
 		desc := d.Descriptor()
-		if desc == ErrDataUnspecified {
+		if desc == ErrValueUnspecified {
 			return true
 		}
 	}

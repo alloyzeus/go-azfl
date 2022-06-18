@@ -14,7 +14,7 @@ func TestContextEmpty(t *testing.T) {
 }
 
 func TestContextWrappedConstantDescriptor(t *testing.T) {
-	var err error = Context(descriptorDetailsError{descriptor: ErrDataUnspecified})
+	var err error = Context(descriptorDetailsError{descriptor: ErrValueUnspecified})
 	if err.Error() != "context unspecified" {
 		t.Errorf(`err.Error() != "context unspecified" -- %q`, err.Error())
 	}
@@ -25,8 +25,8 @@ func TestContextWrappedConstantDescriptor(t *testing.T) {
 		if desc == nil {
 			t.Error("desc == nil")
 		}
-		if desc != ErrDataUnspecified {
-			t.Error("desc != ErrDataUnspecified")
+		if desc != ErrValueUnspecified {
+			t.Error("desc != ErrValueUnspecified")
 		}
 	}
 	if !IsContextUnspecifiedError(err) {
@@ -50,7 +50,7 @@ func TestContextUnspecified(t *testing.T) {
 	if inner == nil {
 		t.Error("inner == nil")
 	}
-	if inner != ErrDataUnspecified {
+	if inner != ErrValueUnspecified {
 		t.Error("inner != DataErrUnspecified")
 	}
 	if d, ok := err.(hasDescriptor); !ok {
@@ -60,14 +60,14 @@ func TestContextUnspecified(t *testing.T) {
 		if desc == nil {
 			t.Error("desc == nil")
 		}
-		if desc != ErrDataUnspecified {
-			t.Error("desc != ErrDataUnspecified")
+		if desc != ErrValueUnspecified {
+			t.Error("desc != ErrValueUnspecified")
 		}
 	}
 }
 
 func TestContextUnspecifiedCustomBare(t *testing.T) {
-	var err error = Context(ErrDataUnspecified)
+	var err error = Context(ErrValueUnspecified)
 	if !IsContextUnspecifiedError(err) {
 		t.Errorf("!IsContextUnspecified(err)")
 	}
@@ -75,14 +75,14 @@ func TestContextUnspecifiedCustomBare(t *testing.T) {
 
 // Ensure that the descriptor is for the context, not for others.
 func TestContextUnspecifiedCustomWrap(t *testing.T) {
-	var err error = Context(Wrap("", ErrDataUnspecified))
+	var err error = Context(Wrap("", ErrValueUnspecified))
 	if IsContextUnspecifiedError(err) {
 		t.Errorf("IsContextUnspecified(err)")
 	}
 }
 
 func TestContextFelds(t *testing.T) {
-	var err error = ContextFields(Ent("authorization", ErrDataUnspecified))
+	var err error = ContextFields(Ent("authorization", ErrValueUnspecified))
 	if err.Error() != "context invalid: authorization: unspecified" {
 		t.Errorf(`err.Error() != "context invalid: authorization: unspecified" -- %q`, err.Error())
 	}
@@ -96,7 +96,7 @@ func TestIsContextErrorNil(t *testing.T) {
 }
 
 func TestIsContextErrorNegative(t *testing.T) {
-	var err error = ErrDataUnspecified
+	var err error = ErrValueUnspecified
 	if IsContextError(err) {
 		t.Error("IsContextError(err)")
 	}
@@ -110,7 +110,7 @@ func TestIsContextUnspecifiedErrorNil(t *testing.T) {
 }
 
 func TestIsContextUnspecifiedErrorNegative(t *testing.T) {
-	var err error = ErrDataUnspecified
+	var err error = ErrValueUnspecified
 	if IsContextUnspecifiedError(err) {
 		t.Error("IsContextUnspecifiedError(err)")
 	}

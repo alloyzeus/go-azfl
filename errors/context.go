@@ -24,7 +24,7 @@ func ContextFields(fields ...EntityError) ContextError {
 }
 
 func ContextUnspecified() ContextError {
-	return &contextError{inner: ErrDataUnspecified}
+	return &contextError{inner: ErrValueUnspecified}
 }
 
 func IsContextUnspecifiedError(err error) bool {
@@ -33,7 +33,7 @@ func IsContextUnspecifiedError(err error) bool {
 	}
 	if d, ok := err.(hasDescriptor); ok {
 		desc := d.Descriptor()
-		if desc == ErrDataUnspecified {
+		if desc == ErrValueUnspecified {
 			return true
 		}
 	}

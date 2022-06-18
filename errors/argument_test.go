@@ -41,7 +41,7 @@ func TestArgUnspecifiedFoo(t *testing.T) {
 	if inner == nil {
 		t.Error("inner == nil")
 	}
-	if inner != ErrDataUnspecified {
+	if inner != ErrValueUnspecified {
 		t.Error("inner != DataErrUnspecified")
 	}
 	if !IsArgUnspecifiedError(err) {
@@ -67,7 +67,7 @@ func TestIsArgUnspecifiedNil(t *testing.T) {
 }
 
 func TestIsArgUnspecifiedNegative(t *testing.T) {
-	var err error = ErrDataInvalid
+	var err error = ErrValueInvalid
 	if IsArgUnspecified(err, "foo") {
 		t.Error(`IsArgUnspecified(err, "foo")`)
 	}
@@ -77,6 +77,13 @@ func TestIsArgUnspecifiedWrongArgName(t *testing.T) {
 	var err error = ArgUnspecified("foo")
 	if IsArgUnspecified(err, "bar") {
 		t.Error(`IsArgUnspecified(err, "bar")`)
+	}
+}
+
+func TestIsArgUnspecifiedCustomStruct(t *testing.T) {
+	var err error = &customArgError{argName: "foo"}
+	if IsArgUnspecified(err, "foo") {
+		t.Error(`IsArgUnspecified(err, "foo")`)
 	}
 }
 
@@ -95,8 +102,21 @@ func TestArgEmpty(t *testing.T) {
 }
 
 func TestArgFields(t *testing.T) {
-	var err error = ArgFields("foo", Ent("name", ErrDataEmpty), Ent("bar", ErrDataUnspecified))
+	var err error = ArgFields("foo", Ent("name", ErrValueEmpty), Ent("bar", ErrValueUnspecified))
 	if err.Error() != "arg foo invalid: name: empty, bar: unspecified" {
 		t.Errorf(`err.Error() != "arg foo invalid: name: empty, bar: unspecified" -- %q`, err.Error())
 	}
 }
+
+type customArgError struct {
+	argName string
+}
+
+var (
+	_ ArgumentError = &customArgError{}
+)
+
+func (e *customArgError) ArgumentName() string { return e.argName }
+func (e *customArgError) Error() string        { return "custom arg error" }
+func (e *customArgError) CallError() CallError { return e }
+func (e *customArgError) Unwrap() error        { return nil }

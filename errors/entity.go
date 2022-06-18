@@ -56,7 +56,7 @@ func EntInvalid(entityIdentifier string, details error) EntityError {
 	return &entityError{
 		identifier: entityIdentifier,
 		err: descriptorDetailsError{
-			descriptor: ErrDataInvalid,
+			descriptor: ErrValueInvalid,
 			details:    details,
 		},
 	}
@@ -68,7 +68,7 @@ func IsEntInvalidError(err error) bool {
 	}
 	if d, ok := err.(hasDescriptor); ok {
 		desc := d.Descriptor()
-		if desc == ErrDataInvalid {
+		if desc == ErrValueInvalid {
 			return true
 		}
 	}
@@ -77,7 +77,7 @@ func IsEntInvalidError(err error) bool {
 
 // ErrEntityNotFound is used to describet that the entity with the identifier
 // could not be found in the system.
-const ErrEntityNotFound = dataErrorConstantDescriptor("not found")
+const ErrEntityNotFound = valueErrorConstantDescriptor("not found")
 
 func EntNotFound(entityIdentifier string, details error) EntityError {
 	return &entityError{

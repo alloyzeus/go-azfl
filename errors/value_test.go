@@ -2,37 +2,37 @@ package errors
 
 import "testing"
 
-func TestDataMalformedBare(t *testing.T) {
-	var err error = ErrDataMalformed
-	if err != ErrDataMalformed {
+func TestValueMalformedBare(t *testing.T) {
+	var err error = ErrValueMalformed
+	if err != ErrValueMalformed {
 		t.Error("err != DataErrMalformed")
 	}
-	if !IsDataMalformedError(err) {
-		t.Errorf("!IsDataMalformed(err)")
+	if !IsValueMalformedError(err) {
+		t.Errorf("!IsValueMalformed(err)")
 	}
 	if err.Error() != "malformed" {
 		t.Errorf(`err.Error() != "malformed" -- %q`, err.Error())
 	}
 }
 
-func TestDataMalformedNil(t *testing.T) {
+func TestValueMalformedNil(t *testing.T) {
 	var err error
-	if IsDataMalformedError(err) {
-		t.Error("IsDataMalformed(err)")
+	if IsValueMalformedError(err) {
+		t.Error("IsValueMalformed(err)")
 	}
 }
 
-func TestDataMalformedNegative(t *testing.T) {
+func TestValueMalformedNegative(t *testing.T) {
 	var err error = Msg("nothing")
-	if IsDataMalformedError(err) {
-		t.Error("IsDataMalformed(err)")
+	if IsValueMalformedError(err) {
+		t.Error("IsValueMalformed(err)")
 	}
 }
 
-func TestDataMalformedComplexNil(t *testing.T) {
-	var err error = DataMalformed(nil)
-	if !IsDataMalformedError(err) {
-		t.Error("!IsDataMalformed(err)")
+func TestValueMalformedComplexNil(t *testing.T) {
+	var err error = ValueMalformed(nil)
+	if !IsValueMalformedError(err) {
+		t.Error("!IsValueMalformed(err)")
 	}
 	if err.Error() != "malformed" {
 		t.Errorf(`err.Error() != "malformed" -- %q`, err.Error())
@@ -42,10 +42,10 @@ func TestDataMalformedComplexNil(t *testing.T) {
 	}
 }
 
-func TestDataMalformedComplexWithDetails(t *testing.T) {
-	var err error = DataMalformed(ErrDataInvalid)
-	if !IsDataMalformedError(err) {
-		t.Error("!IsDataMalformed(err)")
+func TestValueMalformedComplexWithDetails(t *testing.T) {
+	var err error = ValueMalformed(ErrValueInvalid)
+	if !IsValueMalformedError(err) {
+		t.Error("!IsValueMalformed(err)")
 	}
 	if err.Error() != "malformed: invalid" {
 		t.Errorf(`err.Error() != "malformed: invalid" -- %q`, err.Error())
@@ -63,7 +63,7 @@ func TestDescriptorDetailsBlank(t *testing.T) {
 }
 
 func TestDescriptorDetailsOnlyDetails(t *testing.T) {
-	var err error = &descriptorDetailsError{details: ErrDataInvalid}
+	var err error = &descriptorDetailsError{details: ErrValueInvalid}
 	if err.Error() != "invalid" {
 		t.Errorf(`err.Error() != "invalid" -- %q`, err.Error())
 	}
