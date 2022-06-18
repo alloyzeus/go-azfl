@@ -3,14 +3,15 @@ package errors
 import "strings"
 
 // EntityError is a class of errors describing errors in entities.
-// An entity here is defined as anything which has identifier associated to it.
-// For example, a web page is an entity which its URL is the identifier.
+//
+// An entity here is defined as anything that has identifier associated to it.
+// For example, a web page is an entity with its URL is the identifier.
 type EntityError interface {
 	Unwrappable
 	EntityIdentifier() string
 }
 
-// Ent creates an instance of error which conforms EntityError. It takes
+// Ent creates an instance of error that conforms EntityError. It takes
 // entityIdentifier which could be the name, key or URL of an entity. The
 // entityIdentifier should describe the 'what' while err describes the 'why'.
 //
@@ -27,6 +28,15 @@ func Ent(entityIdentifier string, err error) EntityError {
 	}
 }
 
+// EntFields is used to create an error that describes multiple field errors
+// of an entity.
+func EntFields(entityIdentifier string, fields ...EntityError) EntityError {
+	return &entityError{
+		identifier: entityIdentifier,
+		fields:     fields[:],
+	}
+}
+
 // EntMsg creates an instance of error from an entitity identifier and the
 // error message which describes why the entity is considered error.
 func EntMsg(entityIdentifier string, errMsg string) EntityError {
@@ -36,12 +46,55 @@ func EntMsg(entityIdentifier string, errMsg string) EntityError {
 	}
 }
 
-// EntInvalid creates an EntityError with err set to EntErrInvalid.
-func EntInvalid(entityIdentifier string) EntityError {
+// EntInvalid creates an EntityError with err set to DataErrInvalid.
+func EntInvalid(entityIdentifier string, details error) EntityError {
 	return &entityError{
 		identifier: entityIdentifier,
-		err:        EntErrInvalid,
+		err: descriptorDetailsError{
+			descriptor: DataErrInvalid,
+			details:    details,
+		},
 	}
+}
+
+func IsEntInvalid(err error) bool {
+	if err == DataErrInvalid {
+		return true
+	}
+	if d, ok := err.(hasDescriptor); ok {
+		desc := d.Descriptor()
+		if desc == DataErrInvalid {
+			return true
+		}
+	}
+	return false
+}
+
+// EntErrNotFound is used to describet that the entity with the identifier
+// could not be found in the system.
+const EntErrNotFound = dataErrorConstantDescriptor("not found")
+
+func EntNotFound(entityIdentifier string, details error) EntityError {
+	return &entityError{
+		identifier: entityIdentifier,
+		err: descriptorDetailsError{
+			descriptor: EntErrNotFound,
+			details:    details,
+		},
+	}
+}
+
+func IsEntNotFound(err error) bool {
+	if err == EntErrNotFound {
+		return true
+	}
+	if d, ok := err.(hasDescriptor); ok {
+		desc := d.Descriptor()
+		if desc == EntErrNotFound {
+			return true
+		}
+	}
+	return false
 }
 
 type entityError struct {
@@ -51,9 +104,10 @@ type entityError struct {
 }
 
 var (
-	_ error       = &entityError{}
-	_ Unwrappable = &entityError{}
-	_ EntityError = &entityError{}
+	_ error         = &entityError{}
+	_ Unwrappable   = &entityError{}
+	_ EntityError   = &entityError{}
+	_ hasDescriptor = &entityError{}
 )
 
 func (e *entityError) Error() string {
@@ -94,11 +148,23 @@ func (e entityError) fieldErrorsAsString() string {
 
 func (e *entityError) Unwrap() error            { return e.err }
 func (e *entityError) EntityIdentifier() string { return e.identifier }
-
-const (
-	EntErrInvalid = entDescriptorError("invalid")
-)
-
-type entDescriptorError string
-
-func (e entDescriptorError) Error() string { return string(e) }
+func (e *entityError) Descriptor() ErrorDescriptor {
+	if e == nil {
+		return nil
+	}
+	if desc, ok := e.err.(ErrorDescriptor); ok {
+		return desc
+	}
+	if d, ok := e.err.(hasDescriptor); ok {
+		return d.Descriptor()
+	}
+	if wrap, ok := e.err.(Unwrappable); ok {
+		inner := wrap.Unwrap()
+		if inner != nil {
+			if desc, ok := inner.(ErrorDescriptor); ok {
+				return desc
+			}
+		}
+	}
+	return nil
+}

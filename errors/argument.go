@@ -1,5 +1,7 @@
 package errors
 
+//TODO: ArgSet
+
 // ArgumentError abstracts all errors which was caused by error in
 // one of the arguments in a function call. This class of error
 // has the similar concept as 4xx status codes in HTTP, and thus can
@@ -7,7 +9,15 @@ package errors
 type ArgumentError interface {
 	CallError
 	Unwrappable
+
+	// ArgumentName returns the name of the offending argument. It might
+	// be empty if there's only one argument.
 	ArgumentName() string
+}
+
+func IsArgumentError(err error) bool {
+	_, ok := err.(ArgumentError)
+	return ok
 }
 
 func Arg(argName string, err error, fields ...EntityError) ArgumentError {
@@ -41,11 +51,11 @@ func ArgWrap(argName, contextMessage string, err error, fields ...EntityError) A
 	}}
 }
 
-// ArgMissing creates an ArgumentError err is set to ArgErrMissing.
-func ArgMissing(argName string) ArgumentError {
+// ArgUnspecified creates an ArgumentError err is set to DataErrUnspecified.
+func ArgUnspecified(argName string) ArgumentError {
 	return &argumentError{entityError{
 		identifier: argName,
-		err:        ArgErrMissing,
+		err:        DataErrUnspecified,
 	}}
 }
 
@@ -88,11 +98,3 @@ func (e *argumentError) Error() string {
 func (e *argumentError) Unwrap() error {
 	return e.err
 }
-
-const (
-	ArgErrMissing = argDescriptorError("missing")
-)
-
-type argDescriptorError string
-
-func (e argDescriptorError) Error() string { return string(e) }

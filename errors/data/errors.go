@@ -1,3 +1,4 @@
+// Package data is deprecated. Use the ones from parent package instead.
 package data
 
 // Error is an abstract error type for all data-related errors.
