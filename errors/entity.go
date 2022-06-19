@@ -162,3 +162,77 @@ func (e *entityError) Descriptor() ErrorDescriptor {
 	}
 	return nil
 }
+
+// EntityErrorSet is an interface to combine multiple EntityError instances
+// into a single error.
+type EntityErrorSet interface {
+	ErrorSet
+	EntityErrors() []EntityError
+}
+
+// UnwrapEntityErrorSet returns the contained EntityError instances if err is
+// indeed a EntityErrorSet.
+func UnwrapEntityErrorSet(err error) []EntityError {
+	if errSet := asEntityErrorSet(err); errSet != nil {
+		return errSet.EntityErrors()
+	}
+	return nil
+}
+
+// asEntityErrorSet returns err as an EntityErrorSet if err is indeed an
+// EntityErrorSet, otherwise it returns nil.
+func asEntityErrorSet(err error) EntityErrorSet {
+	e, _ := err.(EntityErrorSet)
+	return e
+}
+
+// EntSet creates a compound error comprised of multiple instances of
+// EntityError. Note that the resulting error is not an EntityError because
+// it has no identity.
+func EntSet(entityErrors ...EntityError) EntityErrorSet {
+	ours := make([]EntityError, len(entityErrors))
+	copy(ours, entityErrors)
+	return entErrorSet(ours)
+}
+
+type entErrorSet []EntityError
+
+var (
+	_ error          = entErrorSet{}
+	_ ErrorSet       = entErrorSet{}
+	_ EntityErrorSet = entErrorSet{}
+)
+
+func (e entErrorSet) Error() string {
+	if len(e) > 0 {
+		errs := make([]string, 0, len(e))
+		for _, ce := range e {
+			errs = append(errs, ce.Error())
+		}
+		s := strings.Join(errs, ", ")
+		if s != "" {
+			return s
+		}
+	}
+	return ""
+}
+
+func (e entErrorSet) Errors() []error {
+	if len(e) > 0 {
+		errs := make([]error, 0, len(e))
+		for _, i := range e {
+			errs = append(errs, i)
+		}
+		return errs
+	}
+	return nil
+}
+
+func (e entErrorSet) EntityErrors() []EntityError {
+	if len(e) > 0 {
+		errs := make([]EntityError, len(e))
+		copy(errs, e)
+		return errs
+	}
+	return nil
+}

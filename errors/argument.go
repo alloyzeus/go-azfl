@@ -24,7 +24,7 @@ func Arg(argName string, err error, fields ...EntityError) ArgumentError {
 	return &argumentError{entityError{
 		identifier: argName,
 		err:        err,
-		fields:     fields,
+		fields:     fields, // copy?
 	}}
 }
 

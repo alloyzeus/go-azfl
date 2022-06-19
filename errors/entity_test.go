@@ -119,3 +119,79 @@ func (e *customEntError) EntityIdentifier() string { return e.entID }
 func (e *customEntError) Error() string            { return "custom ent error" }
 func (e *customEntError) CallError() CallError     { return e }
 func (e *customEntError) Unwrap() error            { return nil }
+
+func TestUnwrapEntityErrorSetNil(t *testing.T) {
+	var err error
+	if callErrors := UnwrapEntityErrorSet(err); len(callErrors) != 0 {
+		t.Error("len(callErrors) != 0")
+	}
+}
+
+func TestUnwrapEntityErrorSetWrongType(t *testing.T) {
+	var err error = ErrValueMalformed
+	if callErrors := UnwrapEntityErrorSet(err); len(callErrors) != 0 {
+		t.Error("len(callErrors) != 0")
+	}
+}
+
+func TestEntSetEmpty(t *testing.T) {
+	var err error = entErrorSet{}
+	if err.Error() != "" {
+		t.Errorf(`err.Error() != "" -- %q`, err.Error())
+	}
+	errSet := asErrorSet(err)
+	if errSet == nil {
+		t.Error("errSet == nil")
+	}
+	errs := errSet.Errors()
+	if len(errs) != 0 {
+		t.Error("len(errors) != 0")
+	}
+	errs = UnwrapErrorSet(err)
+	if len(errs) != 0 {
+		t.Error("len(errors) != 0")
+	}
+	entErrSet := asEntityErrorSet(err)
+	if entErrSet == nil {
+		t.Error("entErrSet == nil")
+	}
+	entErrors := entErrSet.EntityErrors()
+	if len(entErrors) != 0 {
+		t.Error("len(entErrors) != 0")
+	}
+	entErrors = UnwrapEntityErrorSet(err)
+	if len(entErrors) != 0 {
+		t.Error("len(entErrors) != 0")
+	}
+}
+
+func TestEntSetSinge(t *testing.T) {
+	var err error = EntSet(Ent("foo", ErrValueMalformed))
+	if err.Error() != "foo: malformed" {
+		t.Errorf(`err.Error() != "foo: malformed" -- %q`, err.Error())
+	}
+	errSet := asErrorSet(err)
+	if errSet == nil {
+		t.Error("errSet == nil")
+	}
+	errs := errSet.Errors()
+	if len(errs) != 1 {
+		t.Error("len(errors) != 1")
+	}
+	errs = UnwrapErrorSet(err)
+	if len(errs) != 1 {
+		t.Error("len(errors) != 1")
+	}
+	entErrSet := asEntityErrorSet(err)
+	if entErrSet == nil {
+		t.Error("entErrSet == nil")
+	}
+	entErrors := entErrSet.EntityErrors()
+	if len(entErrors) != 1 {
+		t.Error("len(entErrors) != 1")
+	}
+	entErrors = UnwrapEntityErrorSet(err)
+	if len(entErrors) != 1 {
+		t.Error("len(entErrors) != 1")
+	}
+}
