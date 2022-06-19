@@ -4,8 +4,8 @@ import "testing"
 
 func TestEntityBlank(t *testing.T) {
 	var err error = Ent("", nil)
-	if err.Error() != "entity invalid" {
-		t.Errorf(`err.Error() != "entity invalid" -- %q`, err.Error())
+	if err.Error() != "entity error" {
+		t.Errorf(`err.Error() != "entity error" -- %q`, err.Error())
 	}
 	if entErr, ok := err.(EntityError); !ok {
 		t.Error("err.(EntityError)")
@@ -38,8 +38,18 @@ func TestEntityWithFields(t *testing.T) {
 		"user",
 		Ent("name", ErrValueEmpty),
 		Ent("age", ErrValueUnspecified))
-	if err.Error() != "user invalid: name: empty, age: unspecified" {
-		t.Errorf(`err.Error() != "user invalid: name: empty, age: unspecified" -- %q`, err.Error())
+	if err.Error() != "user: name: empty, age: unspecified" {
+		t.Errorf(`err.Error() != "user: name: empty, age: unspecified" -- %q`, err.Error())
+	}
+}
+
+func TestEntityWithFieldsNoName(t *testing.T) {
+	var err error = EntFields(
+		"",
+		Ent("name", ErrValueEmpty),
+		Ent("age", ErrValueUnspecified))
+	if err.Error() != "entity: name: empty, age: unspecified" {
+		t.Errorf(`err.Error() != "entity: name: empty, age: unspecified" -- %q`, err.Error())
 	}
 }
 

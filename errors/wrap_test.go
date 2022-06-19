@@ -4,6 +4,10 @@ import "testing"
 
 func TestWrapEmpty(t *testing.T) {
 	var err error = Wrap("", nil)
+	if err.Error() != "" {
+		t.Errorf(`err.Error() != "" -- %q`, err.Error())
+	}
+
 	if u, ok := err.(Unwrappable); !ok {
 		t.Errorf("err.(Unwrappable)")
 	} else {
@@ -22,15 +26,15 @@ func TestWrapEmpty(t *testing.T) {
 	}
 	if inner == ErrValueUnspecified {
 		t.Errorf("inner == DataErrUnspecified")
-	}
-
-	if err.Error() != "" {
-		t.Errorf(`err.Error() != "" -- %q`, err.Error())
 	}
 }
 
 func TestWrapNoContext(t *testing.T) {
 	var err error = Wrap("", ErrValueUnspecified)
+	if err.Error() != "unspecified" {
+		t.Errorf(`err.Error() != "unspecified" -- %q`, err.Error())
+	}
+
 	if u, ok := err.(Unwrappable); !ok {
 		t.Errorf("err.(Unwrappable)")
 	} else {
@@ -50,14 +54,14 @@ func TestWrapNoContext(t *testing.T) {
 	if inner != ErrValueUnspecified {
 		t.Errorf("inner != DataErrUnspecified")
 	}
-
-	if err.Error() != "unspecified" {
-		t.Errorf(`err.Error() != "unspecified" -- %q`, err.Error())
-	}
 }
 
 func TestWrapNoErr(t *testing.T) {
 	var err error = Wrap("unknown", nil)
+	if err.Error() != "unknown" {
+		t.Errorf(`err.Error() != "unknown" -- %q`, err.Error())
+	}
+
 	if u, ok := err.(Unwrappable); !ok {
 		t.Errorf("err.(Unwrappable)")
 	} else {
@@ -77,14 +81,14 @@ func TestWrapNoErr(t *testing.T) {
 	if inner == ErrValueUnspecified {
 		t.Errorf("inner == DataErrUnspecified")
 	}
-
-	if err.Error() != "unknown" {
-		t.Errorf(`err.Error() != "unknown" -- %q`, err.Error())
-	}
 }
 
 func TestWrap(t *testing.T) {
 	var err error = Wrap("launch code", ErrValueUnspecified)
+	if err.Error() != "launch code: unspecified" {
+		t.Errorf(`err.Error() != "launch code: unspecified" -- %q`, err.Error())
+	}
+
 	if u, ok := err.(Unwrappable); !ok {
 		t.Errorf("err.(Unwrappable)")
 	} else {
@@ -103,9 +107,5 @@ func TestWrap(t *testing.T) {
 	}
 	if inner != ErrValueUnspecified {
 		t.Errorf("inner != DataErrUnspecified")
-	}
-
-	if err.Error() != "launch code: unspecified" {
-		t.Errorf(`err.Error() != "launch code: unspecified" -- %q`, err.Error())
 	}
 }

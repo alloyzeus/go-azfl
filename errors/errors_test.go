@@ -2,14 +2,14 @@ package errors
 
 import "testing"
 
-const errNotFound = errorConstantDescriptor("not found")
+const errNotFound = constantErrorDescriptor("not found")
 
 func TestAssorted(t *testing.T) {
 	var nf error = errNotFound
 	var nf2 error = errNotFound
-	var nf3 error = errorConstantDescriptor("not found")
-	if nf != errorConstantDescriptor("not found") {
-		t.Errorf("%#v %#v", nf, errorConstantDescriptor("not found"))
+	var nf3 error = constantErrorDescriptor("not found")
+	if nf != constantErrorDescriptor("not found") {
+		t.Errorf("%#v %#v", nf, constantErrorDescriptor("not found"))
 	}
 	if nf != nf2 {
 		t.Errorf("nf == nf2")
@@ -17,7 +17,7 @@ func TestAssorted(t *testing.T) {
 	if nf != nf3 {
 		t.Errorf("nf == nf3")
 	}
-	if _, ok := nf.(errorConstantDescriptor); !ok {
+	if _, ok := nf.(constantErrorDescriptor); !ok {
 		t.Errorf("nf.(errorConstantDescriptor")
 	}
 	if nf3.Error() == "" {

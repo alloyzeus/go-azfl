@@ -63,11 +63,8 @@ func IsArgUnspecifiedError(err error) bool {
 	if !IsArgumentError(err) {
 		return false
 	}
-	if d, ok := err.(hasDescriptor); ok {
-		desc := d.Descriptor()
-		if desc == ErrValueUnspecified {
-			return true
-		}
+	if desc := UnwrapDescriptor(err); desc != nil {
+		return desc == ErrValueUnspecified
 	}
 	return false
 }
@@ -83,11 +80,8 @@ func IsArgUnspecified(err error, argName string) bool {
 	if argErr.ArgumentName() != argName {
 		return false
 	}
-	if d, ok := err.(hasDescriptor); ok {
-		desc := d.Descriptor()
-		if desc == ErrValueUnspecified {
-			return true
-		}
+	if desc := UnwrapDescriptor(err); desc != nil {
+		return desc == ErrValueUnspecified
 	}
 	return false
 }
@@ -115,17 +109,21 @@ func (e *argumentError) Error() string {
 	if suffix != "" {
 		suffix = ": " + suffix
 	}
+	detailsStr := e.innerMsg()
 
 	if e.identifier != "" {
-		if errMsg := e.innerMsg(); errMsg != "" {
-			return "arg " + e.identifier + ": " + errMsg + suffix
+		if detailsStr != "" {
+			return "arg " + e.identifier + ": " + detailsStr + suffix
 		}
-		return "arg " + e.identifier + " invalid" + suffix
+		return "arg " + e.identifier + suffix
 	}
-	if errMsg := e.innerMsg(); errMsg != "" {
-		return "arg " + errMsg + suffix
+	if detailsStr != "" {
+		return "arg " + detailsStr + suffix
 	}
-	return "arg invalid" + suffix
+	if suffix != "" {
+		return "arg" + suffix
+	}
+	return "arg error"
 }
 
 func (e *argumentError) Unwrap() error {

@@ -1,7 +1,7 @@
 package errors
 
 const (
-	ErrPlaceholder       = errorConstantDescriptor(placeholderErrorText)
+	ErrPlaceholder       = constantErrorDescriptor(placeholderErrorText)
 	placeholderErrorText = `` +
 		`This is a placeholder error. It means that the developer of the ` +
 		`routine where you get the error from has not properly thought about ` +

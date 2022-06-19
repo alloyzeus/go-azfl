@@ -25,7 +25,7 @@ const (
 	// ErrUnimplemented is used to declare that a functionality, or part of it,
 	// has not been implemented. This could be well mapped to some protocols'
 	// status code, e.g., HTTP's 501 and gRPC's 12 .
-	ErrUnimplemented = errorConstantDescriptor("unimplemented")
+	ErrUnimplemented = constantErrorDescriptor("unimplemented")
 )
 
 // A ErrorDescriptor provides the description-part of an error.
@@ -48,18 +48,43 @@ type hasDescriptor interface {
 	Descriptor() ErrorDescriptor
 }
 
-// errorConstantDescriptor is a generic error that designed to be declared
+// constantErrorDescriptor is a generic error that designed to be declared
 // as constant so that an instance could be easily compared by value to
 // its original definiton.
 //
-// A errorConstantDescriptor is not providing a full context about an error,
+// A constantErrorDescriptor is not providing a full context about an error,
 // instead it's designed to be wrapped to provide context to the parent error.
-type errorConstantDescriptor string
+type constantErrorDescriptor string
 
 var (
-	_ error           = errorConstantDescriptor("")
-	_ ErrorDescriptor = errorConstantDescriptor("")
+	_ error           = constantErrorDescriptor("")
+	_ ErrorDescriptor = constantErrorDescriptor("")
 )
 
-func (e errorConstantDescriptor) Error() string                 { return string(e) }
-func (e errorConstantDescriptor) ErrorDescriptorString() string { return string(e) }
+func (e constantErrorDescriptor) Error() string                 { return string(e) }
+func (e constantErrorDescriptor) ErrorDescriptorString() string { return string(e) }
+
+func UnwrapDescriptor(err error) ErrorDescriptor {
+	if err != nil {
+		if d, ok := err.(hasDescriptor); ok {
+			return d.Descriptor()
+		}
+	}
+	return nil
+}
+
+func errorDescriptorString(err error) string {
+	if err != nil {
+		if desc, ok := err.(ErrorDescriptor); ok {
+			return desc.ErrorDescriptorString()
+		}
+	}
+	return ""
+}
+
+func errorString(err error) string {
+	if err != nil {
+		return err.Error()
+	}
+	return ""
+}

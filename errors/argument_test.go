@@ -89,8 +89,8 @@ func TestIsArgUnspecifiedCustomStruct(t *testing.T) {
 
 func TestArgEmpty(t *testing.T) {
 	var err error = Arg("", nil)
-	if err.Error() != "arg invalid" {
-		t.Errorf(`err.Error() != "arg invalid" -- %q`, err.Error())
+	if err.Error() != "arg error" {
+		t.Errorf(`err.Error() != "arg error" -- %q`, err.Error())
 	}
 	inner := Unwrap(err)
 	if inner != nil {
@@ -103,8 +103,15 @@ func TestArgEmpty(t *testing.T) {
 
 func TestArgFields(t *testing.T) {
 	var err error = ArgFields("foo", Ent("name", ErrValueEmpty), Ent("bar", ErrValueUnspecified))
-	if err.Error() != "arg foo invalid: name: empty, bar: unspecified" {
-		t.Errorf(`err.Error() != "arg foo invalid: name: empty, bar: unspecified" -- %q`, err.Error())
+	if err.Error() != "arg foo: name: empty, bar: unspecified" {
+		t.Errorf(`err.Error() != "arg foo: name: empty, bar: unspecified" -- %q`, err.Error())
+	}
+}
+
+func TestArgFieldsNoName(t *testing.T) {
+	var err error = ArgFields("", Ent("name", ErrValueEmpty), Ent("bar", ErrValueUnspecified))
+	if err.Error() != "arg: name: empty, bar: unspecified" {
+		t.Errorf(`err.Error() != "arg: name: empty, bar: unspecified" -- %q`, err.Error())
 	}
 }
 

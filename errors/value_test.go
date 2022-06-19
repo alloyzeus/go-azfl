@@ -4,14 +4,14 @@ import "testing"
 
 func TestValueMalformedBare(t *testing.T) {
 	var err error = ErrValueMalformed
+	if err.Error() != "malformed" {
+		t.Errorf(`err.Error() != "malformed" -- %q`, err.Error())
+	}
 	if err != ErrValueMalformed {
 		t.Error("err != DataErrMalformed")
 	}
 	if !IsValueMalformedError(err) {
 		t.Errorf("!IsValueMalformed(err)")
-	}
-	if err.Error() != "malformed" {
-		t.Errorf(`err.Error() != "malformed" -- %q`, err.Error())
 	}
 }
 
@@ -31,11 +31,11 @@ func TestValueMalformedNegative(t *testing.T) {
 
 func TestValueMalformedComplexNil(t *testing.T) {
 	var err error = ValueMalformed(nil)
-	if !IsValueMalformedError(err) {
-		t.Error("!IsValueMalformed(err)")
-	}
 	if err.Error() != "malformed" {
 		t.Errorf(`err.Error() != "malformed" -- %q`, err.Error())
+	}
+	if !IsValueMalformedError(err) {
+		t.Error("!IsValueMalformed(err)")
 	}
 	if Unwrap(err) != nil {
 		t.Errorf("Unwrap(err) == nil -- %#v", Unwrap(err))
@@ -44,11 +44,11 @@ func TestValueMalformedComplexNil(t *testing.T) {
 
 func TestValueMalformedComplexWithDetails(t *testing.T) {
 	var err error = ValueMalformed(ErrValueInvalid)
-	if !IsValueMalformedError(err) {
-		t.Error("!IsValueMalformed(err)")
-	}
 	if err.Error() != "malformed: invalid" {
 		t.Errorf(`err.Error() != "malformed: invalid" -- %q`, err.Error())
+	}
+	if !IsValueMalformedError(err) {
+		t.Error("!IsValueMalformed(err)")
 	}
 	if Unwrap(err) == nil {
 		t.Errorf("Unwrap(err) == nil -- %#v", Unwrap(err))

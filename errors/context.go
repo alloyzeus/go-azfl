@@ -3,7 +3,6 @@ package errors
 import "strings"
 
 type ContextError interface {
-	error
 	CallError
 	ContextError() ContextError
 }
@@ -31,11 +30,8 @@ func IsContextUnspecifiedError(err error) bool {
 	if !IsContextError(err) {
 		return false
 	}
-	if d, ok := err.(hasDescriptor); ok {
-		desc := d.Descriptor()
-		if desc == ErrValueUnspecified {
-			return true
-		}
+	if desc := UnwrapDescriptor(err); desc != nil {
+		return desc == ErrValueUnspecified
 	}
 	return false
 }
@@ -93,8 +89,8 @@ func (e *contextError) Descriptor() ErrorDescriptor {
 	if desc, ok := e.inner.(ErrorDescriptor); ok {
 		return desc
 	}
-	if d, ok := e.inner.(hasDescriptor); ok {
-		return d.Descriptor()
+	if desc := UnwrapDescriptor(e.inner); desc != nil {
+		return desc
 	}
 	return nil
 }

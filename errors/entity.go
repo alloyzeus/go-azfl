@@ -66,18 +66,15 @@ func IsEntInvalidError(err error) bool {
 	if !IsEntityError(err) {
 		return false
 	}
-	if d, ok := err.(hasDescriptor); ok {
-		desc := d.Descriptor()
-		if desc == ErrValueInvalid {
-			return true
-		}
+	if desc := UnwrapDescriptor(err); desc != nil {
+		return desc == ErrValueInvalid
 	}
 	return false
 }
 
 // ErrEntityNotFound is used to describet that the entity with the identifier
 // could not be found in the system.
-const ErrEntityNotFound = valueErrorConstantDescriptor("not found")
+const ErrEntityNotFound = valueConstantErrorDescriptor("not found")
 
 func EntNotFound(entityIdentifier string, details error) EntityError {
 	return &entityError{
@@ -93,11 +90,8 @@ func IsEntNotFoundError(err error) bool {
 	if !IsEntityError(err) {
 		return false
 	}
-	if d, ok := err.(hasDescriptor); ok {
-		desc := d.Descriptor()
-		if desc == ErrEntityNotFound {
-			return true
-		}
+	if desc := UnwrapDescriptor(err); desc != nil {
+		return desc == ErrEntityNotFound
 	}
 	return false
 }
@@ -125,17 +119,20 @@ func (e *entityError) Error() string {
 		if errMsg := e.innerMsg(); errMsg != "" {
 			return e.identifier + ": " + errMsg + suffix
 		}
-		return e.identifier + " invalid" + suffix
+		return e.identifier + suffix
 	}
 	if errMsg := e.innerMsg(); errMsg != "" {
 		return "entity " + errMsg + suffix
 	}
-	return "entity invalid" + suffix
+	if suffix != "" {
+		return "entity" + suffix
+	}
+	return "entity error"
 }
 
 func (e *entityError) innerMsg() string {
-	if e.err != nil {
-		return e.err.Error()
+	if inner := e.err; inner != nil {
+		return inner.Error()
 	}
 	return ""
 }
@@ -160,8 +157,8 @@ func (e *entityError) Descriptor() ErrorDescriptor {
 	if desc, ok := e.err.(ErrorDescriptor); ok {
 		return desc
 	}
-	if d, ok := e.err.(hasDescriptor); ok {
-		return d.Descriptor()
+	if desc := UnwrapDescriptor(e.err); desc != nil {
+		return desc
 	}
 	return nil
 }

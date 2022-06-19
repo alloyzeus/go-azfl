@@ -6,17 +6,17 @@ type ValueError interface {
 	ValueError() ValueError
 }
 
-type valueErrorConstantDescriptor string
+type valueConstantErrorDescriptor string
 
 var (
-	_ error                = valueErrorConstantDescriptor("")
-	_ ErrorDescriptor      = valueErrorConstantDescriptor("")
-	_ ValueErrorDescriptor = valueErrorConstantDescriptor("")
+	_ error                = valueConstantErrorDescriptor("")
+	_ ErrorDescriptor      = valueConstantErrorDescriptor("")
+	_ ValueErrorDescriptor = valueConstantErrorDescriptor("")
 )
 
-func (e valueErrorConstantDescriptor) Error() string                      { return string(e) }
-func (e valueErrorConstantDescriptor) ErrorDescriptorString() string      { return string(e) }
-func (e valueErrorConstantDescriptor) ValueErrorDescriptorString() string { return string(e) }
+func (e valueConstantErrorDescriptor) Error() string                      { return string(e) }
+func (e valueConstantErrorDescriptor) ErrorDescriptorString() string      { return string(e) }
+func (e valueConstantErrorDescriptor) ValueErrorDescriptorString() string { return string(e) }
 
 type ValueErrorDescriptor interface {
 	ErrorDescriptor
@@ -25,13 +25,13 @@ type ValueErrorDescriptor interface {
 
 const (
 	// Value was not provided (nil)
-	ErrValueUnspecified = valueErrorConstantDescriptor("unspecified")
+	ErrValueUnspecified = valueConstantErrorDescriptor("unspecified")
 	// Value was provided but empty
-	ErrValueEmpty = valueErrorConstantDescriptor("empty")
+	ErrValueEmpty = valueConstantErrorDescriptor("empty")
 
-	ErrValueInvalid         = valueErrorConstantDescriptor("invalid")
-	ErrValueMalformed       = valueErrorConstantDescriptor("malformed")
-	ErrValueTypeUnsupported = valueErrorConstantDescriptor("type unsupported")
+	ErrValueInvalid         = valueConstantErrorDescriptor("invalid")
+	ErrValueMalformed       = valueConstantErrorDescriptor("malformed")
+	ErrValueTypeUnsupported = valueConstantErrorDescriptor("type unsupported")
 )
 
 func ValueMalformed(details error) ValueError {
@@ -42,17 +42,14 @@ func IsValueMalformedError(err error) bool {
 	if err == ErrValueMalformed {
 		return true
 	}
-	if d, ok := err.(hasDescriptor); ok {
-		desc := d.Descriptor()
-		if desc == ErrValueMalformed {
-			return true
-		}
+	if desc := UnwrapDescriptor(err); desc != nil {
+		return desc == ErrValueMalformed
 	}
 	return false
 }
 
 type descriptorDetailsError struct {
-	descriptor valueErrorConstantDescriptor
+	descriptor valueConstantErrorDescriptor
 	details    error
 }
 
