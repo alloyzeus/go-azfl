@@ -13,12 +13,12 @@ func IsContextError(err error) bool {
 }
 
 func Context(details error, fields ...EntityError) ContextError {
-	return &contextError{inner: details, fields: fields[:]}
+	return &contextError{inner: details, fields: copyFieldSet(fields)}
 }
 
 func ContextFields(fields ...EntityError) ContextError {
 	return &contextError{
-		fields: fields[:],
+		fields: copyFieldSet(fields),
 	}
 }
 

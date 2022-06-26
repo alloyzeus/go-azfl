@@ -56,14 +56,14 @@ func TestValueMalformedComplexWithDetails(t *testing.T) {
 }
 
 func TestDescriptorDetailsBlank(t *testing.T) {
-	var err error = &descriptorDetailsError{}
+	var err error = &valueDescriptorDetailsError{}
 	if err.Error() != "" {
 		t.Errorf(`err.Error() != "" -- %q`, err.Error())
 	}
 }
 
 func TestDescriptorDetailsOnlyDetails(t *testing.T) {
-	var err error = &descriptorDetailsError{details: ErrValueInvalid}
+	var err error = &valueDescriptorDetailsError{details: ErrValueInvalid}
 	if err.Error() != "invalid" {
 		t.Errorf(`err.Error() != "invalid" -- %q`, err.Error())
 	}

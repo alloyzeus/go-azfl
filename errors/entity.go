@@ -36,9 +36,12 @@ func Ent(entityIdentifier string, err error) EntityError {
 // EntFields is used to create an error that describes multiple field errors
 // of an entity.
 func EntFields(entityIdentifier string, fields ...EntityError) EntityError {
+	if fields != nil {
+		fields = fields[:]
+	}
 	return &entityError{
 		identifier: entityIdentifier,
-		fields:     fields[:],
+		fields:     fields,
 	}
 }
 
@@ -55,10 +58,7 @@ func EntMsg(entityIdentifier string, errMsg string) EntityError {
 func EntInvalid(entityIdentifier string, details error) EntityError {
 	return &entityError{
 		identifier: entityIdentifier,
-		err: descriptorDetailsError{
-			descriptor: ErrValueInvalid,
-			details:    details,
-		},
+		err:        DescWrap(ErrValueInvalid, details),
 	}
 }
 
@@ -79,10 +79,7 @@ const ErrEntityNotFound = valueConstantErrorDescriptor("not found")
 func EntNotFound(entityIdentifier string, details error) EntityError {
 	return &entityError{
 		identifier: entityIdentifier,
-		err: descriptorDetailsError{
-			descriptor: ErrEntityNotFound,
-			details:    details,
-		},
+		err:        DescWrap(ErrEntityNotFound, details),
 	}
 }
 
@@ -114,27 +111,21 @@ func (e *entityError) Error() string {
 	if suffix != "" {
 		suffix = ": " + suffix
 	}
+	detailsStr := errorString(e.err)
 
 	if e.identifier != "" {
-		if errMsg := e.innerMsg(); errMsg != "" {
-			return e.identifier + ": " + errMsg + suffix
+		if detailsStr != "" {
+			return e.identifier + ": " + detailsStr + suffix
 		}
 		return e.identifier + suffix
 	}
-	if errMsg := e.innerMsg(); errMsg != "" {
-		return "entity " + errMsg + suffix
+	if detailsStr != "" {
+		return "entity " + detailsStr + suffix
 	}
 	if suffix != "" {
 		return "entity" + suffix
 	}
 	return "entity error"
-}
-
-func (e *entityError) innerMsg() string {
-	if inner := e.err; inner != nil {
-		return inner.Error()
-	}
-	return ""
 }
 
 func (e entityError) fieldErrorsAsString() string {
@@ -235,4 +226,17 @@ func (e entErrorSet) EntityErrors() []EntityError {
 		return errs
 	}
 	return nil
+}
+
+func copyFieldSet(fields []EntityError) []EntityError {
+	var copiedFields []EntityError
+	if len(fields) > 0 {
+		copiedFields = make([]EntityError, 0, len(fields))
+		for _, e := range fields {
+			if e != nil {
+				copiedFields = append(copiedFields, e)
+			}
+		}
+	}
+	return copiedFields
 }

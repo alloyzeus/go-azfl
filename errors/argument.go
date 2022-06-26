@@ -109,7 +109,7 @@ func (e *argumentError) Error() string {
 	if suffix != "" {
 		suffix = ": " + suffix
 	}
-	detailsStr := e.innerMsg()
+	detailsStr := errorString(e.err)
 
 	if e.identifier != "" {
 		if detailsStr != "" {

@@ -35,7 +35,7 @@ const (
 )
 
 func ValueMalformed(details error) ValueError {
-	return &descriptorDetailsError{descriptor: ErrValueMalformed, details: details}
+	return &valueDescriptorDetailsError{descriptor: ErrValueMalformed, details: details}
 }
 
 func IsValueMalformedError(err error) bool {
@@ -48,19 +48,19 @@ func IsValueMalformedError(err error) bool {
 	return false
 }
 
-type descriptorDetailsError struct {
+type valueDescriptorDetailsError struct {
 	descriptor valueConstantErrorDescriptor
 	details    error
 }
 
 var (
-	_ error         = descriptorDetailsError{}
-	_ ValueError    = descriptorDetailsError{}
-	_ hasDescriptor = descriptorDetailsError{}
-	_ Unwrappable   = descriptorDetailsError{}
+	_ error         = valueDescriptorDetailsError{}
+	_ ValueError    = valueDescriptorDetailsError{}
+	_ hasDescriptor = valueDescriptorDetailsError{}
+	_ Unwrappable   = valueDescriptorDetailsError{}
 )
 
-func (e descriptorDetailsError) Error() string {
+func (e valueDescriptorDetailsError) Error() string {
 	if e.descriptor != "" {
 		if e.details != nil {
 			return e.descriptor.Error() + ": " + e.details.Error()
@@ -73,6 +73,6 @@ func (e descriptorDetailsError) Error() string {
 	return ""
 }
 
-func (e descriptorDetailsError) Descriptor() ErrorDescriptor { return e.descriptor }
-func (e descriptorDetailsError) ValueError() ValueError      { return e }
-func (e descriptorDetailsError) Unwrap() error               { return e.details }
+func (e valueDescriptorDetailsError) Descriptor() ErrorDescriptor { return e.descriptor }
+func (e valueDescriptorDetailsError) ValueError() ValueError      { return e }
+func (e valueDescriptorDetailsError) Unwrap() error               { return e.details }

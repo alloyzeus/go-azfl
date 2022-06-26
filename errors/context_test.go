@@ -13,8 +13,29 @@ func TestContextEmpty(t *testing.T) {
 	}
 }
 
+func TestContextConstantDescriptor(t *testing.T) {
+	var err error = Context(ErrValueUnspecified, nil)
+	if err.Error() != "context unspecified" {
+		t.Errorf(`err.Error() != "context unspecified" -- %q`, err.Error())
+	}
+	if d, ok := err.(hasDescriptor); !ok {
+		t.Error("err.(hasDescriptor)")
+	} else {
+		desc := d.Descriptor()
+		if desc == nil {
+			t.Error("desc == nil")
+		}
+		if desc != ErrValueUnspecified {
+			t.Error("desc != ErrValueUnspecified")
+		}
+	}
+	if !IsContextUnspecifiedError(err) {
+		t.Error("!IsContextUnspecified(err)")
+	}
+}
+
 func TestContextWrappedConstantDescriptor(t *testing.T) {
-	var err error = Context(descriptorDetailsError{descriptor: ErrValueUnspecified})
+	var err error = Context(DescWrap(ErrValueUnspecified, nil))
 	if err.Error() != "context unspecified" {
 		t.Errorf(`err.Error() != "context unspecified" -- %q`, err.Error())
 	}
