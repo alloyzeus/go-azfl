@@ -72,9 +72,15 @@ func IsEntInvalidError(err error) bool {
 	return false
 }
 
-// ErrEntityNotFound is used to describet that the entity with the identifier
-// could not be found in the system.
-const ErrEntityNotFound = valueConstantErrorDescriptor("not found")
+const (
+	// ErrEntityNotFound is used when the entity with the specified name
+	// cannot be found in the system.
+	ErrEntityNotFound = valueConstantErrorDescriptor("not found")
+
+	// ErrEntityConflict is used when the process of creating a new entity
+	// fails because an entity with the same name already exists.
+	ErrEntityConflict = valueConstantErrorDescriptor("conflict")
+)
 
 func EntNotFound(entityIdentifier string, details error) EntityError {
 	return &entityError{
