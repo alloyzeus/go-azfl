@@ -29,9 +29,16 @@ const (
 	// Value was provided but empty
 	ErrValueEmpty = valueConstantErrorDescriptor("empty")
 
-	ErrValueInvalid         = valueConstantErrorDescriptor("invalid")
-	ErrValueMalformed       = valueConstantErrorDescriptor("malformed")
+	ErrValueMalformed = valueConstantErrorDescriptor("malformed")
+	// The value provided does not match the one required by the system
+	ErrValueMismatch = valueConstantErrorDescriptor("mismatch")
+	// The value provided is currently not supported or not recognized by
+	// the system
+	ErrValueUnsupported     = valueConstantErrorDescriptor("unsupported")
 	ErrValueTypeUnsupported = valueConstantErrorDescriptor("type unsupported")
+
+	// If everything else fails
+	ErrValueInvalid = valueConstantErrorDescriptor("invalid")
 )
 
 func ValueMalformed(details error) ValueError {

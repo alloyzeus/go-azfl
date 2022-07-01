@@ -115,6 +115,13 @@ func TestArgFieldsNoName(t *testing.T) {
 	}
 }
 
+func TestArg1(t *testing.T) {
+	var err error = Arg1(ErrValueUnspecified)
+	if err.Error() != "arg unspecified" {
+		t.Errorf(`err.Error() != "arg unspecified" -- %q`, err.Error())
+	}
+}
+
 type customArgError struct {
 	argName string
 }

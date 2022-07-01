@@ -28,6 +28,15 @@ func Arg(argName string, err error, fields ...EntityError) ArgumentError {
 	}}
 }
 
+// Arg1 is used when there's only one argument for a function.
+func Arg1(err error, fields ...EntityError) ArgumentError {
+	return &argumentError{entityError{
+		identifier: "",
+		err:        err,
+		fields:     fields, // copy?
+	}}
+}
+
 func ArgFields(argName string, fields ...EntityError) ArgumentError {
 	return &argumentError{entityError{
 		identifier: argName,
