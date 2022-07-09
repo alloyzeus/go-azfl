@@ -18,21 +18,21 @@ func Access(descriptor ErrorDescriptor, details error) AccessError {
 	}
 }
 
-const ErrAccessDenied = constantErrorDescriptor("denied")
+const ErrAccessForbidden = accessErrorDescriptor("forbidden")
 
-func AccessDenied(details error) AccessError {
+func AccessForbidden(details error) AccessError {
 	return &accessError{
-		descriptor: ErrAccessDenied,
+		descriptor: ErrAccessForbidden,
 		details:    details,
 	}
 }
 
-func IsAccessDenied(err error) bool {
-	if err == ErrAccessDenied {
+func IsAccessForbidden(err error) bool {
+	if err == ErrAccessForbidden {
 		return true
 	}
 	if desc := UnwrapDescriptor(err); desc != nil {
-		return desc == ErrAccessDenied
+		return desc == ErrAccessForbidden
 	}
 	return false
 }
@@ -87,3 +87,17 @@ func (e *accessError) ContextError() ContextError  { return e }
 func (e *accessError) CallError() CallError        { return e }
 func (e *accessError) Descriptor() ErrorDescriptor { return e.descriptor }
 func (e *accessError) Unwrap() error               { return e.details }
+
+type accessErrorDescriptor string
+
+var (
+	_ error           = accessErrorDescriptor("")
+	_ AccessError     = accessErrorDescriptor("")
+	_ ErrorDescriptor = accessErrorDescriptor("")
+)
+
+func (e accessErrorDescriptor) AccessError() AccessError      { return e }
+func (e accessErrorDescriptor) CallError() CallError          { return e }
+func (e accessErrorDescriptor) ContextError() ContextError    { return e }
+func (e accessErrorDescriptor) Error() string                 { return string(e) }
+func (e accessErrorDescriptor) ErrorDescriptorString() string { return string(e) }

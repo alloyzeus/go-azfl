@@ -30,8 +30,6 @@ func TestDetailsOnly(t *testing.T) {
 }
 
 func TestDescWrapSimple(t *testing.T) {
-	var err error = DescWrap(ErrAccessDenied, Msg("insufficient permission"))
-	if err.Error() != "denied: insufficient permission" {
-		t.Errorf(`err.Error() != "denied: insufficient permission" -- %q`, err.Error())
-	}
+	var err error = DescWrap(ErrAccessForbidden, Msg("insufficient permission"))
+	assert(t, "forbidden: insufficient permission", err.Error())
 }

@@ -4,122 +4,78 @@ import "testing"
 
 func TestArgUnspecifiedEmpty(t *testing.T) {
 	var err error = ArgUnspecified("")
-	if err.Error() != "arg unspecified" {
-		t.Errorf(`err.Error() != "arg unspecified" -- %q`, err.Error())
-	}
-	if argErr, ok := err.(ArgumentError); !ok {
-		t.Error("err.(ArgumentError)")
-	} else {
-		if argErr == nil {
-			t.Error("argErr == nil")
-		}
-		if argErr.ArgumentName() != "" {
-			t.Errorf(`argErr.ArgumentName() == "" -- %q`, argErr.ArgumentName())
-		}
-	}
-	if !IsArgUnspecifiedError(err) {
-		t.Error("!IsArgUnspecifiedError(err)")
-	}
+	assert(t, "arg unspecified", err.Error())
+
+	argErr, ok := err.(ArgumentError)
+	assert(t, true, ok)
+	assertNotEqual(t, nil, argErr)
+	assert(t, "", argErr.ArgumentName())
+	assert(t, true, IsArgUnspecifiedError(err))
+	assert(t, ErrValueUnspecified, UnwrapDescriptor(err))
 }
 
 func TestArgUnspecifiedFoo(t *testing.T) {
 	var err error = ArgUnspecified("foo")
-	if err.Error() != "arg foo: unspecified" {
-		t.Errorf(`err.Error() != "arg foo: unspecified" -- %q`, err.Error())
-	}
-	if argErr, ok := err.(ArgumentError); !ok {
-		t.Error("err.(ArgumentError)")
-	} else {
-		if argErr == nil {
-			t.Error("argErr == nil")
-		}
-		if argErr.ArgumentName() != "foo" {
-			t.Errorf(`argErr.ArgumentName() == "foo" -- %q`, argErr.ArgumentName())
-		}
-	}
+	assert(t, "arg foo: unspecified", err.Error())
+
+	argErr, ok := err.(ArgumentError)
+	assert(t, true, ok)
+	assertNotEqual(t, nil, argErr)
+	assert(t, "foo", argErr.ArgumentName())
+	assert(t, true, IsArgUnspecifiedError(err))
+	assert(t, ErrValueUnspecified, UnwrapDescriptor(err))
+
 	inner := Unwrap(err)
-	if inner == nil {
-		t.Error("inner == nil")
-	}
-	if inner != ErrValueUnspecified {
-		t.Error("inner != DataErrUnspecified")
-	}
-	if !IsArgUnspecifiedError(err) {
-		t.Error("!IsArgUnspecified(err")
-	}
-	if !IsArgUnspecified(err, "foo") {
-		t.Error(`!IsArgUnspecified(err, "foo")`)
-	}
+	assertNotEqual(t, nil, inner)
+	assert(t, ErrValueUnspecified, inner)
+	assert(t, true, IsArgUnspecifiedError(err))
+	assert(t, true, IsArgUnspecified(err, "foo"))
+	assert(t, false, IsArgUnspecified(err, "bar"))
 }
 
 func TestIsArgUnspecifiedErrorNil(t *testing.T) {
 	var err error
-	if IsArgUnspecifiedError(err) {
-		t.Error("IsArgUnspecifiedError(err)")
-	}
-}
-
-func TestIsArgUnspecifiedNil(t *testing.T) {
-	var err error
-	if IsArgUnspecified(err, "foo") {
-		t.Error(`IsArgUnspecified(err, "foo")`)
-	}
+	assert(t, false, IsArgUnspecifiedError(err))
+	assert(t, false, IsArgUnspecified(err, "foo"))
 }
 
 func TestIsArgUnspecifiedNegative(t *testing.T) {
 	var err error = ErrValueInvalid
-	if IsArgUnspecified(err, "foo") {
-		t.Error(`IsArgUnspecified(err, "foo")`)
-	}
+	assert(t, false, IsArgUnspecified(err, "foo"))
 }
 
 func TestIsArgUnspecifiedWrongArgName(t *testing.T) {
 	var err error = ArgUnspecified("foo")
-	if IsArgUnspecified(err, "bar") {
-		t.Error(`IsArgUnspecified(err, "bar")`)
-	}
+	assert(t, false, IsArgUnspecified(err, "bar"))
 }
 
 func TestIsArgUnspecifiedCustomStruct(t *testing.T) {
 	var err error = &customArgError{argName: "foo"}
-	if IsArgUnspecified(err, "foo") {
-		t.Error(`IsArgUnspecified(err, "foo")`)
-	}
+	assert(t, false, IsArgUnspecified(err, "foo"))
 }
 
 func TestArgEmpty(t *testing.T) {
 	var err error = Arg("", nil)
-	if err.Error() != "arg error" {
-		t.Errorf(`err.Error() != "arg error" -- %q`, err.Error())
-	}
+	assert(t, "arg error", err.Error())
+
 	inner := Unwrap(err)
-	if inner != nil {
-		t.Error("inner != nil")
-	}
-	if IsArgUnspecifiedError(err) {
-		t.Error("IsArgUnspecifiedError(err)")
-	}
+	assert(t, nil, inner)
+	assert(t, false, IsArgUnspecifiedError(err))
 }
 
 func TestArgFields(t *testing.T) {
 	var err error = ArgFields("foo", Ent("name", ErrValueEmpty), Ent("bar", ErrValueUnspecified))
-	if err.Error() != "arg foo: name: empty, bar: unspecified" {
-		t.Errorf(`err.Error() != "arg foo: name: empty, bar: unspecified" -- %q`, err.Error())
-	}
+	assert(t, "arg foo: name: empty, bar: unspecified", err.Error())
 }
 
 func TestArgFieldsNoName(t *testing.T) {
 	var err error = ArgFields("", Ent("name", ErrValueEmpty), Ent("bar", ErrValueUnspecified))
-	if err.Error() != "arg: name: empty, bar: unspecified" {
-		t.Errorf(`err.Error() != "arg: name: empty, bar: unspecified" -- %q`, err.Error())
-	}
+	assert(t, "arg: name: empty, bar: unspecified", err.Error())
 }
 
 func TestArg1(t *testing.T) {
 	var err error = Arg1(ErrValueUnspecified)
-	if err.Error() != "arg unspecified" {
-		t.Errorf(`err.Error() != "arg unspecified" -- %q`, err.Error())
-	}
+	assert(t, "arg unspecified", err.Error())
 }
 
 type customArgError struct {
