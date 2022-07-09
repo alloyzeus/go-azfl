@@ -2,6 +2,10 @@ package azcore
 
 import "time"
 
+const (
+	ErrOperationNotAllowed = constantErrorDescriptor("operation not allowed")
+)
+
 // OperationInfo holds information about an action.
 type OperationInfo[
 	SessionIDNumT SessionIDNum, SessionIDT SessionID[SessionIDNumT],
