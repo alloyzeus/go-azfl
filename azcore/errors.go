@@ -11,11 +11,11 @@ const (
 )
 
 func UserContextRequiredError(details error) error {
-	return errors.Access(ErrUserContextRequired, details)
+	return errors.Access().Desc(ErrUserContextRequired).Wrap(details)
 }
 
 func ServiceContextRequiredError(details error) error {
-	return errors.Access(ErrServiceContextRequired, details)
+	return errors.Access().Desc(ErrServiceContextRequired).Wrap(details)
 }
 
 type constantErrorDescriptor string

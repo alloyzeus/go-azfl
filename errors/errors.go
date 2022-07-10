@@ -1,5 +1,27 @@
 // Package errors provides extra functionalities to that of Go's stdlib
 // errors package.
+//
+// Examples:
+//
+//     // An error that describes that argument "username" is unspecified
+//     err := errors.Arg("username").Unspecified()
+//
+//     // Check if an error is an argument error where "username" is unspecified
+//     errors.IsArgUnspecified(err, "username")
+//
+//     // ... or simply check if it's an argument error
+//     if errors.IsArgumentError(err) {
+//         // e.g., respond with HTTP 400
+//     }
+//
+//     // An error that describes that the field "Name" of entity with ID "user5432" is empty
+//     errors.Ent("user5432").Fieldset(errors.Ent("Name").Desc(errors.ErrValueEmpty))
+//
+//     // An error that describes that argument "email" is malformed. Detailing error, usually from
+//     // the parser function, is available as wrapped error.
+//     errors.Arg("email").Desc(errors.ErrValueMalformed).Wrap(err)
+//
+// Structured!
 package errors
 
 import (
