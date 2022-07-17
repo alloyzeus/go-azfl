@@ -47,7 +47,7 @@ func TextDecode(s string) ([]byte, error) {
 	}
 	dataBytes, err := crock32.Decode(string(dataEncoded))
 	if err != nil {
-		return nil, errors.Arg1().DescMsg("data decoding").Wrap(err)
+		return nil, errors.Arg1().Fieldset(errors.EntValueMalformed("data").Wrap(err))
 	}
 	if len(csEncoded) == 2 {
 		//TODO: checksum

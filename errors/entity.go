@@ -54,6 +54,24 @@ func Ent(entityIdentifier string) EntityErrorBuilder {
 	}
 }
 
+// EntValueMalformed creates an EntityError with entity identifier is set to
+// the value of entityIdentifier and descriptor is set to ErrValueMalformed.
+func EntValueMalformed(entityIdentifier string) EntityErrorBuilder {
+	return &entityError{
+		identifier: entityIdentifier,
+		descriptor: ErrValueMalformed,
+	}
+}
+
+// EntValueUnsupported creates an EntityError with entity identifier is set to
+// the value of entityIdentifier and descriptor is set to ErrValueUnsupported.
+func EntValueUnsupported(entityIdentifier string) EntityErrorBuilder {
+	return &entityError{
+		identifier: entityIdentifier,
+		descriptor: ErrValueUnsupported,
+	}
+}
+
 //TODO
 // func MultiEnt(identifiers ...string)
 

@@ -66,6 +66,74 @@ func TestEntDescMsg(t *testing.T) {
 	assert(t, nil, Unwrap(err))
 }
 
+//----
+
+func TestEntValueMalformedNoName(t *testing.T) {
+	var err error = EntValueMalformed("")
+
+	//TODO: should be "entity value unsupported"
+	assert(t, "entity malformed", err.Error())
+	assert(t, nil, Unwrap(err))
+	assert(t, ErrValueMalformed, UnwrapDescriptor(err))
+
+	entErr, ok := err.(EntityError)
+	assert(t, true, ok)
+	assertNotEqual(t, nil, entErr)
+	assert(t, "", entErr.EntityIdentifier())
+}
+
+func TestEntValueMalformedFoo(t *testing.T) {
+	var err error = EntValueMalformed("foo")
+	assert(t, "foo: malformed", err.Error())
+
+	entErr, ok := err.(*entityError)
+	assert(t, true, ok)
+	assertNotEqual(t, nil, entErr)
+	assert(t, "foo", entErr.EntityIdentifier())
+	assert(t, ErrValueMalformed, UnwrapDescriptor(err))
+
+	wrapped := Unwrap(err)
+	assert(t, nil, wrapped)
+
+	desc := UnwrapDescriptor(err)
+	assertNotEqual(t, nil, desc)
+	assert(t, ErrValueMalformed, desc)
+}
+
+func TestEntValueUnsupportedNoName(t *testing.T) {
+	var err error = EntValueUnsupported("")
+
+	//TODO: should be "entity value unsupported"
+	assert(t, "entity unsupported", err.Error())
+	assert(t, nil, Unwrap(err))
+	assert(t, ErrValueUnsupported, UnwrapDescriptor(err))
+
+	entErr, ok := err.(EntityError)
+	assert(t, true, ok)
+	assertNotEqual(t, nil, entErr)
+	assert(t, "", entErr.EntityIdentifier())
+}
+
+func TestEntValueUnsupportedFoo(t *testing.T) {
+	var err error = EntValueUnsupported("foo")
+	assert(t, "foo: unsupported", err.Error())
+
+	entErr, ok := err.(*entityError)
+	assert(t, true, ok)
+	assertNotEqual(t, nil, entErr)
+	assert(t, "foo", entErr.EntityIdentifier())
+	assert(t, ErrValueUnsupported, UnwrapDescriptor(err))
+
+	wrapped := Unwrap(err)
+	assert(t, nil, wrapped)
+
+	desc := UnwrapDescriptor(err)
+	assertNotEqual(t, nil, desc)
+	assert(t, ErrValueUnsupported, desc)
+}
+
+//----
+
 type customEntError struct {
 	entID string
 }

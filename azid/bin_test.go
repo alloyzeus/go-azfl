@@ -32,7 +32,7 @@ func int32IDNumFromAZIDBinField(
 ) (id int32IDNum, readLen int, err error) {
 	if typeHint != azid.BinDataTypeUnspecified && typeHint != azid.BinDataTypeInt32 {
 		return int32IDNum(0), 0,
-			errors.Arg("typeHint").Desc(errors.ErrValueUnsupported)
+			errors.ArgValueUnsupported("typeHint")
 	}
 	i := binary.BigEndian.Uint32(b)
 	return int32IDNum(i), 4, nil
@@ -64,17 +64,17 @@ func int32IDFromAZIDBin(b []byte) (id int32ID, readLen int, err error) {
 	typ, err := azid.BinDataTypeFromByte(b[0])
 	if err != nil {
 		return int32ID(0), 0,
-			errors.Arg1().DescMsg("type parsing").Wrap(err)
+			errors.Arg1().Fieldset(errors.EntValueMalformed("type").Wrap(err))
 	}
 	if typ != azid.BinDataTypeInt32 {
 		return int32ID(0), 0,
-			errors.Arg1().Fieldset(errors.Ent("type").Desc(errors.ErrValueUnsupported))
+			errors.Arg1().Fieldset(errors.EntValueUnsupported("type"))
 	}
 
 	i, readLen, err := int32IDNumFromAZIDBinField(b[1:], typ)
 	if err != nil {
 		return int32ID(0), 0,
-			errors.Arg1().DescMsg("id data parsing").Wrap(err)
+			errors.Arg1().Fieldset(errors.EntValueMalformed("id").Wrap(err))
 	}
 
 	return int32ID(i), 1 + readLen, nil
@@ -91,7 +91,7 @@ func adjunctIDNumFromAZIDBinField(
 ) (id adjunctIDNum, readLen int, err error) {
 	if typeHint != azid.BinDataTypeUnspecified && typeHint != azid.BinDataTypeInt16 {
 		return adjunctIDNum(0), 0,
-			errors.Arg("typeHint").Desc(errors.ErrValueUnsupported)
+			errors.ArgValueUnsupported("typeHint")
 	}
 	i := binary.BigEndian.Uint16(b)
 	return adjunctIDNum(i), 2, nil
@@ -115,7 +115,7 @@ func adjunctIDFromAZIDBinField(
 ) (id adjunctID, readLen int, err error) {
 	if typeHint != azid.BinDataTypeArray {
 		return adjunctID{}, 0,
-			errors.Arg1().Fieldset(errors.Ent("type").Desc(errors.ErrValueUnspecified))
+			errors.Arg1().Fieldset(errors.EntValueUnsupported("type"))
 	}
 
 	arrayLen := int(b[0])
@@ -130,26 +130,26 @@ func adjunctIDFromAZIDBinField(
 	parentType, err := azid.BinDataTypeFromByte(b[typeCursor])
 	if err != nil {
 		return adjunctID{}, 0,
-			errors.Arg1().DescMsg("parent type parsing").Wrap(err)
+			errors.Arg1().Fieldset(errors.EntValueMalformed("parent type").Wrap(err))
 	}
 	typeCursor++
 	parentID, readLen, err := int32IDFromAZIDBinField(b[dataCursor:], parentType)
 	if err != nil {
 		return adjunctID{}, 0,
-			errors.Arg1().DescMsg("parent data parsing").Wrap(err)
+			errors.Arg1().Fieldset(errors.EntValueMalformed("parent data").Wrap(err))
 	}
 	dataCursor += readLen
 
 	idType, err := azid.BinDataTypeFromByte(b[typeCursor])
 	if err != nil {
 		return adjunctID{}, 0,
-			errors.Arg1().DescMsg("id type parsing").Wrap(err)
+			errors.Arg1().Fieldset(errors.EntValueMalformed("id type").Wrap(err))
 	}
 	typeCursor++
 	idNum, readLen, err := adjunctIDNumFromAZIDBinField(b[dataCursor:], idType)
 	if err != nil {
 		return adjunctID{}, 0,
-			errors.Arg1().DescMsg("id data parsing").Wrap(err)
+			errors.Arg1().Fieldset(errors.EntValueMalformed("id data").Wrap(err))
 	}
 	dataCursor += readLen
 
@@ -162,11 +162,11 @@ func adjunctIDFromAZIDBin(
 	typ, err := azid.BinDataTypeFromByte(b[0])
 	if err != nil {
 		return adjunctID{}, 0,
-			errors.Arg1().DescMsg("type parsing").Wrap(err)
+			errors.Arg1().Fieldset(errors.EntValueMalformed("type").Wrap(err))
 	}
 	if typ != azid.BinDataTypeArray {
 		return adjunctID{}, 0,
-			errors.Arg1().Fieldset(errors.Ent("type").Desc(errors.ErrValueUnsupported))
+			errors.Arg1().Fieldset(errors.EntValueUnsupported("type"))
 	}
 
 	id, readLen, err = adjunctIDFromAZIDBinField(b[1:], typ)

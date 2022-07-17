@@ -2,74 +2,6 @@ package errors
 
 import "testing"
 
-func TestArgUnspecifiedEmpty(t *testing.T) {
-	var err error = ArgUnspecified("")
-	assert(t, "arg unspecified", err.Error())
-	assert(t, true, IsArgumentUnspecifiedError(err))
-	assert(t, ErrValueUnspecified, UnwrapDescriptor(err))
-
-	argErr, ok := err.(ArgumentError)
-	assert(t, true, ok)
-	assertNotEqual(t, nil, argErr)
-	assert(t, argErr, argErr.CallError())
-	assert(t, "", argErr.ArgumentName())
-
-	argErrB := AsArgumentError(err)
-	assertNotEqual(t, nil, argErrB)
-	assert(t, true, argErr == argErrB)
-	assert(t, argErr, argErrB)
-
-	wrapped := Unwrap(err)
-	assert(t, nil, wrapped)
-
-	desc := UnwrapDescriptor(err)
-	assertNotEqual(t, nil, desc)
-	assert(t, ErrValueUnspecified, desc)
-}
-
-func TestArgUnspecifiedFoo(t *testing.T) {
-	var err error = ArgUnspecified("foo")
-	assert(t, "arg foo: unspecified", err.Error())
-	assert(t, true, IsArgumentUnspecifiedError(err))
-	assert(t, true, IsArgumentUnspecified(err, "foo"))
-	assert(t, false, IsArgumentUnspecified(err, "bar"))
-
-	argErr, ok := err.(ArgumentError)
-	assert(t, true, ok)
-	assertNotEqual(t, nil, argErr)
-	assert(t, "foo", argErr.ArgumentName())
-	assert(t, true, IsArgumentUnspecifiedError(err))
-	assert(t, ErrValueUnspecified, UnwrapDescriptor(err))
-
-	wrapped := Unwrap(err)
-	assert(t, nil, wrapped)
-
-	desc := UnwrapDescriptor(err)
-	assertNotEqual(t, nil, desc)
-	assert(t, ErrValueUnspecified, desc)
-}
-
-func TestIsArgUnspecifiedErrorNil(t *testing.T) {
-	var err error
-	assert(t, false, IsArgumentUnspecifiedError(err))
-	assert(t, false, IsArgumentUnspecified(err, "foo"))
-}
-
-func TestIsArgUnspecifiedNegative(t *testing.T) {
-	var err error = ErrValueInvalid
-	assert(t, false, IsArgumentUnspecified(err, "foo"))
-}
-
-func TestIsArgUnspecifiedWrongArgName(t *testing.T) {
-	var err error = ArgUnspecified("foo")
-	assert(t, false, IsArgumentUnspecified(err, "bar"))
-}
-
-func TestIsArgUnspecifiedCustomStruct(t *testing.T) {
-	var err error = &customArgError{argName: "foo"}
-	assert(t, false, IsArgumentUnspecified(err, "foo"))
-}
-
 func TestArgEmpty(t *testing.T) {
 	var err error = Arg("")
 	assert(t, "arg error", err.Error())
@@ -136,6 +68,111 @@ func TestAsArgumentErrorNil(t *testing.T) {
 func TestAsArgumentErrorNegative(t *testing.T) {
 	var err error = Ent("")
 	assert(t, nil, AsArgumentError(err))
+}
+
+func TestArgUnspecifiedEmpty(t *testing.T) {
+	var err error = ArgUnspecified("")
+
+	assert(t, "arg unspecified", err.Error())
+	assert(t, true, IsArgumentUnspecifiedError(err))
+	assert(t, ErrValueUnspecified, UnwrapDescriptor(err))
+
+	argErr, ok := err.(ArgumentError)
+	assert(t, true, ok)
+	assertNotEqual(t, nil, argErr)
+	assert(t, argErr, argErr.CallError())
+	assert(t, "", argErr.ArgumentName())
+
+	argErrB := AsArgumentError(err)
+	assertNotEqual(t, nil, argErrB)
+	assert(t, true, argErr == argErrB)
+	assert(t, argErr, argErrB)
+
+	wrapped := Unwrap(err)
+	assert(t, nil, wrapped)
+
+	desc := UnwrapDescriptor(err)
+	assertNotEqual(t, nil, desc)
+	assert(t, ErrValueUnspecified, desc)
+}
+
+func TestArgUnspecifiedFoo(t *testing.T) {
+	var err error = ArgUnspecified("foo")
+	assert(t, "arg foo: unspecified", err.Error())
+	assert(t, true, IsArgumentUnspecifiedError(err))
+	assert(t, true, IsArgumentUnspecified(err, "foo"))
+	assert(t, false, IsArgumentUnspecified(err, "bar"))
+
+	argErr, ok := err.(ArgumentError)
+	assert(t, true, ok)
+	assertNotEqual(t, nil, argErr)
+	assert(t, "foo", argErr.ArgumentName())
+	assert(t, true, IsArgumentUnspecifiedError(err))
+	assert(t, ErrValueUnspecified, UnwrapDescriptor(err))
+
+	wrapped := Unwrap(err)
+	assert(t, nil, wrapped)
+
+	desc := UnwrapDescriptor(err)
+	assertNotEqual(t, nil, desc)
+	assert(t, ErrValueUnspecified, desc)
+}
+
+func TestIsArgUnspecifiedErrorNil(t *testing.T) {
+	var err error
+	assert(t, false, IsArgumentUnspecifiedError(err))
+	assert(t, false, IsArgumentUnspecified(err, "foo"))
+}
+
+func TestIsArgUnspecifiedNegative(t *testing.T) {
+	var err error = ErrValueInvalid
+	assert(t, false, IsArgumentUnspecified(err, "foo"))
+}
+
+func TestIsArgUnspecifiedWrongArgName(t *testing.T) {
+	var err error = ArgUnspecified("foo")
+	assert(t, false, IsArgumentUnspecified(err, "bar"))
+}
+
+func TestIsArgUnspecifiedCustomStruct(t *testing.T) {
+	var err error = &customArgError{argName: "foo"}
+	assert(t, false, IsArgumentUnspecified(err, "foo"))
+}
+
+func TestArgValueUnsupportedNoName(t *testing.T) {
+	var err error = ArgValueUnsupported("")
+
+	//TODO: should be "arg value unsupported"
+	assert(t, "arg unsupported", err.Error())
+	assert(t, nil, Unwrap(err))
+	assert(t, ErrValueUnsupported, UnwrapDescriptor(err))
+
+	argErr, ok := err.(ArgumentError)
+	assert(t, true, ok)
+	assertNotEqual(t, nil, argErr)
+	assert(t, "", argErr.ArgumentName())
+}
+
+func TestArgValueUnsupportedFoo(t *testing.T) {
+	var err error = ArgValueUnsupported("foo")
+	assert(t, "arg foo: unsupported", err.Error())
+	// assert(t, true, IsArgumentUnspecifiedError(err))
+	// assert(t, true, IsArgumentUnspecified(err, "foo"))
+	// assert(t, false, IsArgumentUnspecified(err, "bar"))
+
+	argErr, ok := err.(ArgumentError)
+	assert(t, true, ok)
+	assertNotEqual(t, nil, argErr)
+	assert(t, "foo", argErr.ArgumentName())
+	// assert(t, true, IsArgumentUnspecifiedError(err))
+	assert(t, ErrValueUnsupported, UnwrapDescriptor(err))
+
+	wrapped := Unwrap(err)
+	assert(t, nil, wrapped)
+
+	desc := UnwrapDescriptor(err)
+	assertNotEqual(t, nil, desc)
+	assert(t, ErrValueUnsupported, desc)
 }
 
 type customArgError struct {

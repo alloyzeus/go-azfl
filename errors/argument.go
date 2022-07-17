@@ -57,8 +57,12 @@ func Arg1() ArgumentErrorBuilder {
 	return Arg("")
 }
 
+// ArgUnspecified describes that argument with name argName is unspecified.
 func ArgUnspecified(argName string) ArgumentErrorBuilder {
-	return Arg(argName).Desc(ErrValueUnspecified)
+	return &argumentError{entityError{
+		identifier: argName,
+		descriptor: ErrValueUnspecified,
+	}}
 }
 
 func IsArgumentUnspecifiedError(err error) bool {
@@ -69,6 +73,15 @@ func IsArgumentUnspecifiedError(err error) bool {
 		return desc == ErrValueUnspecified
 	}
 	return false
+}
+
+// ArgValueUnsupported creates an ArgumentError with name is set to the value
+// of argName and descriptor is set to ErrValueUnsupported.
+func ArgValueUnsupported(argName string) ArgumentErrorBuilder {
+	return &argumentError{entityError{
+		identifier: argName,
+		descriptor: ErrValueUnsupported,
+	}}
 }
 
 // IsArgumentUnspecified checks if an error describes about unspecifity of an argument.
