@@ -27,6 +27,7 @@ func IsAccessError(err error) bool {
 	return ok
 }
 
+//TODO: should be Access(resourceIdentifiers ...string)
 func Access() AccessErrorBuilder {
 	return &accessError{}
 }

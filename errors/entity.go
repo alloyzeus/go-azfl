@@ -54,6 +54,9 @@ func Ent(entityIdentifier string) EntityErrorBuilder {
 	}
 }
 
+//TODO
+// func MultiEnt(identifiers ...string)
+
 const (
 	// ErrEntityNotFound is used when the entity with the specified name
 	// cannot be found in the system.
@@ -62,6 +65,10 @@ const (
 	// ErrEntityConflict is used when the process of creating a new entity
 	// fails because an entity with the same name already exists.
 	ErrEntityConflict = valueConstantErrorDescriptor("conflict")
+
+	// ErrEntityUnreachable is used to describe that the system is unable
+	// to reach the system responsible of the specified entity.
+	ErrEntityUnreachable = valueConstantErrorDescriptor("unreachable")
 )
 
 func IsEntityNotFoundError(err error) bool {

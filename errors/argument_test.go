@@ -5,14 +5,19 @@ import "testing"
 func TestArgUnspecifiedEmpty(t *testing.T) {
 	var err error = ArgUnspecified("")
 	assert(t, "arg unspecified", err.Error())
+	assert(t, true, IsArgumentUnspecifiedError(err))
+	assert(t, ErrValueUnspecified, UnwrapDescriptor(err))
 
 	argErr, ok := err.(ArgumentError)
 	assert(t, true, ok)
 	assertNotEqual(t, nil, argErr)
 	assert(t, argErr, argErr.CallError())
 	assert(t, "", argErr.ArgumentName())
-	assert(t, true, IsArgumentUnspecifiedError(err))
-	assert(t, ErrValueUnspecified, UnwrapDescriptor(err))
+
+	argErrB := AsArgumentError(err)
+	assertNotEqual(t, nil, argErrB)
+	assert(t, true, argErr == argErrB)
+	assert(t, argErr, argErrB)
 
 	wrapped := Unwrap(err)
 	assert(t, nil, wrapped)
@@ -116,6 +121,21 @@ func TestArgDescMsg(t *testing.T) {
 	desc := UnwrapDescriptor(err)
 	assertNotEqual(t, nil, desc)
 	assert(t, customDesc, desc.Error())
+}
+
+func TestAsArgumentError(t *testing.T) {
+	var err error = Arg1()
+	assert(t, err, AsArgumentError(err))
+}
+
+func TestAsArgumentErrorNil(t *testing.T) {
+	var err error
+	assert(t, nil, AsArgumentError(err))
+}
+
+func TestAsArgumentErrorNegative(t *testing.T) {
+	var err error = Ent("")
+	assert(t, nil, AsArgumentError(err))
 }
 
 type customArgError struct {

@@ -38,6 +38,14 @@ func IsArgumentError(err error) bool {
 	return ok
 }
 
+// AsArgumentError returns non-nil if err is indeed an ArgumentError.
+func AsArgumentError(err error) ArgumentError {
+	if e, ok := err.(ArgumentError); ok {
+		return e
+	}
+	return nil
+}
+
 func Arg(argName string) ArgumentErrorBuilder {
 	return &argumentError{entityError{
 		identifier: argName,

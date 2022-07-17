@@ -24,23 +24,23 @@ func Wrap(contextMessage string, detailingError error) error {
 var _ Unwrappable = &errorWrap{}
 
 type errorWrap struct {
-	msg string
-	err error
+	msg     string
+	wrapped error
 }
 
 func (e *errorWrap) Error() string {
 	if e.msg != "" {
-		if e.err != nil {
-			return e.msg + ": " + e.err.Error()
+		if e.wrapped != nil {
+			return e.msg + ": " + e.wrapped.Error()
 		}
 		return e.msg
 	}
-	if e.err != nil {
-		return e.err.Error()
+	if e.wrapped != nil {
+		return e.wrapped.Error()
 	}
 	return ""
 }
 
 func (e *errorWrap) Unwrap() error {
-	return e.err
+	return e.wrapped
 }
