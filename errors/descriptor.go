@@ -11,6 +11,8 @@ package errors
 //
 // This interface could be used to describe any *what*, like the method
 // in "method not implemented". For specific to data, see DataDescriptorError.
+//
+// Other term for ErrorDescriptor is error code.
 type ErrorDescriptor interface {
 	error
 	ErrorDescriptorString() string
@@ -20,7 +22,7 @@ type hasDescriptor interface {
 	Descriptor() ErrorDescriptor
 }
 
-func DescWrap(descriptor ErrorDescriptor, details error) error {
+func descWrap(descriptor ErrorDescriptor, details error) error {
 	return descriptorDetailsError{descriptor: descriptor, details: details}
 }
 
@@ -74,6 +76,20 @@ func UnwrapDescriptor(err error) ErrorDescriptor {
 		}
 	}
 	return nil
+}
+
+func HasDescriptor(err error, desc ErrorDescriptor) bool {
+	d := UnwrapDescriptor(err)
+	if d == desc {
+		return true
+	}
+	//TODO: use other strategies. even reflect as the last resort
+	return false
+}
+
+func HasDescriptorText(err error, descText string) bool {
+	d := UnwrapDescriptor(err)
+	return d.Error() == descText
 }
 
 func errorDescriptorString(err error) string {

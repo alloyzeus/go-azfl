@@ -15,60 +15,57 @@ type ArgumentError interface {
 	ArgumentName() string
 }
 
+type ArgumentErrorBuilder interface {
+	ArgumentError
+
+	// Desc returns a copy with descriptor is set to desc.
+	Desc(desc EntityErrorDescriptor) ArgumentErrorBuilder
+
+	// DescMsg sets the descriptor with the provided string. For the best
+	// experience, descMsg should be defined as a constant so that the error
+	// users could use it to identify an error. For non-constant descriptor
+	// use the Wrap method.
+	DescMsg(descMsg string) ArgumentErrorBuilder
+
+	// Wrap returns a copy with wrapped error is set to detailingError.
+	Wrap(detailingError error) ArgumentErrorBuilder
+
+	Fieldset(fields ...EntityError) ArgumentErrorBuilder
+}
+
 func IsArgumentError(err error) bool {
 	_, ok := err.(ArgumentError)
 	return ok
 }
 
-func Arg(argName string, err error, fields ...EntityError) ArgumentError {
+// AsArgumentError returns non-nil if err is indeed an ArgumentError.
+func AsArgumentError(err error) ArgumentError {
+	if e, ok := err.(ArgumentError); ok {
+		return e
+	}
+	return nil
+}
+
+func Arg(argName string) ArgumentErrorBuilder {
 	return &argumentError{entityError{
 		identifier: argName,
-		err:        err,
-		fields:     fields, // copy?
 	}}
 }
 
 // Arg1 is used when there's only one argument for a function.
-func Arg1(err error, fields ...EntityError) ArgumentError {
-	return &argumentError{entityError{
-		identifier: "",
-		err:        err,
-		fields:     fields, // copy?
-	}}
+func Arg1() ArgumentErrorBuilder {
+	return Arg("")
 }
 
-func ArgFields(argName string, fields ...EntityError) ArgumentError {
+// ArgUnspecified describes that argument with name argName is unspecified.
+func ArgUnspecified(argName string) ArgumentErrorBuilder {
 	return &argumentError{entityError{
 		identifier: argName,
-		fields:     fields,
+		descriptor: ErrValueUnspecified,
 	}}
 }
 
-func ArgMsg(argName, errMsg string, fields ...EntityError) ArgumentError {
-	return &argumentError{entityError{
-		identifier: argName,
-		err:        Msg(errMsg),
-		fields:     fields,
-	}}
-}
-
-func ArgWrap(argName, contextMessage string, err error, fields ...EntityError) ArgumentError {
-	return &argumentError{entityError{
-		identifier: argName,
-		err:        Wrap(contextMessage, err),
-		fields:     fields,
-	}}
-}
-
-// ArgUnspecified creates an ArgumentError err is set to DataErrUnspecified.
-func ArgUnspecified(argName string) ArgumentError {
-	return &argumentError{entityError{
-		identifier: argName,
-		err:        ErrValueUnspecified,
-	}}
-}
-
-func IsArgUnspecifiedError(err error) bool {
+func IsArgumentUnspecifiedError(err error) bool {
 	if !IsArgumentError(err) {
 		return false
 	}
@@ -78,7 +75,19 @@ func IsArgUnspecifiedError(err error) bool {
 	return false
 }
 
-func IsArgUnspecified(err error, argName string) bool {
+// ArgValueUnsupported creates an ArgumentError with name is set to the value
+// of argName and descriptor is set to ErrValueUnsupported.
+func ArgValueUnsupported(argName string) ArgumentErrorBuilder {
+	return &argumentError{entityError{
+		identifier: argName,
+		descriptor: ErrValueUnsupported,
+	}}
+}
+
+// IsArgumentUnspecified checks if an error describes about unspecifity of an argument.
+//
+//TODO: ArgSet
+func IsArgumentUnspecified(err error, argName string) bool {
 	if err == nil {
 		return false
 	}
@@ -100,11 +109,12 @@ type argumentError struct {
 }
 
 var (
-	_ error         = &argumentError{}
-	_ Unwrappable   = &argumentError{}
-	_ CallError     = &argumentError{}
-	_ EntityError   = &argumentError{}
-	_ ArgumentError = &argumentError{}
+	_ error                = &argumentError{}
+	_ Unwrappable          = &argumentError{}
+	_ CallError            = &argumentError{}
+	_ EntityError          = &argumentError{}
+	_ ArgumentError        = &argumentError{}
+	_ ArgumentErrorBuilder = &argumentError{}
 )
 
 func (e *argumentError) ArgumentName() string {
@@ -118,16 +128,25 @@ func (e *argumentError) Error() string {
 	if suffix != "" {
 		suffix = ": " + suffix
 	}
-	detailsStr := errorString(e.err)
+	var descStr string
+	if e.descriptor != nil {
+		descStr = e.descriptor.Error()
+	}
+	causeStr := errorString(e.wrapped)
+	if causeStr == "" {
+		causeStr = descStr
+	} else if descStr != "" {
+		causeStr = descStr + ": " + causeStr
+	}
 
 	if e.identifier != "" {
-		if detailsStr != "" {
-			return "arg " + e.identifier + ": " + detailsStr + suffix
+		if causeStr != "" {
+			return "arg " + e.identifier + ": " + causeStr + suffix
 		}
 		return "arg " + e.identifier + suffix
 	}
-	if detailsStr != "" {
-		return "arg " + detailsStr + suffix
+	if causeStr != "" {
+		return "arg " + causeStr + suffix
 	}
 	if suffix != "" {
 		return "arg" + suffix
@@ -136,5 +155,25 @@ func (e *argumentError) Error() string {
 }
 
 func (e *argumentError) Unwrap() error {
-	return e.err
+	return e.wrapped
+}
+
+func (e argumentError) Desc(desc EntityErrorDescriptor) ArgumentErrorBuilder {
+	e.descriptor = desc
+	return &e
+}
+
+func (e argumentError) DescMsg(descMsg string) ArgumentErrorBuilder {
+	e.descriptor = constantErrorDescriptor(descMsg)
+	return &e
+}
+
+func (e argumentError) Fieldset(fields ...EntityError) ArgumentErrorBuilder {
+	e.fields = fields // copy?
+	return &e
+}
+
+func (e argumentError) Wrap(detailingError error) ArgumentErrorBuilder {
+	e.wrapped = detailingError
+	return &e
 }

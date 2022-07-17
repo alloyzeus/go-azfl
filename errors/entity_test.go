@@ -3,109 +3,136 @@ package errors
 import "testing"
 
 func TestEntityBlank(t *testing.T) {
-	var err error = Ent("", nil)
-	if err.Error() != "entity error" {
-		t.Errorf(`err.Error() != "entity error" -- %q`, err.Error())
-	}
-	if entErr, ok := err.(EntityError); !ok {
-		t.Error("err.(EntityError)")
-	} else {
-		if entErr.EntityIdentifier() != "" {
-			t.Error(`entErr.EntityIdentifier() != ""`)
-		}
-	}
-	if inner := Unwrap(err); inner != nil {
-		t.Error("inner != nil")
-	}
+	var err error = Ent("")
+	assert(t, "entity error", err.Error())
+
+	entErr, ok := err.(EntityError)
+	assert(t, true, ok)
+	assertNotEqual(t, nil, entErr)
+	assert(t, "", entErr.EntityIdentifier())
+	assert(t, nil, Unwrap(err))
 }
 
 func TestEntityNoID(t *testing.T) {
-	var err error = Ent("", ErrValueMalformed)
-	if err.Error() != "entity malformed" {
-		t.Errorf(`err.Error() != "entity malformed" -- %q`, err.Error())
-	}
-	if entErr, ok := err.(EntityError); !ok {
-		t.Error("err.(EntityError)")
-	} else {
-		if entErr.EntityIdentifier() != "" {
-			t.Error(`entErr.EntityIdentifier() != ""`)
-		}
-	}
+	var err error = Ent("").Desc(ErrValueMalformed)
+	assert(t, "entity malformed", err.Error())
+
+	entErr, ok := err.(EntityError)
+	assert(t, true, ok)
+	assertNotEqual(t, nil, entErr)
+	assert(t, "", entErr.EntityIdentifier())
+	assert(t, nil, Unwrap(err))
+	assert(t, ErrValueMalformed, UnwrapDescriptor(err))
 }
 
 func TestEntityWithFields(t *testing.T) {
-	var err error = EntFields(
-		"user",
-		Ent("name", ErrValueEmpty),
-		Ent("age", ErrValueUnspecified))
-	if err.Error() != "user: name: empty, age: unspecified" {
-		t.Errorf(`err.Error() != "user: name: empty, age: unspecified" -- %q`, err.Error())
-	}
+	var err error = Ent("user").Fieldset(
+		Ent("name").Desc(ErrValueEmpty),
+		Ent("age").Desc(ErrValueUnspecified))
+	assert(t, "user: name: empty, age: unspecified", err.Error())
 }
 
 func TestEntityWithFieldsNoName(t *testing.T) {
-	var err error = EntFields(
-		"",
-		Ent("name", ErrValueEmpty),
-		Ent("age", ErrValueUnspecified))
-	if err.Error() != "entity: name: empty, age: unspecified" {
-		t.Errorf(`err.Error() != "entity: name: empty, age: unspecified" -- %q`, err.Error())
-	}
+	var err error = Ent("").Fieldset(
+		Ent("name").Desc(ErrValueEmpty),
+		Ent("age").Desc(ErrValueUnspecified))
+	assert(t, "entity: name: empty, age: unspecified", err.Error())
 }
 
 func TestEntNotFound(t *testing.T) {
-	var fooNotFound error = EntNotFound("foo", nil)
-	if !IsEntNotFoundError(fooNotFound) {
-		t.Errorf("!IsEntNotFound(fooNotFound)")
-	}
-	if fooNotFound.Error() != "foo: not found" {
-		t.Errorf(`fooNotFound.Error() != "foo: not found" -- %q`, fooNotFound.Error())
-	}
+	var fooNotFound error = Ent("foo").Wrap(ErrEntityNotFound)
+	assert(t, "foo: not found", fooNotFound.Error())
+	assert(t, true, IsEntityNotFoundError(fooNotFound))
+}
+
+func TestErrEntNotFound(t *testing.T) {
 	var notFoundBare error = ErrEntityNotFound
-	if IsEntNotFoundError(notFoundBare) {
-		t.Errorf("IsEntNotFound(notFoundBare)")
-	}
-	if IsArgumentError(fooNotFound) {
-		t.Errorf("IsArgumentError(fooNotFound)")
-	}
-	if IsCallError(fooNotFound) {
-		t.Errorf("IsCallError(fooNotFound)")
-	}
+	assert(t, false, IsEntityNotFoundError(notFoundBare))
+	assert(t, false, IsArgumentError(notFoundBare))
+	assert(t, false, IsCallError(notFoundBare))
 }
 
 func TestIsEntNotFoundErrorCustomNegative(t *testing.T) {
 	var err error = &customEntError{entID: "foo"}
-	if IsEntNotFoundError(err) {
+	if IsEntityNotFoundError(err) {
 		t.Error(`IsEntNotFoundError(err)`)
 	}
 }
 
-func TestEntInvalid(t *testing.T) {
-	var fooInvalid error = EntInvalid("foo", nil)
-	if !IsEntInvalidError(fooInvalid) {
-		t.Errorf("!IsEntInvalid(fooInvalid)")
-	}
-	if fooInvalid.Error() != "foo: invalid" {
-		t.Errorf(`fooInvalid.Error() != "foo: invalid" -- %q`, fooInvalid.Error())
-	}
-	var notFoundBare error = ErrValueInvalid
-	if IsEntInvalidError(notFoundBare) {
-		t.Errorf("IsEntInvalid(notFoundBare)")
-	}
-	if IsArgumentError(fooInvalid) {
-		t.Errorf("IsArgumentError(fooInvalid)")
-	}
-	if IsCallError(fooInvalid) {
-		t.Errorf("IsCallError(fooInvalid)")
-	}
+func TestEntDescMsg(t *testing.T) {
+	var err error = Ent("foo").DescMsg("custom descriptor")
+	assert(t, "foo: custom descriptor", err.Error())
+	assert(t, "custom descriptor", UnwrapDescriptor(err).Error())
+	assert(t, nil, Unwrap(err))
 }
 
-func TestIsEntInvalidErrorCustomNegative(t *testing.T) {
-	var err error = &customEntError{entID: "foo"}
-	if IsEntInvalidError(err) {
-		t.Error(`IsEntInvalidError(err)`)
-	}
+//----
+
+func TestEntValueMalformedNoName(t *testing.T) {
+	var err error = EntValueMalformed("")
+
+	//TODO: should be "entity value unsupported"
+	assert(t, "entity malformed", err.Error())
+	assert(t, nil, Unwrap(err))
+	assert(t, ErrValueMalformed, UnwrapDescriptor(err))
+
+	entErr, ok := err.(EntityError)
+	assert(t, true, ok)
+	assertNotEqual(t, nil, entErr)
+	assert(t, "", entErr.EntityIdentifier())
 }
+
+func TestEntValueMalformedFoo(t *testing.T) {
+	var err error = EntValueMalformed("foo")
+	assert(t, "foo: malformed", err.Error())
+
+	entErr, ok := err.(*entityError)
+	assert(t, true, ok)
+	assertNotEqual(t, nil, entErr)
+	assert(t, "foo", entErr.EntityIdentifier())
+	assert(t, ErrValueMalformed, UnwrapDescriptor(err))
+
+	wrapped := Unwrap(err)
+	assert(t, nil, wrapped)
+
+	desc := UnwrapDescriptor(err)
+	assertNotEqual(t, nil, desc)
+	assert(t, ErrValueMalformed, desc)
+}
+
+func TestEntValueUnsupportedNoName(t *testing.T) {
+	var err error = EntValueUnsupported("")
+
+	//TODO: should be "entity value unsupported"
+	assert(t, "entity unsupported", err.Error())
+	assert(t, nil, Unwrap(err))
+	assert(t, ErrValueUnsupported, UnwrapDescriptor(err))
+
+	entErr, ok := err.(EntityError)
+	assert(t, true, ok)
+	assertNotEqual(t, nil, entErr)
+	assert(t, "", entErr.EntityIdentifier())
+}
+
+func TestEntValueUnsupportedFoo(t *testing.T) {
+	var err error = EntValueUnsupported("foo")
+	assert(t, "foo: unsupported", err.Error())
+
+	entErr, ok := err.(*entityError)
+	assert(t, true, ok)
+	assertNotEqual(t, nil, entErr)
+	assert(t, "foo", entErr.EntityIdentifier())
+	assert(t, ErrValueUnsupported, UnwrapDescriptor(err))
+
+	wrapped := Unwrap(err)
+	assert(t, nil, wrapped)
+
+	desc := UnwrapDescriptor(err)
+	assertNotEqual(t, nil, desc)
+	assert(t, ErrValueUnsupported, desc)
+}
+
+//----
 
 type customEntError struct {
 	entID string
@@ -166,7 +193,7 @@ func TestEntSetEmpty(t *testing.T) {
 }
 
 func TestEntSetSinge(t *testing.T) {
-	var err error = EntSet(Ent("foo", ErrValueMalformed))
+	var err error = EntSet(Ent("foo").Desc(ErrValueMalformed))
 	if err.Error() != "foo: malformed" {
 		t.Errorf(`err.Error() != "foo: malformed" -- %q`, err.Error())
 	}
