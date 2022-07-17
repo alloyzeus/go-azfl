@@ -13,6 +13,7 @@ type ArgumentError interface {
 	// ArgumentName returns the name of the offending argument. It might
 	// be empty if there's only one argument.
 	ArgumentName() string
+	FieldErrors() []EntityError
 }
 
 type ArgumentErrorBuilder interface {
@@ -29,6 +30,10 @@ type ArgumentErrorBuilder interface {
 
 	// Wrap returns a copy with wrapped error is set to detailingError.
 	Wrap(detailingError error) ArgumentErrorBuilder
+
+	// Rewrap collects descriptor, wrapped, and fields from err and include
+	// them into the new error.
+	Rewrap(err error) ArgumentErrorBuilder
 
 	Fieldset(fields ...EntityError) ArgumentErrorBuilder
 }
@@ -115,6 +120,8 @@ var (
 	_ EntityError          = &argumentError{}
 	_ ArgumentError        = &argumentError{}
 	_ ArgumentErrorBuilder = &argumentError{}
+	_ hasDescriptor        = &argumentError{}
+	_ hasFieldErrors       = &argumentError{}
 )
 
 func (e *argumentError) ArgumentName() string {
@@ -175,5 +182,22 @@ func (e argumentError) Fieldset(fields ...EntityError) ArgumentErrorBuilder {
 
 func (e argumentError) Wrap(detailingError error) ArgumentErrorBuilder {
 	e.wrapped = detailingError
+	return &e
+}
+
+func (e argumentError) Rewrap(err error) ArgumentErrorBuilder {
+	if err != nil {
+		if descErr, _ := err.(ErrorDescriptor); descErr != nil {
+			e.descriptor = descErr
+		} else {
+			if unwrappable, _ := err.(Unwrappable); unwrappable != nil {
+				e.descriptor = UnwrapDescriptor(err)
+				e.wrapped = Unwrap(err)
+				e.fields = UnwrapFieldErrors(err)
+			} else {
+				e.wrapped = err
+			}
+		}
+	}
 	return &e
 }

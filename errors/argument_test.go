@@ -175,6 +175,71 @@ func TestArgValueUnsupportedFoo(t *testing.T) {
 	assert(t, ErrValueUnsupported, desc)
 }
 
+func TestArgRewrapNil(t *testing.T) {
+	var err error = Arg("foo").Rewrap(nil)
+	assert(t, "arg foo", err.Error())
+	assert(t, true, IsArgumentError(err))
+	assert(t, true, IsEntityError(err))
+	assert(t, nil, UnwrapDescriptor(err))
+	assert(t, nil, Unwrap(err))
+}
+
+func TestArgRewrapDesc(t *testing.T) {
+	var err error = Arg("foo").Rewrap(ErrValueMalformed)
+	assert(t, "arg foo: malformed", err.Error())
+	assert(t, true, IsArgumentError(err))
+	assert(t, true, IsEntityError(err))
+	assertNotEqual(t, nil, UnwrapDescriptor(err))
+	assert(t, ErrValueMalformed, UnwrapDescriptor(err))
+	assert(t, nil, Unwrap(err))
+}
+
+func TestArgRewrapDescWrapped(t *testing.T) {
+	var err error = Arg("foo").Rewrap(Arg1().Desc(ErrValueMalformed).Wrap(Msg("bar")))
+	assert(t, "arg foo: malformed: bar", err.Error())
+	assert(t, true, IsArgumentError(err))
+	assert(t, true, IsEntityError(err))
+	assertNotEqual(t, nil, UnwrapDescriptor(err))
+	assert(t, ErrValueMalformed, UnwrapDescriptor(err))
+	assertNotEqual(t, nil, Unwrap(err))
+	assert(t, "bar", Unwrap(err).Error())
+}
+
+func TestArgRewrapRandom(t *testing.T) {
+	var err error = Arg("foo").Rewrap(Msg("bar"))
+	assert(t, "arg foo: bar", err.Error())
+	assert(t, true, IsArgumentError(err))
+	assert(t, true, IsEntityError(err))
+	assert(t, nil, UnwrapDescriptor(err))
+	assertNotEqual(t, nil, Unwrap(err))
+	assert(t, "bar", Unwrap(err).Error())
+}
+
+func TestArgRewrapWrappedNoDesc(t *testing.T) {
+	var err error = Arg("foo").Rewrap(Arg1().Wrap(Msg("bar")))
+	assert(t, "arg foo: bar", err.Error())
+	assert(t, true, IsArgumentError(err))
+	assert(t, true, IsEntityError(err))
+	assert(t, nil, UnwrapDescriptor(err))
+	assertNotEqual(t, nil, Unwrap(err))
+	assert(t, "bar", Unwrap(err).Error())
+}
+
+func TestArgRewrapFields(t *testing.T) {
+	var err error = Arg("simple").Rewrap(Arg1().Fieldset(
+		EntValueUnsupported("foo"),
+		Ent("bar").Desc(ErrValueMalformed),
+	))
+	assert(t, "arg simple: foo: unsupported, bar: malformed", err.Error())
+	assert(t, true, IsArgumentError(err))
+	assert(t, true, IsEntityError(err))
+	assert(t, nil, UnwrapDescriptor(err))
+	assert(t, nil, Unwrap(err))
+	assert(t, 2, len(UnwrapFieldErrors(err)))
+}
+
+// ----
+
 type customArgError struct {
 	argName string
 }
@@ -183,7 +248,8 @@ var (
 	_ ArgumentError = &customArgError{}
 )
 
-func (e *customArgError) ArgumentName() string { return e.argName }
-func (e *customArgError) Error() string        { return "custom arg error" }
-func (e *customArgError) CallError() CallError { return e }
-func (e *customArgError) Unwrap() error        { return nil }
+func (e *customArgError) ArgumentName() string      { return e.argName }
+func (e *customArgError) Error() string             { return "custom arg error" }
+func (e *customArgError) CallError() CallError      { return e }
+func (e *customArgError) Unwrap() error             { return nil }
+func (e customArgError) FieldErrors() []EntityError { return nil }

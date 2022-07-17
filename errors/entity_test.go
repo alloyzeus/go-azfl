@@ -142,10 +142,11 @@ var (
 	_ EntityError = &customEntError{}
 )
 
-func (e *customEntError) EntityIdentifier() string { return e.entID }
-func (e *customEntError) Error() string            { return "custom ent error" }
-func (e *customEntError) CallError() CallError     { return e }
-func (e *customEntError) Unwrap() error            { return nil }
+func (e *customEntError) EntityIdentifier() string  { return e.entID }
+func (e *customEntError) Error() string             { return "custom ent error" }
+func (e *customEntError) CallError() CallError      { return e }
+func (e *customEntError) Unwrap() error             { return nil }
+func (e customEntError) FieldErrors() []EntityError { return nil }
 
 func TestUnwrapEntityErrorSetNil(t *testing.T) {
 	var err error
@@ -160,6 +161,65 @@ func TestUnwrapEntityErrorSetWrongType(t *testing.T) {
 		t.Error("len(callErrors) != 0")
 	}
 }
+
+func TestEntRewrapNil(t *testing.T) {
+	var err error = Ent("foo").Rewrap(nil)
+	assert(t, "foo", err.Error())
+	assert(t, true, IsEntityError(err))
+	assert(t, nil, UnwrapDescriptor(err))
+	assert(t, nil, Unwrap(err))
+}
+
+func TestEntRewrapDesc(t *testing.T) {
+	var err error = Ent("foo").Rewrap(ErrValueMalformed)
+	assert(t, "foo: malformed", err.Error())
+	assert(t, true, IsEntityError(err))
+	assertNotEqual(t, nil, UnwrapDescriptor(err))
+	assert(t, ErrValueMalformed, UnwrapDescriptor(err))
+	assert(t, nil, Unwrap(err))
+}
+
+func TestEntRewrapDescWrapped(t *testing.T) {
+	var err error = Ent("foo").Rewrap(Arg1().Desc(ErrValueMalformed).Wrap(Msg("bar")))
+	assert(t, "foo: malformed: bar", err.Error())
+	assert(t, true, IsEntityError(err))
+	assertNotEqual(t, nil, UnwrapDescriptor(err))
+	assert(t, ErrValueMalformed, UnwrapDescriptor(err))
+	assertNotEqual(t, nil, Unwrap(err))
+	assert(t, "bar", Unwrap(err).Error())
+}
+
+func TestEntRewrapRandom(t *testing.T) {
+	var err error = Ent("foo").Rewrap(Msg("bar"))
+	assert(t, "foo: bar", err.Error())
+	assert(t, true, IsEntityError(err))
+	assert(t, nil, UnwrapDescriptor(err))
+	assertNotEqual(t, nil, Unwrap(err))
+	assert(t, "bar", Unwrap(err).Error())
+}
+
+func TestEntRewrapWrappedNoDesc(t *testing.T) {
+	var err error = Ent("foo").Rewrap(Arg1().Wrap(Msg("bar")))
+	assert(t, "foo: bar", err.Error())
+	assert(t, true, IsEntityError(err))
+	assert(t, nil, UnwrapDescriptor(err))
+	assertNotEqual(t, nil, Unwrap(err))
+	assert(t, "bar", Unwrap(err).Error())
+}
+
+func TestEntRewrapFields(t *testing.T) {
+	var err error = Ent("simple").Rewrap(Arg1().Fieldset(
+		EntValueUnsupported("foo"),
+		Ent("bar").Desc(ErrValueMalformed),
+	))
+	assert(t, "simple: foo: unsupported, bar: malformed", err.Error())
+	assert(t, true, IsEntityError(err))
+	assert(t, nil, UnwrapDescriptor(err))
+	assert(t, nil, Unwrap(err))
+	assert(t, 2, len(UnwrapFieldErrors(err)))
+}
+
+//----
 
 func TestEntSetEmpty(t *testing.T) {
 	var err error = entErrorSet{}

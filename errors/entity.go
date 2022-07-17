@@ -10,6 +10,7 @@ type EntityError interface {
 	Unwrappable
 
 	EntityIdentifier() string
+	FieldErrors() []EntityError
 }
 
 type EntityErrorBuilder interface {
@@ -26,6 +27,10 @@ type EntityErrorBuilder interface {
 
 	// Wrap returns a copy with wrapped error is set to detailingError.
 	Wrap(detailingError error) EntityErrorBuilder
+
+	// Rewrap collects descriptor, wrapped, and fields from err and include
+	// them into the new error.
+	Rewrap(err error) EntityErrorBuilder
 
 	Fieldset(fields ...EntityError) EntityErrorBuilder
 }
@@ -112,6 +117,7 @@ var (
 	_ EntityError        = &entityError{}
 	_ EntityErrorBuilder = &entityError{}
 	_ hasDescriptor      = &entityError{}
+	_ hasFieldErrors     = &entityError{}
 )
 
 func (e *entityError) Error() string {
@@ -167,6 +173,26 @@ func (e entityError) Descriptor() ErrorDescriptor {
 	}
 	return nil
 }
+func (e entityError) FieldErrors() []EntityError {
+	return copyFieldSet(e.fields)
+}
+
+func (e entityError) Rewrap(err error) EntityErrorBuilder {
+	if err != nil {
+		if descErr, _ := err.(ErrorDescriptor); descErr != nil {
+			e.descriptor = descErr
+		} else {
+			if unwrappable, _ := err.(Unwrappable); unwrappable != nil {
+				e.descriptor = UnwrapDescriptor(err)
+				e.wrapped = Unwrap(err)
+				e.fields = UnwrapFieldErrors(err)
+			} else {
+				e.wrapped = err
+			}
+		}
+	}
+	return &e
+}
 
 func (e entityError) Desc(desc EntityErrorDescriptor) EntityErrorBuilder {
 	e.descriptor = desc
@@ -186,6 +212,17 @@ func (e entityError) Fieldset(fields ...EntityError) EntityErrorBuilder {
 func (e entityError) Wrap(detailingError error) EntityErrorBuilder {
 	e.wrapped = detailingError
 	return &e
+}
+
+func UnwrapFieldErrors(err error) []EntityError {
+	if prov, _ := err.(hasFieldErrors); prov != nil {
+		return prov.FieldErrors()
+	}
+	return nil
+}
+
+type hasFieldErrors interface {
+	FieldErrors() []EntityError
 }
 
 // EntityErrorSet is an interface to combine multiple EntityError instances
