@@ -6,25 +6,36 @@ type AccessError interface {
 	AccessError() AccessError
 }
 
+type AccessErrorBuilder interface {
+	AccessError
+
+	// Desc returns a copy with descriptor is set to desc.
+	Desc(desc ErrorDescriptor) AccessErrorBuilder
+
+	// DescMsg sets the descriptor with the provided string. For the best
+	// experience, descMsg should be defined as a constant so that the error
+	// users could use it to identify an error. For non-constant descriptor
+	// use the Wrap method.
+	DescMsg(descMsg string) AccessErrorBuilder
+
+	// Wrap returns a copy with wrapped error is set to detailingError.
+	Wrap(detailingError error) AccessErrorBuilder
+}
+
 func IsAccessError(err error) bool {
 	_, ok := err.(AccessError)
 	return ok
 }
 
-func Access(descriptor ErrorDescriptor, details error) AccessError {
-	return &accessError{
-		descriptor: descriptor,
-		details:    details,
-	}
+//TODO: should be Access(resourceIdentifiers ...string)
+func Access() AccessErrorBuilder {
+	return &accessError{}
 }
 
 const ErrAccessForbidden = accessErrorDescriptor("forbidden")
 
-func AccessForbidden(details error) AccessError {
-	return &accessError{
-		descriptor: ErrAccessForbidden,
-		details:    details,
-	}
+func AccessForbidden() AccessErrorBuilder {
+	return Access().Desc(ErrAccessForbidden)
 }
 
 func IsAccessForbidden(err error) bool {
@@ -39,11 +50,8 @@ func IsAccessForbidden(err error) bool {
 
 const ErrAuthorizationInvalid = constantErrorDescriptor("authorization invalid")
 
-func AuthorizationInvalid(details error) AccessError {
-	return &accessError{
-		descriptor: ErrAuthorizationInvalid,
-		details:    details,
-	}
+func AuthorizationInvalid() AccessErrorBuilder {
+	return Access().Desc(ErrAuthorizationInvalid)
 }
 
 func IsAuthorizationInvalid(err error) bool {
@@ -58,7 +66,7 @@ func IsAuthorizationInvalid(err error) bool {
 
 type accessError struct {
 	descriptor ErrorDescriptor
-	details    error
+	wrapped    error
 }
 
 var (
@@ -69,15 +77,15 @@ var (
 )
 
 func (e *accessError) Error() string {
-	detailsStr := errorString(e.details)
+	causeStr := errorString(e.wrapped)
 	if descStr := errorDescriptorString(e.descriptor); descStr != "" {
-		if detailsStr != "" {
-			return "access " + descStr + ": " + detailsStr
+		if causeStr != "" {
+			return "access " + descStr + ": " + causeStr
 		}
 		return "access " + descStr
 	}
-	if detailsStr != "" {
-		return "access: " + detailsStr
+	if causeStr != "" {
+		return "access: " + causeStr
 	}
 	return "access error"
 }
@@ -86,7 +94,22 @@ func (e *accessError) AccessError() AccessError    { return e }
 func (e *accessError) ContextError() ContextError  { return e }
 func (e *accessError) CallError() CallError        { return e }
 func (e *accessError) Descriptor() ErrorDescriptor { return e.descriptor }
-func (e *accessError) Unwrap() error               { return e.details }
+func (e *accessError) Unwrap() error               { return e.wrapped }
+
+func (e accessError) Desc(desc EntityErrorDescriptor) AccessErrorBuilder {
+	e.descriptor = desc
+	return &e
+}
+
+func (e accessError) DescMsg(descMsg string) AccessErrorBuilder {
+	e.descriptor = constantErrorDescriptor(descMsg)
+	return &e
+}
+
+func (e accessError) Wrap(detailingError error) AccessErrorBuilder {
+	e.wrapped = detailingError
+	return &e
+}
 
 type accessErrorDescriptor string
 

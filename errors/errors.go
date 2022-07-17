@@ -1,5 +1,40 @@
 // Package errors provides extra functionalities to that of Go's stdlib
 // errors package.
+//
+// An error as follow is informative for human developers:
+//
+//     Unable to parse "example" as an email address.
+//
+// But for other part of code that calls the function, it will need to
+// parse that message so that it can react properly, including to translate
+// the message into various human languages.
+//
+// It is pretty much clear that structured errors are more flexible. For the
+// calling routines, they won't need to parse the message. If we are going
+// to display the error to human end users, the structured errors will also
+// have more advantages as different human languages are constructed
+// differently.
+//
+// Examples:
+//
+//     // An error that describes that argument "username" is unspecified
+//     err := errors.Arg("username").Unspecified()
+//
+//     // Check if an error is an argument error where "username" is unspecified
+//     errors.IsArgUnspecified(err, "username")
+//
+//     // ... or simply check if it's an argument error
+//     if errors.IsArgumentError(err) {
+//         // e.g., respond with HTTP 400
+//     }
+//
+//     // An error that describes that the field "Name" of entity with ID "user5432" is empty
+//     errors.Ent("user5432").Fieldset(errors.Ent("Name").Desc(errors.ErrValueEmpty))
+//
+//     // An error that describes that argument "email" is malformed. Detailing error, usually from
+//     // the parser function, is available as wrapped error.
+//     errors.Arg("email").Desc(errors.ErrValueMalformed).Wrap(err)
+//
 package errors
 
 import (

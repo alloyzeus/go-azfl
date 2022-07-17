@@ -8,8 +8,35 @@ import "strings"
 // For example, a web page is an entity with its URL is the identifier.
 type EntityError interface {
 	Unwrappable
+
 	EntityIdentifier() string
+	FieldErrors() []EntityError
 }
+
+type EntityErrorBuilder interface {
+	EntityError
+
+	// Desc returns a copy with descriptor is set to desc.
+	Desc(desc EntityErrorDescriptor) EntityErrorBuilder
+
+	// DescMsg sets the descriptor with the provided string. For the best
+	// experience, descMsg should be defined as a constant so that the error
+	// users could use it to identify an error. For non-constant descriptor
+	// use the Wrap method.
+	DescMsg(descMsg string) EntityErrorBuilder
+
+	// Wrap returns a copy with wrapped error is set to detailingError.
+	Wrap(detailingError error) EntityErrorBuilder
+
+	// Rewrap collects descriptor, wrapped, and fields from err and include
+	// them into the new error.
+	Rewrap(err error) EntityErrorBuilder
+
+	Fieldset(fields ...EntityError) EntityErrorBuilder
+}
+
+//TODO: custom type
+type EntityErrorDescriptor = ErrorDescriptor
 
 func IsEntityError(err error) bool {
 	_, ok := err.(EntityError)
@@ -21,56 +48,37 @@ func IsEntityError(err error) bool {
 // entityIdentifier should describe the 'what' while err describes the 'why'.
 //
 //   // Describes that the file ".config.yaml" does not exist.
-//   errors.Ent("./config.yaml", os.ErrNotExist)
+//   errors.Ent("./config.yaml").Wrap(os.ErrNotExist)
 //
 //   // Describes that the site "https://example.com" is unreachable.
-//   errors.Ent("https://example.com/", errors.Msg("unreachable"))
+//   errors.Ent("https://example.com/").DescMsg("unreachable")
 //
-func Ent(entityIdentifier string, err error) EntityError {
+func Ent(entityIdentifier string) EntityErrorBuilder {
 	return &entityError{
 		identifier: entityIdentifier,
-		err:        err,
 	}
 }
 
-// EntFields is used to create an error that describes multiple field errors
-// of an entity.
-func EntFields(entityIdentifier string, fields ...EntityError) EntityError {
-	if fields != nil {
-		fields = fields[:]
-	}
+// EntValueMalformed creates an EntityError with entity identifier is set to
+// the value of entityIdentifier and descriptor is set to ErrValueMalformed.
+func EntValueMalformed(entityIdentifier string) EntityErrorBuilder {
 	return &entityError{
 		identifier: entityIdentifier,
-		fields:     fields,
+		descriptor: ErrValueMalformed,
 	}
 }
 
-// EntMsg creates an instance of error from an entitity identifier and the
-// error message which describes why the entity is considered error.
-func EntMsg(entityIdentifier string, errMsg string) EntityError {
+// EntValueUnsupported creates an EntityError with entity identifier is set to
+// the value of entityIdentifier and descriptor is set to ErrValueUnsupported.
+func EntValueUnsupported(entityIdentifier string) EntityErrorBuilder {
 	return &entityError{
 		identifier: entityIdentifier,
-		err:        Msg(errMsg),
+		descriptor: ErrValueUnsupported,
 	}
 }
 
-// EntInvalid creates an EntityError with err set to DataErrInvalid.
-func EntInvalid(entityIdentifier string, details error) EntityError {
-	return &entityError{
-		identifier: entityIdentifier,
-		err:        DescWrap(ErrValueInvalid, details),
-	}
-}
-
-func IsEntInvalidError(err error) bool {
-	if !IsEntityError(err) {
-		return false
-	}
-	if desc := UnwrapDescriptor(err); desc != nil {
-		return desc == ErrValueInvalid
-	}
-	return false
-}
+//TODO
+// func MultiEnt(identifiers ...string)
 
 const (
 	// ErrEntityNotFound is used when the entity with the specified name
@@ -80,16 +88,13 @@ const (
 	// ErrEntityConflict is used when the process of creating a new entity
 	// fails because an entity with the same name already exists.
 	ErrEntityConflict = valueConstantErrorDescriptor("conflict")
+
+	// ErrEntityUnreachable is used to describe that the system is unable
+	// to reach the system responsible of the specified entity.
+	ErrEntityUnreachable = valueConstantErrorDescriptor("unreachable")
 )
 
-func EntNotFound(entityIdentifier string, details error) EntityError {
-	return &entityError{
-		identifier: entityIdentifier,
-		err:        DescWrap(ErrEntityNotFound, details),
-	}
-}
-
-func IsEntNotFoundError(err error) bool {
+func IsEntityNotFoundError(err error) bool {
 	if !IsEntityError(err) {
 		return false
 	}
@@ -101,15 +106,18 @@ func IsEntNotFoundError(err error) bool {
 
 type entityError struct {
 	identifier string
-	err        error
+	descriptor ErrorDescriptor
+	wrapped    error
 	fields     []EntityError
 }
 
 var (
-	_ error         = &entityError{}
-	_ Unwrappable   = &entityError{}
-	_ EntityError   = &entityError{}
-	_ hasDescriptor = &entityError{}
+	_ error              = &entityError{}
+	_ Unwrappable        = &entityError{}
+	_ EntityError        = &entityError{}
+	_ EntityErrorBuilder = &entityError{}
+	_ hasDescriptor      = &entityError{}
+	_ hasFieldErrors     = &entityError{}
 )
 
 func (e *entityError) Error() string {
@@ -117,16 +125,25 @@ func (e *entityError) Error() string {
 	if suffix != "" {
 		suffix = ": " + suffix
 	}
-	detailsStr := errorString(e.err)
+	var descStr string
+	if e.descriptor != nil {
+		descStr = e.descriptor.Error()
+	}
+	causeStr := errorString(e.wrapped)
+	if causeStr == "" {
+		causeStr = descStr
+	} else if descStr != "" {
+		causeStr = descStr + ": " + causeStr
+	}
 
 	if e.identifier != "" {
-		if detailsStr != "" {
-			return e.identifier + ": " + detailsStr + suffix
+		if causeStr != "" {
+			return e.identifier + ": " + causeStr + suffix
 		}
 		return e.identifier + suffix
 	}
-	if detailsStr != "" {
-		return "entity " + detailsStr + suffix
+	if causeStr != "" {
+		return "entity " + causeStr + suffix
 	}
 	if suffix != "" {
 		return "entity" + suffix
@@ -145,19 +162,67 @@ func (e entityError) fieldErrorsAsString() string {
 	return ""
 }
 
-func (e *entityError) Unwrap() error            { return e.err }
-func (e *entityError) EntityIdentifier() string { return e.identifier }
-func (e *entityError) Descriptor() ErrorDescriptor {
-	if e == nil {
-		return nil
+func (e entityError) Unwrap() error            { return e.wrapped }
+func (e entityError) EntityIdentifier() string { return e.identifier }
+func (e entityError) Descriptor() ErrorDescriptor {
+	if e.descriptor != nil {
+		return e.descriptor
 	}
-	if desc, ok := e.err.(ErrorDescriptor); ok {
-		return desc
-	}
-	if desc := UnwrapDescriptor(e.err); desc != nil {
+	if desc, ok := e.wrapped.(ErrorDescriptor); ok {
 		return desc
 	}
 	return nil
+}
+func (e entityError) FieldErrors() []EntityError {
+	return copyFieldSet(e.fields)
+}
+
+func (e entityError) Rewrap(err error) EntityErrorBuilder {
+	if err != nil {
+		if descErr, _ := err.(ErrorDescriptor); descErr != nil {
+			e.descriptor = descErr
+		} else {
+			if unwrappable, _ := err.(Unwrappable); unwrappable != nil {
+				e.descriptor = UnwrapDescriptor(err)
+				e.wrapped = Unwrap(err)
+				e.fields = UnwrapFieldErrors(err)
+			} else {
+				e.wrapped = err
+			}
+		}
+	}
+	return &e
+}
+
+func (e entityError) Desc(desc EntityErrorDescriptor) EntityErrorBuilder {
+	e.descriptor = desc
+	return &e
+}
+
+func (e entityError) DescMsg(descMsg string) EntityErrorBuilder {
+	e.descriptor = constantErrorDescriptor(descMsg)
+	return &e
+}
+
+func (e entityError) Fieldset(fields ...EntityError) EntityErrorBuilder {
+	e.fields = fields // copy?
+	return &e
+}
+
+func (e entityError) Wrap(detailingError error) EntityErrorBuilder {
+	e.wrapped = detailingError
+	return &e
+}
+
+func UnwrapFieldErrors(err error) []EntityError {
+	if prov, _ := err.(hasFieldErrors); prov != nil {
+		return prov.FieldErrors()
+	}
+	return nil
+}
+
+type hasFieldErrors interface {
+	FieldErrors() []EntityError
 }
 
 // EntityErrorSet is an interface to combine multiple EntityError instances
@@ -226,12 +291,7 @@ func (e entErrorSet) Errors() []error {
 }
 
 func (e entErrorSet) EntityErrors() []EntityError {
-	if len(e) > 0 {
-		errs := make([]EntityError, len(e))
-		copy(errs, e)
-		return errs
-	}
-	return nil
+	return copyFieldSet(e)
 }
 
 func copyFieldSet(fields []EntityError) []EntityError {

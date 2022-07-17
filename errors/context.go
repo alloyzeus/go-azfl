@@ -2,9 +2,29 @@ package errors
 
 import "strings"
 
+//TODO: a ContextError should be an EntityError, with *context* as the entity.
+
 type ContextError interface {
 	CallError
 	ContextError() ContextError
+}
+
+type ContextErrorBuilder interface {
+	ContextError
+
+	// Desc returns a copy with descriptor is set to desc.
+	Desc(desc ErrorDescriptor) ContextErrorBuilder
+
+	// DescMsg sets the descriptor with the provided string. For the best
+	// experience, descMsg should be defined as a constant so that the error
+	// users could use it to identify an error. For non-constant descriptor
+	// use the Wrap method.
+	DescMsg(descMsg string) ContextErrorBuilder
+
+	// Wrap returns a copy with wrapped error is set to detailingError.
+	Wrap(detailingError error) ContextErrorBuilder
+
+	Fieldset(fields ...EntityError) ContextErrorBuilder
 }
 
 func IsContextError(err error) bool {
@@ -12,18 +32,12 @@ func IsContextError(err error) bool {
 	return ok
 }
 
-func Context(details error, fields ...EntityError) ContextError {
-	return &contextError{inner: details, fields: copyFieldSet(fields)}
+func Context() ContextErrorBuilder {
+	return &contextError{}
 }
 
-func ContextFields(fields ...EntityError) ContextError {
-	return &contextError{
-		fields: copyFieldSet(fields),
-	}
-}
-
-func ContextUnspecified() ContextError {
-	return &contextError{inner: ErrValueUnspecified}
+func ContextUnspecified() ContextErrorBuilder {
+	return Context().Wrap(ErrValueUnspecified)
 }
 
 func IsContextUnspecifiedError(err error) bool {
@@ -37,15 +51,17 @@ func IsContextUnspecifiedError(err error) bool {
 }
 
 type contextError struct {
-	inner  error
-	fields []EntityError
+	descriptor ErrorDescriptor
+	wrapped    error
+	fields     []EntityError
 }
 
 var (
-	_ error        = &contextError{}
-	_ CallError    = &contextError{}
-	_ ContextError = &contextError{}
-	_ Unwrappable  = &contextError{}
+	_ error               = &contextError{}
+	_ CallError           = &contextError{}
+	_ ContextError        = &contextError{}
+	_ ContextErrorBuilder = &contextError{}
+	_ Unwrappable         = &contextError{}
 )
 
 func (e *contextError) Error() string {
@@ -53,23 +69,26 @@ func (e *contextError) Error() string {
 	if suffix != "" {
 		suffix = ": " + suffix
 	}
+	var descStr string
+	if e.descriptor != nil {
+		descStr = e.descriptor.Error()
+	}
+	causeStr := errorString(e.wrapped)
+	if causeStr == "" {
+		causeStr = descStr
+	} else if descStr != "" {
+		causeStr = descStr + ": " + causeStr
+	}
 
-	if errMsg := e.innerMsg(); errMsg != "" {
-		return "context " + errMsg + suffix
+	if causeStr != "" {
+		return "context " + causeStr + suffix
 	}
 	return "context invalid" + suffix
 }
 
 func (e *contextError) CallError() CallError       { return e }
 func (e *contextError) ContextError() ContextError { return e }
-func (e *contextError) Unwrap() error              { return e.inner }
-
-func (e *contextError) innerMsg() string {
-	if e.inner != nil {
-		return e.inner.Error()
-	}
-	return ""
-}
+func (e *contextError) Unwrap() error              { return e.wrapped }
 
 func (e contextError) fieldErrorsAsString() string {
 	if flen := len(e.fields); flen > 0 {
@@ -82,15 +101,32 @@ func (e contextError) fieldErrorsAsString() string {
 	return ""
 }
 
-func (e *contextError) Descriptor() ErrorDescriptor {
-	if e == nil {
-		return nil
+func (e contextError) Descriptor() ErrorDescriptor {
+	if e.descriptor != nil {
+		return e.descriptor
 	}
-	if desc, ok := e.inner.(ErrorDescriptor); ok {
-		return desc
-	}
-	if desc := UnwrapDescriptor(e.inner); desc != nil {
+	if desc, ok := e.wrapped.(ErrorDescriptor); ok {
 		return desc
 	}
 	return nil
+}
+
+func (e contextError) Desc(desc EntityErrorDescriptor) ContextErrorBuilder {
+	e.descriptor = desc
+	return &e
+}
+
+func (e contextError) DescMsg(descMsg string) ContextErrorBuilder {
+	e.descriptor = constantErrorDescriptor(descMsg)
+	return &e
+}
+
+func (e contextError) Fieldset(fields ...EntityError) ContextErrorBuilder {
+	e.fields = fields // copy?
+	return &e
+}
+
+func (e contextError) Wrap(detailingError error) ContextErrorBuilder {
+	e.wrapped = detailingError
+	return &e
 }

@@ -26,7 +26,7 @@ func TestAssorted(t *testing.T) {
 	if nf3.Error() == "" {
 		t.Errorf(`nf3.Error() == "" -- %q`, nf3.Error())
 	}
-	if IsEntNotFoundError(nf) {
+	if IsEntityNotFoundError(nf) {
 		t.Errorf("IsEntNotFound(nf)")
 	}
 }

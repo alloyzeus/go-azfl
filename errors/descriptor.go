@@ -11,45 +11,53 @@ package errors
 //
 // This interface could be used to describe any *what*, like the method
 // in "method not implemented". For specific to data, see DataDescriptorError.
+//
+// Other term for ErrorDescriptor is error code.
 type ErrorDescriptor interface {
 	error
 	ErrorDescriptorString() string
+}
+
+type DescriptorWrappedError interface {
+	Unwrappable
+
+	Descriptor() ErrorDescriptor
 }
 
 type hasDescriptor interface {
 	Descriptor() ErrorDescriptor
 }
 
-func DescWrap(descriptor ErrorDescriptor, details error) error {
-	return descriptorDetailsError{descriptor: descriptor, details: details}
+func descWrap(descriptor ErrorDescriptor, details error) DescriptorWrappedError {
+	return descriptorWrappedError{descriptor: descriptor, wrapped: details}
 }
 
-type descriptorDetailsError struct {
+type descriptorWrappedError struct {
 	descriptor ErrorDescriptor
-	details    error
+	wrapped    error
 }
 
 var (
-	_ error         = descriptorDetailsError{}
-	_ hasDescriptor = descriptorDetailsError{}
-	_ Unwrappable   = descriptorDetailsError{}
+	_ error         = descriptorWrappedError{}
+	_ hasDescriptor = descriptorWrappedError{}
+	_ Unwrappable   = descriptorWrappedError{}
 )
 
-func (e descriptorDetailsError) Error() string {
+func (e descriptorWrappedError) Error() string {
 	if e.descriptor != nil {
-		if e.details != nil {
-			return e.descriptor.Error() + ": " + e.details.Error()
+		if e.wrapped != nil {
+			return e.descriptor.Error() + ": " + e.wrapped.Error()
 		}
 		return e.descriptor.Error()
 	}
-	if e.details != nil {
-		return e.details.Error()
+	if e.wrapped != nil {
+		return e.wrapped.Error()
 	}
 	return ""
 }
 
-func (e descriptorDetailsError) Descriptor() ErrorDescriptor { return e.descriptor }
-func (e descriptorDetailsError) Unwrap() error               { return e.details }
+func (e descriptorWrappedError) Descriptor() ErrorDescriptor { return e.descriptor }
+func (e descriptorWrappedError) Unwrap() error               { return e.wrapped }
 
 // constantErrorDescriptor is a generic error that designed to be declared
 // as constant so that an instance could be easily compared by value to
@@ -74,6 +82,20 @@ func UnwrapDescriptor(err error) ErrorDescriptor {
 		}
 	}
 	return nil
+}
+
+func HasDescriptor(err error, desc ErrorDescriptor) bool {
+	d := UnwrapDescriptor(err)
+	if d == desc {
+		return true
+	}
+	//TODO: use other strategies. even reflect as the last resort
+	return false
+}
+
+func HasDescriptorText(err error, descText string) bool {
+	d := UnwrapDescriptor(err)
+	return d.Error() == descText
 }
 
 func errorDescriptorString(err error) string {
