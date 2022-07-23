@@ -3,7 +3,7 @@ package azid
 import (
 	"github.com/rez-go/crock32"
 
-	"github.com/alloyzeus/go-azfl/errors"
+	errors "github.com/alloyzeus/go-azfl/azerrs"
 )
 
 // TextMarshalable is an interface definition for objects which able to
@@ -26,18 +26,18 @@ var (
 // TextDecode decodes azid-bin ref-key from a string.
 func TextDecode(s string) ([]byte, error) {
 	var dataEncoded []byte
-	var csEncoded []byte
-	inAsBytes := []byte(s)
-	for i, c := range inAsBytes {
+	var checksumEncoded []byte
+	inputAsBytes := []byte(s)
+	for i, c := range inputAsBytes {
 		if c == 'U' || c == 'u' {
-			if i+1 < len(inAsBytes) {
-				if c = inAsBytes[i+1]; c == 'N' || c == 'n' {
-					dataEncoded = inAsBytes[:i]
-					csEncoded = inAsBytes[i+2 : i+4]
+			if i+1 < len(inputAsBytes) {
+				if c = inputAsBytes[i+1]; c == 'N' || c == 'n' {
+					dataEncoded = inputAsBytes[:i]
+					checksumEncoded = inputAsBytes[i+2 : i+4]
 					break
 				}
 			} else {
-				dataEncoded = inAsBytes[:i]
+				dataEncoded = inputAsBytes[:i]
 				break
 			}
 		}
@@ -47,9 +47,9 @@ func TextDecode(s string) ([]byte, error) {
 	}
 	dataBytes, err := crock32.Decode(string(dataEncoded))
 	if err != nil {
-		return nil, errors.ArgWrap("", "data decoding", err)
+		return nil, errors.Arg1().Desc(errors.ErrValueMalformed).Wrap(err)
 	}
-	if len(csEncoded) == 2 {
+	if len(checksumEncoded) == 2 {
 		//TODO: checksum
 	}
 	return dataBytes, nil
