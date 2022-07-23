@@ -207,12 +207,11 @@ func TestArgRewrapDescWrapped(t *testing.T) {
 
 func TestArgRewrapRandom(t *testing.T) {
 	var err error = Arg("foo").Rewrap(Msg("bar"))
-	assert(t, "arg foo: bar", err.Error())
+	assert(t, "arg foo", err.Error())
 	assert(t, true, IsArgumentError(err))
 	assert(t, true, IsEntityError(err))
 	assert(t, nil, UnwrapDescriptor(err))
-	assertNotEqual(t, nil, Unwrap(err))
-	assert(t, "bar", Unwrap(err).Error())
+	assert(t, nil, Unwrap(err))
 }
 
 func TestArgRewrapWrappedNoDesc(t *testing.T) {

@@ -1,6 +1,7 @@
 package errors
 
-// A ErrorDescriptor provides the description-part of an error.
+// A ErrorDescriptor provides the description-part of an error. It was
+// designed to be translated to error codes.
 //
 // In a good practice, an error contains an information about *what* and *why*.
 // A ErrorDescriptor abstracts the answers to the *why*.
@@ -10,9 +11,7 @@ package errors
 // will contain the "not found".
 //
 // This interface could be used to describe any *what*, like the method
-// in "method not implemented". For specific to data, see DataDescriptorError.
-//
-// Other term for ErrorDescriptor is error code.
+// in "method not implemented". For specific to value, see ValueDescriptorError.
 type ErrorDescriptor interface {
 	error
 	ErrorDescriptorString() string
@@ -86,11 +85,8 @@ func UnwrapDescriptor(err error) ErrorDescriptor {
 
 func HasDescriptor(err error, desc ErrorDescriptor) bool {
 	d := UnwrapDescriptor(err)
-	if d == desc {
-		return true
-	}
 	//TODO: use other strategies. even reflect as the last resort
-	return false
+	return d == desc
 }
 
 func HasDescriptorText(err error, descText string) bool {

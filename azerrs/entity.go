@@ -181,14 +181,12 @@ func (e entityError) Rewrap(err error) EntityErrorBuilder {
 	if err != nil {
 		if descErr, _ := err.(ErrorDescriptor); descErr != nil {
 			e.descriptor = descErr
+			e.wrapped = nil
+			e.fields = nil
 		} else {
-			if unwrappable, _ := err.(Unwrappable); unwrappable != nil {
-				e.descriptor = UnwrapDescriptor(err)
-				e.wrapped = Unwrap(err)
-				e.fields = UnwrapFieldErrors(err)
-			} else {
-				e.wrapped = err
-			}
+			e.descriptor = UnwrapDescriptor(err)
+			e.wrapped = Unwrap(err)
+			e.fields = UnwrapFieldErrors(err)
 		}
 	}
 	return &e
