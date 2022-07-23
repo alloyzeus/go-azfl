@@ -13,6 +13,8 @@ type ArgumentError interface {
 	// ArgumentName returns the name of the offending argument. It might
 	// be empty if there's only one argument.
 	ArgumentName() string
+
+	Descriptor() ErrorDescriptor
 	FieldErrors() []EntityError
 }
 
@@ -198,4 +200,40 @@ func (e argumentError) Rewrap(err error) ArgumentErrorBuilder {
 		}
 	}
 	return &e
+}
+
+type ArgumentErrorChecker struct {
+	errToCheck ArgumentError
+	truthState bool
+}
+
+func ArgumentErrorCheck(err error) ArgumentErrorChecker {
+	argErr, ok := err.(ArgumentError)
+	return ArgumentErrorChecker{
+		errToCheck: argErr,
+		truthState: ok,
+	}
+}
+
+func (checker ArgumentErrorChecker) IsTrue() bool { return checker.truthState }
+
+func (checker ArgumentErrorChecker) HasName(argName string) ArgumentErrorChecker {
+	if err := checker.errToCheck; err == nil || err.ArgumentName() != argName {
+		checker.truthState = false
+	}
+	return checker
+}
+
+func (checker ArgumentErrorChecker) HasDesc(desc ErrorDescriptor) ArgumentErrorChecker {
+	if !HasDescriptor(checker.errToCheck, desc) {
+		checker.truthState = false
+	}
+	return checker
+}
+
+func (checker ArgumentErrorChecker) HasWrapped(err error) ArgumentErrorChecker {
+	if !Is(err, Unwrap(checker.errToCheck)) {
+		checker.truthState = false
+	}
+	return checker
 }

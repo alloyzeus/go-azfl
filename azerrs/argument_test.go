@@ -32,6 +32,16 @@ func TestArgDescWrap(t *testing.T) {
 	inner := Msg("inner")
 	var err error = Arg("foo").Desc(ErrValueMalformed).Wrap(inner)
 	assert(t, "arg foo: malformed: inner", err.Error())
+	assert(t, true, ArgumentErrorCheck(err).IsTrue())
+	assert(t, true, ArgumentErrorCheck(err).HasName("foo").IsTrue())
+	assert(t, false, ArgumentErrorCheck(err).HasName("bar").IsTrue())
+	assert(t, true, ArgumentErrorCheck(err).HasName("foo").HasDesc(ErrValueMalformed).IsTrue())
+	assert(t, false, ArgumentErrorCheck(err).HasName("foo").HasDesc(ErrValueEmpty).IsTrue())
+	assert(t, false, ArgumentErrorCheck(err).HasName("bar").HasDesc(ErrValueMalformed).IsTrue())
+	assert(t, false, ArgumentErrorCheck(err).HasName("bar").HasDesc(ErrValueEmpty).IsTrue())
+	assert(t, true, ArgumentErrorCheck(err).HasName("foo").HasDesc(ErrValueMalformed).HasWrapped(inner).IsTrue())
+	assert(t, false, ArgumentErrorCheck(err).HasWrapped(nil).IsTrue())
+	assert(t, false, ArgumentErrorCheck(inner).IsTrue())
 
 	wrapped := Unwrap(err)
 	assertNotEqual(t, nil, wrapped)
@@ -235,6 +245,10 @@ func TestArgRewrapFields(t *testing.T) {
 	assert(t, nil, UnwrapDescriptor(err))
 	assert(t, nil, Unwrap(err))
 	assert(t, 2, len(UnwrapFieldErrors(err)))
+	assert(t, true, ArgumentErrorCheck(err).IsTrue())
+	assert(t, true, ArgumentErrorCheck(err).HasName("simple").IsTrue())
+	assert(t, true, ArgumentErrorCheck(err).HasName("simple").HasDesc(nil).IsTrue())
+	assert(t, true, ArgumentErrorCheck(err).HasName("simple").HasDesc(nil).HasWrapped(nil).IsTrue())
 }
 
 // ----
@@ -251,4 +265,5 @@ func (e *customArgError) ArgumentName() string      { return e.argName }
 func (e *customArgError) Error() string             { return "custom arg error" }
 func (e *customArgError) CallError() CallError      { return e }
 func (e *customArgError) Unwrap() error             { return nil }
+func (customArgError) Descriptor() ErrorDescriptor  { return nil }
 func (e customArgError) FieldErrors() []EntityError { return nil }
