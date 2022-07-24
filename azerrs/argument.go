@@ -30,18 +30,18 @@ type ArgumentErrorBuilder interface {
 	// use the Wrap method.
 	DescMsg(descMsg string) ArgumentErrorBuilder
 
-	// Wrap returns a copy with wrapped error is set to detailingError.
-	Wrap(detailingError error) ArgumentErrorBuilder
+	// Doc provides documentation text to the error. A documentation text
+	// provides directives or clues for the developers on how to fix the error.
+	Doc(docText string) ArgumentErrorBuilder
+
+	Fieldset(fields ...NamedError) ArgumentErrorBuilder
 
 	// Rewrap collects descriptor, wrapped, and fields from err and include
 	// them into the new error.
 	Rewrap(err error) ArgumentErrorBuilder
 
-	Fieldset(fields ...NamedError) ArgumentErrorBuilder
-
-	// Doc provides documentation text to the error. A document text should
-	// provide directives on how to fix the error.
-	Doc(docText string) ArgumentErrorBuilder
+	// Wrap returns a copy with wrapped error is set to detailingError.
+	Wrap(detailingError error) ArgumentErrorBuilder
 }
 
 func IsArgumentError(err error) bool {
@@ -118,9 +118,9 @@ func IsArgumentUnspecified(err error, argName string) bool {
 type argumentError struct {
 	argName    string
 	descriptor ErrorDescriptor
-	wrapped    error
-	fields     []NamedError
 	docText    string
+	fields     []NamedError
+	wrapped    error
 }
 
 var (
@@ -187,8 +187,13 @@ func (e argumentError) DescMsg(descMsg string) ArgumentErrorBuilder {
 	return &e
 }
 
-func (e argumentError) Wrap(detailingError error) ArgumentErrorBuilder {
-	e.wrapped = detailingError
+func (e argumentError) Doc(docText string) ArgumentErrorBuilder {
+	e.docText = docText
+	return &e
+}
+
+func (e argumentError) Fieldset(fields ...NamedError) ArgumentErrorBuilder {
+	e.fields = copyNamedSet(fields)
 	return &e
 }
 
@@ -207,13 +212,8 @@ func (e argumentError) Rewrap(err error) ArgumentErrorBuilder {
 	return &e
 }
 
-func (e argumentError) Fieldset(fields ...NamedError) ArgumentErrorBuilder {
-	e.fields = copyNamedSet(fields)
-	return &e
-}
-
-func (e argumentError) Doc(docText string) ArgumentErrorBuilder {
-	e.docText = docText
+func (e argumentError) Wrap(detailingError error) ArgumentErrorBuilder {
+	e.wrapped = detailingError
 	return &e
 }
 

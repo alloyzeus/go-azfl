@@ -14,14 +14,14 @@ type OperationError interface {
 type OperationErrorBuilder interface {
 	OperationError
 
+	// Doc provides documentation text to the error. A documentation text
+	// provides directives or clues for the developers on how to fix the error.
+	Doc(docText string) OperationErrorBuilder
+
 	Params(params ...NamedError) OperationErrorBuilder
 
 	// Wrap returns a copy with wrapped error is set to detailingError.
 	Wrap(detailingError error) OperationErrorBuilder
-
-	// Doc provides documentation text to the error. A document text should
-	// provide directives on how to fix the error.
-	Doc(docText string) OperationErrorBuilder
 }
 
 func Op(operationName string) OperationErrorBuilder {
@@ -30,9 +30,9 @@ func Op(operationName string) OperationErrorBuilder {
 
 type opError struct {
 	operationName string
+	docText       string
 	params        []NamedError
 	wrapped       error
-	docText       string
 }
 
 var (
@@ -80,6 +80,11 @@ func (e *opError) Error() string {
 	return "operation error"
 }
 
+func (e opError) Doc(docText string) OperationErrorBuilder {
+	e.docText = docText
+	return &e
+}
+
 func (e opError) Params(params ...NamedError) OperationErrorBuilder {
 	e.params = copyNamedSet(params)
 	return &e
@@ -87,10 +92,5 @@ func (e opError) Params(params ...NamedError) OperationErrorBuilder {
 
 func (e opError) Wrap(detailingError error) OperationErrorBuilder {
 	e.wrapped = detailingError
-	return &e
-}
-
-func (e opError) Doc(docText string) OperationErrorBuilder {
-	e.docText = docText
 	return &e
 }

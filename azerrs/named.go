@@ -24,17 +24,21 @@ type NamedErrorBuilder interface {
 	// use the Wrap method.
 	DescMsg(descMsg string) NamedErrorBuilder
 
-	// Value provides the value associated to the name.
-	Val(value any) NamedErrorBuilder
+	// Doc provides documentation text to the error. A documentation text
+	// provides directives or clues for the developers on how to fix the error.
+	Doc(docText string) NamedErrorBuilder
 
-	// Wrap returns a copy with wrapped error is set to detailingError.
-	Wrap(detailingError error) NamedErrorBuilder
+	Fieldset(fields ...NamedError) NamedErrorBuilder
 
 	// Rewrap collects descriptor, wrapped, and fields from err and include
 	// them into the new error.
 	Rewrap(err error) NamedErrorBuilder
 
-	Fieldset(fields ...NamedError) NamedErrorBuilder
+	// Value provides the value associated to the name.
+	Val(value any) NamedErrorBuilder
+
+	// Wrap returns a copy with wrapped error is set to detailingError.
+	Wrap(detailingError error) NamedErrorBuilder
 }
 
 func N(name string) NamedErrorBuilder {
@@ -62,15 +66,19 @@ func NamedValueUnsupported(valueName string) NamedErrorBuilder {
 type namedError struct {
 	name       string
 	descriptor ErrorDescriptor
-	wrapped    error
-	value      any
+	docText    string
 	fields     []NamedError
+	value      any
+	wrapped    error
 }
 
 func (e *namedError) Error() string {
 	suffix := namedSetToString(e.fields)
 	if suffix != "" {
 		suffix = ": " + suffix
+	}
+	if e.docText != "" {
+		suffix = suffix + ". " + e.docText
 	}
 	var descStr string
 	if e.descriptor != nil {
@@ -128,6 +136,26 @@ func (e namedError) FieldErrors() []NamedError {
 	return copyNamedSet(e.fields)
 }
 
+func (e namedError) Desc(desc ErrorDescriptor) NamedErrorBuilder {
+	e.descriptor = desc
+	return &e
+}
+
+func (e namedError) DescMsg(descMsg string) NamedErrorBuilder {
+	e.descriptor = constantErrorDescriptor(descMsg)
+	return &e
+}
+
+func (e namedError) Doc(docText string) NamedErrorBuilder {
+	e.docText = docText
+	return &e
+}
+
+func (e namedError) Fieldset(fields ...NamedError) NamedErrorBuilder {
+	e.fields = copyNamedSet(fields)
+	return &e
+}
+
 func (e namedError) Rewrap(err error) NamedErrorBuilder {
 	if err != nil {
 		if descErr, _ := err.(ErrorDescriptor); descErr != nil {
@@ -145,23 +173,8 @@ func (e namedError) Rewrap(err error) NamedErrorBuilder {
 	return &e
 }
 
-func (e namedError) Desc(desc ErrorDescriptor) NamedErrorBuilder {
-	e.descriptor = desc
-	return &e
-}
-
-func (e namedError) DescMsg(descMsg string) NamedErrorBuilder {
-	e.descriptor = constantErrorDescriptor(descMsg)
-	return &e
-}
-
 func (e namedError) Val(value any) NamedErrorBuilder {
 	e.value = value
-	return &e
-}
-
-func (e namedError) Fieldset(fields ...NamedError) NamedErrorBuilder {
-	e.fields = copyNamedSet(fields)
 	return &e
 }
 
