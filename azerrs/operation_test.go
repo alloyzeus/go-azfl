@@ -82,3 +82,17 @@ func TestOpNoNameParamsNoWrap(t *testing.T) {
 
 	assert(t, "operation error. part=HEAD", err.Error())
 }
+
+func TestOpDocWrap(t *testing.T) {
+	var err error = Op("SwimmingRevolution").Params(N("location").Val("Pacific Ocean")).
+		Wrap(Msg("sun is shining")).Doc("Please check the water temperature first")
+
+	assert(t, `SwimmingRevolution: sun is shining. location="Pacific Ocean". Please check the water temperature first`, err.Error())
+}
+
+func TestOpDocNoWrap(t *testing.T) {
+	var err error = Op("SwimmingRevolution").Params(N("location").Val("Pacific Ocean")).
+		Doc("Please check the water temperature first")
+
+	assert(t, `SwimmingRevolution error. location="Pacific Ocean". Please check the water temperature first`, err.Error())
+}

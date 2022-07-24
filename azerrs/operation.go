@@ -18,6 +18,10 @@ type OperationErrorBuilder interface {
 
 	// Wrap returns a copy with wrapped error is set to detailingError.
 	Wrap(detailingError error) OperationErrorBuilder
+
+	// Doc provides documentation text to the error. A document text should
+	// provide directives on how to fix the error.
+	Doc(docText string) OperationErrorBuilder
 }
 
 func Op(operationName string) OperationErrorBuilder {
@@ -28,6 +32,7 @@ type opError struct {
 	operationName string
 	params        []NamedError
 	wrapped       error
+	docText       string
 }
 
 var (
@@ -45,6 +50,9 @@ func (e *opError) Error() string {
 	suffix := namedSetToString(e.params)
 	if suffix != "" {
 		suffix = ". " + suffix
+	}
+	if e.docText != "" {
+		suffix = suffix + ". " + e.docText
 	}
 	var descStr string
 	causeStr := errorString(e.wrapped)
@@ -79,5 +87,10 @@ func (e opError) Params(params ...NamedError) OperationErrorBuilder {
 
 func (e opError) Wrap(detailingError error) OperationErrorBuilder {
 	e.wrapped = detailingError
+	return &e
+}
+
+func (e opError) Doc(docText string) OperationErrorBuilder {
+	e.docText = docText
 	return &e
 }

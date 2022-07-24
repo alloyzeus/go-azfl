@@ -38,6 +38,10 @@ type ArgumentErrorBuilder interface {
 	Rewrap(err error) ArgumentErrorBuilder
 
 	Fieldset(fields ...NamedError) ArgumentErrorBuilder
+
+	// Doc provides documentation text to the error. A document text should
+	// provide directives on how to fix the error.
+	Doc(docText string) ArgumentErrorBuilder
 }
 
 func IsArgumentError(err error) bool {
@@ -116,6 +120,7 @@ type argumentError struct {
 	descriptor ErrorDescriptor
 	wrapped    error
 	fields     []NamedError
+	docText    string
 }
 
 var (
@@ -138,6 +143,9 @@ func (e *argumentError) Error() string {
 	suffix := namedSetToString(e.fields)
 	if suffix != "" {
 		suffix = ": " + suffix
+	}
+	if e.docText != "" {
+		suffix = suffix + ". " + e.docText
 	}
 	var descStr string
 	if e.descriptor != nil {
@@ -179,11 +187,6 @@ func (e argumentError) DescMsg(descMsg string) ArgumentErrorBuilder {
 	return &e
 }
 
-func (e argumentError) Fieldset(fields ...NamedError) ArgumentErrorBuilder {
-	e.fields = fields // copy?
-	return &e
-}
-
 func (e argumentError) Wrap(detailingError error) ArgumentErrorBuilder {
 	e.wrapped = detailingError
 	return &e
@@ -201,6 +204,16 @@ func (e argumentError) Rewrap(err error) ArgumentErrorBuilder {
 			e.fields = UnwrapFieldErrors(err)
 		}
 	}
+	return &e
+}
+
+func (e argumentError) Fieldset(fields ...NamedError) ArgumentErrorBuilder {
+	e.fields = copyNamedSet(fields)
+	return &e
+}
+
+func (e argumentError) Doc(docText string) ArgumentErrorBuilder {
+	e.docText = docText
 	return &e
 }
 

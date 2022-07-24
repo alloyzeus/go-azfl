@@ -251,6 +251,24 @@ func TestArgRewrapFields(t *testing.T) {
 	assert(t, true, ArgumentErrorCheck(err).HasName("simple").HasDesc(nil).HasWrapped(nil).IsTrue())
 }
 
+func TestArgDoc(t *testing.T) {
+	var err error = Arg("color").Doc("Check the color of the sky right now")
+
+	assert(t, "arg color. Check the color of the sky right now", err.Error())
+}
+
+func TestArgDocDesc(t *testing.T) {
+	var err error = ArgUnspecified("color").Doc("Check the color of the ocean right now")
+
+	assert(t, "arg color: unspecified. Check the color of the ocean right now", err.Error())
+}
+
+func TestArgDocWrap(t *testing.T) {
+	var err error = Arg("color").Wrap(Msg("hex invalid")).Doc("Check the color of your right iris")
+
+	assert(t, "arg color: hex invalid. Check the color of your right iris", err.Error())
+}
+
 // ----
 
 type customArgError struct {
