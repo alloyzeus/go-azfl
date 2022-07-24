@@ -14,6 +14,8 @@ type OperationError interface {
 type OperationErrorBuilder interface {
 	OperationError
 
+	Params(params ...NamedError) OperationErrorBuilder
+
 	// Wrap returns a copy with wrapped error is set to detailingError.
 	Wrap(detailingError error) OperationErrorBuilder
 }
@@ -24,6 +26,7 @@ func Op(operationName string) OperationErrorBuilder {
 
 type opError struct {
 	operationName string
+	params        []NamedError
 	wrapped       error
 }
 
@@ -39,17 +42,39 @@ func (e opError) OperationName() string { return e.operationName }
 func (e opError) Unwrap() error { return e.wrapped }
 
 func (e *opError) Error() string {
+	suffix := namedSetToString(e.params)
+	if suffix != "" {
+		suffix = ". " + suffix
+	}
+	var descStr string
 	causeStr := errorString(e.wrapped)
+	if causeStr == "" {
+		causeStr = descStr
+	} else if descStr != "" {
+		causeStr = descStr + ": " + causeStr
+	}
+
 	if e.operationName != "" {
 		if causeStr != "" {
-			return e.operationName + ": " + causeStr
+			return e.operationName + ": " + causeStr + suffix
+		}
+		if suffix != "" {
+			return e.operationName + " error" + suffix
 		}
 		return e.operationName + " error"
 	}
 	if causeStr != "" {
-		return "operation error: " + causeStr
+		return "operation " + causeStr + suffix
+	}
+	if suffix != "" {
+		return "operation error" + suffix
 	}
 	return "operation error"
+}
+
+func (e opError) Params(params ...NamedError) OperationErrorBuilder {
+	e.params = copyNamedSet(params)
+	return &e
 }
 
 func (e opError) Wrap(detailingError error) OperationErrorBuilder {

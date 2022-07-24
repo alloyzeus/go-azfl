@@ -13,13 +13,13 @@ func TestArgEmpty(t *testing.T) {
 
 func TestArgFields(t *testing.T) {
 	var err error = Arg("foo").Fieldset(
-		Ent("name").Desc(ErrValueEmpty), Ent("bar").Desc(ErrValueUnspecified))
+		N("name").Desc(ErrValueEmpty), N("bar").Desc(ErrValueUnspecified))
 	assert(t, "arg foo: name: empty, bar: unspecified", err.Error())
 }
 
 func TestArgFieldsNoName(t *testing.T) {
 	var err error = Arg("").Fieldset(
-		Ent("name").Desc(ErrValueEmpty), Ent("bar").Desc(ErrValueUnspecified))
+		N("name").Desc(ErrValueEmpty), N("bar").Desc(ErrValueUnspecified))
 	assert(t, "arg: name: empty, bar: unspecified", err.Error())
 }
 
@@ -76,7 +76,7 @@ func TestAsArgumentErrorNil(t *testing.T) {
 }
 
 func TestAsArgumentErrorNegative(t *testing.T) {
-	var err error = Ent("")
+	var err error = N("")
 	assert(t, nil, AsArgumentError(err))
 }
 
@@ -189,7 +189,7 @@ func TestArgRewrapNil(t *testing.T) {
 	var err error = Arg("foo").Rewrap(nil)
 	assert(t, "arg foo", err.Error())
 	assert(t, true, IsArgumentError(err))
-	assert(t, true, IsEntityError(err))
+	assert(t, false, IsEntityError(err))
 	assert(t, nil, UnwrapDescriptor(err))
 	assert(t, nil, Unwrap(err))
 }
@@ -198,7 +198,7 @@ func TestArgRewrapDesc(t *testing.T) {
 	var err error = Arg("foo").Rewrap(ErrValueMalformed)
 	assert(t, "arg foo: malformed", err.Error())
 	assert(t, true, IsArgumentError(err))
-	assert(t, true, IsEntityError(err))
+	assert(t, false, IsEntityError(err))
 	assertNotEqual(t, nil, UnwrapDescriptor(err))
 	assert(t, ErrValueMalformed, UnwrapDescriptor(err))
 	assert(t, nil, Unwrap(err))
@@ -208,7 +208,7 @@ func TestArgRewrapDescWrapped(t *testing.T) {
 	var err error = Arg("foo").Rewrap(Arg1().Desc(ErrValueMalformed).Wrap(Msg("bar")))
 	assert(t, "arg foo: malformed: bar", err.Error())
 	assert(t, true, IsArgumentError(err))
-	assert(t, true, IsEntityError(err))
+	assert(t, false, IsEntityError(err))
 	assertNotEqual(t, nil, UnwrapDescriptor(err))
 	assert(t, ErrValueMalformed, UnwrapDescriptor(err))
 	assertNotEqual(t, nil, Unwrap(err))
@@ -219,7 +219,7 @@ func TestArgRewrapRandom(t *testing.T) {
 	var err error = Arg("foo").Rewrap(Msg("bar"))
 	assert(t, "arg foo", err.Error())
 	assert(t, true, IsArgumentError(err))
-	assert(t, true, IsEntityError(err))
+	assert(t, false, IsEntityError(err))
 	assert(t, nil, UnwrapDescriptor(err))
 	assert(t, nil, Unwrap(err))
 }
@@ -228,7 +228,7 @@ func TestArgRewrapWrappedNoDesc(t *testing.T) {
 	var err error = Arg("foo").Rewrap(Arg1().Wrap(Msg("bar")))
 	assert(t, "arg foo: bar", err.Error())
 	assert(t, true, IsArgumentError(err))
-	assert(t, true, IsEntityError(err))
+	assert(t, false, IsEntityError(err))
 	assert(t, nil, UnwrapDescriptor(err))
 	assertNotEqual(t, nil, Unwrap(err))
 	assert(t, "bar", Unwrap(err).Error())
@@ -236,12 +236,12 @@ func TestArgRewrapWrappedNoDesc(t *testing.T) {
 
 func TestArgRewrapFields(t *testing.T) {
 	var err error = Arg("simple").Rewrap(Arg1().Fieldset(
-		EntValueUnsupported("foo"),
-		Ent("bar").Desc(ErrValueMalformed),
+		NamedValueUnsupported("foo"),
+		N("bar").Desc(ErrValueMalformed),
 	))
 	assert(t, "arg simple: foo: unsupported, bar: malformed", err.Error())
 	assert(t, true, IsArgumentError(err))
-	assert(t, true, IsEntityError(err))
+	assert(t, false, IsEntityError(err))
 	assert(t, nil, UnwrapDescriptor(err))
 	assert(t, nil, Unwrap(err))
 	assert(t, 2, len(UnwrapFieldErrors(err)))
@@ -261,9 +261,9 @@ var (
 	_ ArgumentError = &customArgError{}
 )
 
-func (e *customArgError) ArgumentName() string      { return e.argName }
-func (e *customArgError) Error() string             { return "custom arg error" }
-func (e *customArgError) CallError() CallError      { return e }
-func (e *customArgError) Unwrap() error             { return nil }
-func (customArgError) Descriptor() ErrorDescriptor  { return nil }
-func (e customArgError) FieldErrors() []EntityError { return nil }
+func (e *customArgError) ArgumentName() string     { return e.argName }
+func (e *customArgError) Error() string            { return "custom arg error" }
+func (e *customArgError) CallError() CallError     { return e }
+func (e *customArgError) Unwrap() error            { return nil }
+func (customArgError) Descriptor() ErrorDescriptor { return nil }
+func (e customArgError) FieldErrors() []NamedError { return nil }

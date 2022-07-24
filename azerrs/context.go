@@ -2,8 +2,6 @@ package errors
 
 import "strings"
 
-//TODO: a ContextError should be an EntityError, with *context* as the entity.
-
 type ContextError interface {
 	CallError
 	ContextError() ContextError
@@ -24,7 +22,7 @@ type ContextErrorBuilder interface {
 	// Wrap returns a copy with wrapped error is set to detailingError.
 	Wrap(detailingError error) ContextErrorBuilder
 
-	Fieldset(fields ...EntityError) ContextErrorBuilder
+	Fieldset(fields ...NamedError) ContextErrorBuilder
 }
 
 func IsContextError(err error) bool {
@@ -53,7 +51,7 @@ func IsContextUnspecifiedError(err error) bool {
 type contextError struct {
 	descriptor ErrorDescriptor
 	wrapped    error
-	fields     []EntityError
+	fields     []NamedError
 }
 
 var (
@@ -111,7 +109,7 @@ func (e contextError) Descriptor() ErrorDescriptor {
 	return nil
 }
 
-func (e contextError) Desc(desc EntityErrorDescriptor) ContextErrorBuilder {
+func (e contextError) Desc(desc ErrorDescriptor) ContextErrorBuilder {
 	e.descriptor = desc
 	return &e
 }
@@ -121,7 +119,7 @@ func (e contextError) DescMsg(descMsg string) ContextErrorBuilder {
 	return &e
 }
 
-func (e contextError) Fieldset(fields ...EntityError) ContextErrorBuilder {
+func (e contextError) Fieldset(fields ...NamedError) ContextErrorBuilder {
 	e.fields = fields // copy?
 	return &e
 }

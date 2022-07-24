@@ -10,14 +10,14 @@ type EntityError interface {
 	Unwrappable
 
 	EntityIdentifier() string
-	FieldErrors() []EntityError
+	FieldErrors() []NamedError
 }
 
 type EntityErrorBuilder interface {
 	EntityError
 
 	// Desc returns a copy with descriptor is set to desc.
-	Desc(desc EntityErrorDescriptor) EntityErrorBuilder
+	Desc(desc ErrorDescriptor) EntityErrorBuilder
 
 	// DescMsg sets the descriptor with the provided string. For the best
 	// experience, descMsg should be defined as a constant so that the error
@@ -32,11 +32,8 @@ type EntityErrorBuilder interface {
 	// them into the new error.
 	Rewrap(err error) EntityErrorBuilder
 
-	Fieldset(fields ...EntityError) EntityErrorBuilder
+	Fieldset(fields ...NamedError) EntityErrorBuilder
 }
-
-//TODO: custom type
-type EntityErrorDescriptor = ErrorDescriptor
 
 func IsEntityError(err error) bool {
 	_, ok := err.(EntityError)
@@ -56,24 +53,6 @@ func IsEntityError(err error) bool {
 func Ent(entityIdentifier string) EntityErrorBuilder {
 	return &entityError{
 		identifier: entityIdentifier,
-	}
-}
-
-// EntValueMalformed creates an EntityError with entity identifier is set to
-// the value of entityIdentifier and descriptor is set to ErrValueMalformed.
-func EntValueMalformed(entityIdentifier string) EntityErrorBuilder {
-	return &entityError{
-		identifier: entityIdentifier,
-		descriptor: ErrValueMalformed,
-	}
-}
-
-// EntValueUnsupported creates an EntityError with entity identifier is set to
-// the value of entityIdentifier and descriptor is set to ErrValueUnsupported.
-func EntValueUnsupported(entityIdentifier string) EntityErrorBuilder {
-	return &entityError{
-		identifier: entityIdentifier,
-		descriptor: ErrValueUnsupported,
 	}
 }
 
@@ -108,7 +87,7 @@ type entityError struct {
 	identifier string
 	descriptor ErrorDescriptor
 	wrapped    error
-	fields     []EntityError
+	fields     []NamedError
 }
 
 var (
@@ -173,8 +152,8 @@ func (e entityError) Descriptor() ErrorDescriptor {
 	}
 	return nil
 }
-func (e entityError) FieldErrors() []EntityError {
-	return copyFieldSet(e.fields)
+func (e entityError) FieldErrors() []NamedError {
+	return copyNamedSet(e.fields)
 }
 
 func (e entityError) Rewrap(err error) EntityErrorBuilder {
@@ -192,7 +171,7 @@ func (e entityError) Rewrap(err error) EntityErrorBuilder {
 	return &e
 }
 
-func (e entityError) Desc(desc EntityErrorDescriptor) EntityErrorBuilder {
+func (e entityError) Desc(desc ErrorDescriptor) EntityErrorBuilder {
 	e.descriptor = desc
 	return &e
 }
@@ -202,7 +181,7 @@ func (e entityError) DescMsg(descMsg string) EntityErrorBuilder {
 	return &e
 }
 
-func (e entityError) Fieldset(fields ...EntityError) EntityErrorBuilder {
+func (e entityError) Fieldset(fields ...NamedError) EntityErrorBuilder {
 	e.fields = fields // copy?
 	return &e
 }
@@ -210,17 +189,6 @@ func (e entityError) Fieldset(fields ...EntityError) EntityErrorBuilder {
 func (e entityError) Wrap(detailingError error) EntityErrorBuilder {
 	e.wrapped = detailingError
 	return &e
-}
-
-func UnwrapFieldErrors(err error) []EntityError {
-	if prov, _ := err.(hasFieldErrors); prov != nil {
-		return prov.FieldErrors()
-	}
-	return nil
-}
-
-type hasFieldErrors interface {
-	FieldErrors() []EntityError
 }
 
 // EntityErrorSet is an interface to combine multiple EntityError instances
@@ -289,14 +257,14 @@ func (e entErrorSet) Errors() []error {
 }
 
 func (e entErrorSet) EntityErrors() []EntityError {
-	return copyFieldSet(e)
+	return copyEntitySet(e)
 }
 
-func copyFieldSet(fields []EntityError) []EntityError {
+func copyEntitySet(entSet []EntityError) []EntityError {
 	var copiedFields []EntityError
-	if len(fields) > 0 {
-		copiedFields = make([]EntityError, 0, len(fields))
-		for _, e := range fields {
+	if len(entSet) > 0 {
+		copiedFields = make([]EntityError, 0, len(entSet))
+		for _, e := range entSet {
 			if e != nil {
 				copiedFields = append(copiedFields, e)
 			}

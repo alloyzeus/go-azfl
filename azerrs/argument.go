@@ -15,14 +15,14 @@ type ArgumentError interface {
 	ArgumentName() string
 
 	Descriptor() ErrorDescriptor
-	FieldErrors() []EntityError
+	FieldErrors() []NamedError
 }
 
 type ArgumentErrorBuilder interface {
 	ArgumentError
 
 	// Desc returns a copy with descriptor is set to desc.
-	Desc(desc EntityErrorDescriptor) ArgumentErrorBuilder
+	Desc(desc ErrorDescriptor) ArgumentErrorBuilder
 
 	// DescMsg sets the descriptor with the provided string. For the best
 	// experience, descMsg should be defined as a constant so that the error
@@ -37,7 +37,7 @@ type ArgumentErrorBuilder interface {
 	// them into the new error.
 	Rewrap(err error) ArgumentErrorBuilder
 
-	Fieldset(fields ...EntityError) ArgumentErrorBuilder
+	Fieldset(fields ...NamedError) ArgumentErrorBuilder
 }
 
 func IsArgumentError(err error) bool {
@@ -54,9 +54,9 @@ func AsArgumentError(err error) ArgumentError {
 }
 
 func Arg(argName string) ArgumentErrorBuilder {
-	return &argumentError{entityError{
-		identifier: argName,
-	}}
+	return &argumentError{
+		argName: argName,
+	}
 }
 
 // Arg1 is used when there's only one argument for a function.
@@ -66,10 +66,10 @@ func Arg1() ArgumentErrorBuilder {
 
 // ArgUnspecified describes that argument with name argName is unspecified.
 func ArgUnspecified(argName string) ArgumentErrorBuilder {
-	return &argumentError{entityError{
-		identifier: argName,
+	return &argumentError{
+		argName:    argName,
 		descriptor: ErrValueUnspecified,
-	}}
+	}
 }
 
 func IsArgumentUnspecifiedError(err error) bool {
@@ -85,10 +85,10 @@ func IsArgumentUnspecifiedError(err error) bool {
 // ArgValueUnsupported creates an ArgumentError with name is set to the value
 // of argName and descriptor is set to ErrValueUnsupported.
 func ArgValueUnsupported(argName string) ArgumentErrorBuilder {
-	return &argumentError{entityError{
-		identifier: argName,
+	return &argumentError{
+		argName:    argName,
 		descriptor: ErrValueUnsupported,
-	}}
+	}
 }
 
 // IsArgumentUnspecified checks if an error describes about unspecifity of an argument.
@@ -112,14 +112,16 @@ func IsArgumentUnspecified(err error, argName string) bool {
 }
 
 type argumentError struct {
-	entityError
+	argName    string
+	descriptor ErrorDescriptor
+	wrapped    error
+	fields     []NamedError
 }
 
 var (
 	_ error                = &argumentError{}
 	_ Unwrappable          = &argumentError{}
 	_ CallError            = &argumentError{}
-	_ EntityError          = &argumentError{}
 	_ ArgumentError        = &argumentError{}
 	_ ArgumentErrorBuilder = &argumentError{}
 	_ hasDescriptor        = &argumentError{}
@@ -127,13 +129,13 @@ var (
 )
 
 func (e *argumentError) ArgumentName() string {
-	return e.entityError.identifier
+	return e.argName
 }
 
 func (e *argumentError) CallError() CallError { return e }
 
 func (e *argumentError) Error() string {
-	suffix := e.fieldErrorsAsString()
+	suffix := namedSetToString(e.fields)
 	if suffix != "" {
 		suffix = ": " + suffix
 	}
@@ -148,11 +150,11 @@ func (e *argumentError) Error() string {
 		causeStr = descStr + ": " + causeStr
 	}
 
-	if e.identifier != "" {
+	if e.argName != "" {
 		if causeStr != "" {
-			return "arg " + e.identifier + ": " + causeStr + suffix
+			return "arg " + e.argName + ": " + causeStr + suffix
 		}
-		return "arg " + e.identifier + suffix
+		return "arg " + e.argName + suffix
 	}
 	if causeStr != "" {
 		return "arg " + causeStr + suffix
@@ -163,11 +165,11 @@ func (e *argumentError) Error() string {
 	return "arg error"
 }
 
-func (e *argumentError) Unwrap() error {
-	return e.wrapped
-}
+func (e argumentError) Descriptor() ErrorDescriptor { return e.descriptor }
+func (e argumentError) Unwrap() error               { return e.wrapped }
+func (e argumentError) FieldErrors() []NamedError   { return copyNamedSet(e.fields) }
 
-func (e argumentError) Desc(desc EntityErrorDescriptor) ArgumentErrorBuilder {
+func (e argumentError) Desc(desc ErrorDescriptor) ArgumentErrorBuilder {
 	e.descriptor = desc
 	return &e
 }
@@ -177,7 +179,7 @@ func (e argumentError) DescMsg(descMsg string) ArgumentErrorBuilder {
 	return &e
 }
 
-func (e argumentError) Fieldset(fields ...EntityError) ArgumentErrorBuilder {
+func (e argumentError) Fieldset(fields ...NamedError) ArgumentErrorBuilder {
 	e.fields = fields // copy?
 	return &e
 }

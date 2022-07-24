@@ -96,7 +96,7 @@ func (e *accessError) CallError() CallError        { return e }
 func (e *accessError) Descriptor() ErrorDescriptor { return e.descriptor }
 func (e *accessError) Unwrap() error               { return e.wrapped }
 
-func (e accessError) Desc(desc EntityErrorDescriptor) AccessErrorBuilder {
+func (e accessError) Desc(desc ErrorDescriptor) AccessErrorBuilder {
 	e.descriptor = desc
 	return &e
 }

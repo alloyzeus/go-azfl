@@ -29,7 +29,7 @@ func TestOpJustName(t *testing.T) {
 func TestOpJustWrapped(t *testing.T) {
 	var err error = Op("").Wrap(ErrAccessForbidden)
 
-	assert(t, "operation error: forbidden", err.Error())
+	assert(t, "operation forbidden", err.Error())
 
 	inner := Unwrap(err)
 	assertNotEqual(t, nil, inner)
@@ -56,4 +56,29 @@ func TestOpNameAndWrapped(t *testing.T) {
 	assertNotEqual(t, nil, opErr)
 	assert(t, "DropDatabase", opErr.OperationName())
 	assert(t, ErrAccessForbidden, opErr.Unwrap())
+}
+
+func TestOpParamsBasic(t *testing.T) {
+	var err error = Op("LaunchNuke").Params(N("authorizationCode").Desc(ErrValueMismatch))
+
+	assert(t, "LaunchNuke error. authorizationCode: mismatch", err.Error())
+}
+
+func TestOpParamsRes(t *testing.T) {
+	var err error = Op("Fetch").Params(N("part").Val("HEAD")).Wrap(ErrEntityUnreachable)
+
+	//TODO: param values are quoted when necessary
+	assert(t, "Fetch: unreachable. part=HEAD", err.Error())
+}
+
+func TestOpParamsNoWrap(t *testing.T) {
+	var err error = Op("Fetch").Params(N("part").Val("HEAD"))
+
+	assert(t, "Fetch error. part=HEAD", err.Error())
+}
+
+func TestOpNoNameParamsNoWrap(t *testing.T) {
+	var err error = Op("").Params(N("part").Val("HEAD"))
+
+	assert(t, "operation error. part=HEAD", err.Error())
 }

@@ -79,7 +79,7 @@ func TestContextUnspecifiedCustomBare(t *testing.T) {
 }
 
 func TestContextFelds(t *testing.T) {
-	var err error = Context().Fieldset(Ent("authorization").Desc(ErrValueUnspecified))
+	var err error = Context().Fieldset(N("authorization").Desc(ErrValueUnspecified))
 	assert(t, "context invalid: authorization: unspecified", err.Error())
 }
 
