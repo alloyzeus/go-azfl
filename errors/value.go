@@ -6,6 +6,13 @@ type ValueError interface {
 	ValueError() ValueError
 }
 
+type ValueErrorBuilder interface {
+	ValueError
+
+	// Wrap returns a copy with wrapped error is set to detailingError.
+	Wrap(detailingError error) ValueErrorBuilder
+}
+
 type valueConstantErrorDescriptor string
 
 var (
@@ -41,8 +48,8 @@ const (
 	ErrValueInvalid = valueConstantErrorDescriptor("invalid")
 )
 
-func ValueMalformed(details error) ValueError {
-	return &valueDescriptorDetailsError{descriptor: ErrValueMalformed, details: details}
+func ValueMalformed() ValueErrorBuilder {
+	return &valueDescriptorDetailsError{descriptor: ErrValueMalformed}
 }
 
 func IsValueMalformedError(err error) bool {
@@ -57,29 +64,35 @@ func IsValueMalformedError(err error) bool {
 
 type valueDescriptorDetailsError struct {
 	descriptor valueConstantErrorDescriptor
-	details    error
+	wrapped    error
 }
 
 var (
-	_ error         = valueDescriptorDetailsError{}
-	_ ValueError    = valueDescriptorDetailsError{}
-	_ hasDescriptor = valueDescriptorDetailsError{}
-	_ Unwrappable   = valueDescriptorDetailsError{}
+	_ error             = valueDescriptorDetailsError{}
+	_ ValueError        = valueDescriptorDetailsError{}
+	_ ValueErrorBuilder = valueDescriptorDetailsError{}
+	_ hasDescriptor     = valueDescriptorDetailsError{}
+	_ Unwrappable       = valueDescriptorDetailsError{}
 )
 
 func (e valueDescriptorDetailsError) Error() string {
 	if e.descriptor != "" {
-		if e.details != nil {
-			return e.descriptor.Error() + ": " + e.details.Error()
+		if e.wrapped != nil {
+			return e.descriptor.Error() + ": " + e.wrapped.Error()
 		}
 		return e.descriptor.Error()
 	}
-	if e.details != nil {
-		return e.details.Error()
+	if e.wrapped != nil {
+		return e.wrapped.Error()
 	}
 	return ""
 }
 
 func (e valueDescriptorDetailsError) Descriptor() ErrorDescriptor { return e.descriptor }
 func (e valueDescriptorDetailsError) ValueError() ValueError      { return e }
-func (e valueDescriptorDetailsError) Unwrap() error               { return e.details }
+func (e valueDescriptorDetailsError) Unwrap() error               { return e.wrapped }
+
+func (e valueDescriptorDetailsError) Wrap(detailingError error) ValueErrorBuilder {
+	e.wrapped = detailingError
+	return e
+}

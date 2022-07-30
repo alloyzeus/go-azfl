@@ -80,6 +80,10 @@ const (
 	// ErrEntityConflict is used when the process of creating a new entity
 	// fails because an entity with the same name already exists.
 	ErrEntityConflict = valueConstantErrorDescriptor("conflict")
+
+	// ErrEntityUnreachable is used to describe that the system is unable
+	// to reach the system responsible of the specified entity.
+	ErrEntityUnreachable = valueConstantErrorDescriptor("unreachable")
 )
 
 func EntNotFound(entityIdentifier string, details error) EntityError {
