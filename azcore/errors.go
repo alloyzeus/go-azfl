@@ -1,6 +1,6 @@
 package azcore
 
-import errors "github.com/alloyzeus/go-azfl/azerrs"
+import errors "github.com/alloyzeus/go-azfl/errors"
 
 // Error is the module error type.
 type Error error
