@@ -14,9 +14,8 @@ type OperationError interface {
 type OperationErrorBuilder interface {
 	OperationError
 
-	// Doc provides documentation text to the error. A documentation text
-	// provides directives or clues for the developers on how to fix the error.
-	Doc(docText string) OperationErrorBuilder
+	// Hint provides a clue for the developers on how to fix the error.
+	Hint(hintText string) OperationErrorBuilder
 
 	Params(params ...NamedError) OperationErrorBuilder
 
@@ -30,7 +29,7 @@ func Op(operationName string) OperationErrorBuilder {
 
 type opError struct {
 	operationName string
-	docText       string
+	hintText      string
 	params        []NamedError
 	wrapped       error
 }
@@ -51,8 +50,8 @@ func (e *opError) Error() string {
 	if suffix != "" {
 		suffix = ". " + suffix
 	}
-	if e.docText != "" {
-		suffix = suffix + ". " + e.docText
+	if e.hintText != "" {
+		suffix = suffix + ". " + e.hintText
 	}
 	var descStr string
 	causeStr := errorString(e.wrapped)
@@ -80,8 +79,8 @@ func (e *opError) Error() string {
 	return "operation error"
 }
 
-func (e opError) Doc(docText string) OperationErrorBuilder {
-	e.docText = docText
+func (e opError) Hint(hintText string) OperationErrorBuilder {
+	e.hintText = hintText
 	return &e
 }
 

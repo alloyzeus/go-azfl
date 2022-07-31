@@ -30,9 +30,8 @@ type ArgumentErrorBuilder interface {
 	// use the Wrap method.
 	DescMsg(descMsg string) ArgumentErrorBuilder
 
-	// Doc provides documentation text to the error. A documentation text
-	// provides directives or clues for the developers on how to fix the error.
-	Doc(docText string) ArgumentErrorBuilder
+	// Hint provides a clue for the developers on how to fix the error.
+	Hint(hintText string) ArgumentErrorBuilder
 
 	Fieldset(fields ...NamedError) ArgumentErrorBuilder
 
@@ -118,7 +117,7 @@ func IsArgumentUnspecified(err error, argName string) bool {
 type argumentError struct {
 	argName    string
 	descriptor ErrorDescriptor
-	docText    string
+	hintText   string
 	fields     []NamedError
 	wrapped    error
 }
@@ -144,8 +143,8 @@ func (e *argumentError) Error() string {
 	if suffix != "" {
 		suffix = ": " + suffix
 	}
-	if e.docText != "" {
-		suffix = suffix + ". " + e.docText
+	if e.hintText != "" {
+		suffix = suffix + ". " + e.hintText
 	}
 	var descStr string
 	if e.descriptor != nil {
@@ -187,8 +186,8 @@ func (e argumentError) DescMsg(descMsg string) ArgumentErrorBuilder {
 	return &e
 }
 
-func (e argumentError) Doc(docText string) ArgumentErrorBuilder {
-	e.docText = docText
+func (e argumentError) Hint(hintText string) ArgumentErrorBuilder {
+	e.hintText = hintText
 	return &e
 }
 

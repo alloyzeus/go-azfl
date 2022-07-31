@@ -24,9 +24,8 @@ type NamedErrorBuilder interface {
 	// use the Wrap method.
 	DescMsg(descMsg string) NamedErrorBuilder
 
-	// Doc provides documentation text to the error. A documentation text
-	// provides directives or clues for the developers on how to fix the error.
-	Doc(docText string) NamedErrorBuilder
+	// Hint provides a clue for the developers on how to fix the error.
+	Hint(hintText string) NamedErrorBuilder
 
 	Fieldset(fields ...NamedError) NamedErrorBuilder
 
@@ -66,7 +65,7 @@ func NamedValueUnsupported(valueName string) NamedErrorBuilder {
 type namedError struct {
 	name       string
 	descriptor ErrorDescriptor
-	docText    string
+	hintText   string
 	fields     []NamedError
 	value      any
 	wrapped    error
@@ -77,8 +76,8 @@ func (e *namedError) Error() string {
 	if suffix != "" {
 		suffix = ": " + suffix
 	}
-	if e.docText != "" {
-		suffix = suffix + ". " + e.docText
+	if e.hintText != "" {
+		suffix = suffix + ". " + e.hintText
 	}
 	var descStr string
 	if e.descriptor != nil {
@@ -146,8 +145,8 @@ func (e namedError) DescMsg(descMsg string) NamedErrorBuilder {
 	return &e
 }
 
-func (e namedError) Doc(docText string) NamedErrorBuilder {
-	e.docText = docText
+func (e namedError) Hint(hintText string) NamedErrorBuilder {
+	e.hintText = hintText
 	return &e
 }
 
