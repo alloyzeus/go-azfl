@@ -76,6 +76,17 @@ func UnwrapDescriptor(err error) ErrorDescriptor {
 	return nil
 }
 
+func HasDescriptor(err error, desc ErrorDescriptor) bool {
+	d := UnwrapDescriptor(err)
+	//TODO: use other strategies. even reflect as the last resort
+	return d == desc
+}
+
+func HasDescriptorText(err error, descText string) bool {
+	d := UnwrapDescriptor(err)
+	return d.Error() == descText
+}
+
 func errorDescriptorString(err error) string {
 	if err != nil {
 		if desc, ok := err.(ErrorDescriptor); ok {
