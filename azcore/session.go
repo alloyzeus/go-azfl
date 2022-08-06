@@ -24,12 +24,12 @@ type Session[
 	//
 	// A delegation is commonly used when a service is accessing another
 	// service on the behalf of a user.
-	DelegateSession() SessionT
+	DelegateSession() *SessionT
 
 	// ImpersonatorSession returns the session that is impersonating
 	// the subject of this session, i.e., the session that was used to create
 	// this session. It returns nil if this session is not an impersonation.
-	ImpersonatorSession() SessionT
+	ImpersonatorSession() *SessionT
 
 	// Subject returns the subject of this session.
 	Subject() SessionSubjectT
