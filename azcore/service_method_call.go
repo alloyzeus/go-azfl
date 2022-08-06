@@ -110,7 +110,7 @@ type ServiceMethodCallInput[
 		SessionIDNumT, SessionIDT,
 		TerminalIDNumT, TerminalIDT,
 		UserIDNumT, UserIDT,
-		SessionSubjectT],
+		SessionSubjectT, SessionT],
 	ServiceMethodIdempotencyKeyT ServiceMethodIdempotencyKey,
 	InputContextT ServiceMethodCallInputContext[
 		SessionIDNumT, SessionIDT, TerminalIDNumT, TerminalIDT,
@@ -134,7 +134,7 @@ type ServiceMethodCallInputContext[
 		SessionIDNumT, SessionIDT,
 		TerminalIDNumT, TerminalIDT,
 		UserIDNumT, UserIDT,
-		SessionSubjectT],
+		SessionSubjectT, SessionT],
 	ServiceMethodIdempotencyKeyT ServiceMethodIdempotencyKey,
 ] interface {
 	ServiceMethodCallContext

@@ -24,7 +24,7 @@ type EntityCreationInfo[
 		SessionIDNumT, SessionIDT,
 		TerminalIDNumT, TerminalIDT,
 		UserIDNumT, UserIDT,
-		SessionSubjectT],
+		SessionSubjectT, SessionT],
 ] interface {
 	OperationInfo[
 		SessionIDNumT, SessionIDT, TerminalIDNumT, TerminalIDT,
@@ -45,7 +45,7 @@ type EntityCreationEvent[
 		SessionIDNumT, SessionIDT,
 		TerminalIDNumT, TerminalIDT,
 		UserIDNumT, UserIDT,
-		SessionSubjectT],
+		SessionSubjectT, SessionT],
 	EntityCreationInfoT EntityCreationInfo[
 		SessionIDNumT, SessionIDT, TerminalIDNumT, TerminalIDT,
 		UserIDNumT, UserIDT, SessionSubjectT, SessionT],
@@ -68,7 +68,7 @@ type EntityCreationInputContext[
 		SessionIDNumT, SessionIDT,
 		TerminalIDNumT, TerminalIDT,
 		UserIDNumT, UserIDT,
-		SessionSubjectT],
+		SessionSubjectT, SessionT],
 	ServiceMethodIdempotencyKeyT ServiceMethodIdempotencyKey,
 ] interface {
 	ServiceMethodCallInputContext[

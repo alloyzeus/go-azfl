@@ -18,7 +18,7 @@ type OperationInfo[
 		SessionIDNumT, SessionIDT,
 		TerminalIDNumT, TerminalIDT,
 		UserIDNumT, UserIDT,
-		SessionSubjectT],
+		SessionSubjectT, SessionT],
 ] interface {
 	// IdempotencyKey returns the idempotency key for this operation.
 	IdempotencyKey() ServiceMethodIdempotencyKey
@@ -67,7 +67,7 @@ type OperationDelegationInfo[
 		SessionIDNumT, SessionIDT,
 		TerminalIDNumT, TerminalIDT,
 		UserIDNumT, UserIDT,
-		SessionSubjectT],
+		SessionSubjectT, SessionT],
 ] interface {
 	// ParentDelegationInfo returns the delegation parent of this delegation.
 	ParentDelegationInfo() OperationDelegationInfo[

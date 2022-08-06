@@ -12,7 +12,7 @@ type ServiceMutatingMethodCallInputContext[
 		SessionIDNumT, SessionIDT,
 		TerminalIDNumT, TerminalIDT,
 		UserIDNumT, UserIDT,
-		SessionSubjectT],
+		SessionSubjectT, SessionT],
 	ServiceMethodCallInputContextT ServiceMethodCallInputContext[
 		SessionIDNumT, SessionIDT,
 		TerminalIDNumT, TerminalIDT,

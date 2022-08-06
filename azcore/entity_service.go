@@ -27,14 +27,12 @@ type EntityMethodCallInputContext[
 	UserIDNumT UserIDNum, UserIDT UserID[UserIDNumT],
 	SessionSubjectT SessionSubject[
 		TerminalIDNumT, TerminalIDT,
-		UserIDNumT, UserIDT,
-	],
+		UserIDNumT, UserIDT],
 	SessionT Session[
 		SessionIDNumT, SessionIDT,
 		TerminalIDNumT, TerminalIDT,
 		UserIDNumT, UserIDT,
-		SessionSubjectT,
-	],
+		SessionSubjectT, SessionT],
 	ServiceMethodIdempotencyKeyT ServiceMethodIdempotencyKey,
 ] interface {
 	EntityMethodContext
@@ -73,21 +71,18 @@ type EntityMutatingMethodCallContext[
 	UserIDNumT UserIDNum, UserIDT UserID[UserIDNumT],
 	SessionSubjectT SessionSubject[
 		TerminalIDNumT, TerminalIDT,
-		UserIDNumT, UserIDT,
-	],
+		UserIDNumT, UserIDT],
 	SessionT Session[
 		SessionIDNumT, SessionIDT,
 		TerminalIDNumT, TerminalIDT,
 		UserIDNumT, UserIDT,
-		SessionSubjectT,
-	],
+		SessionSubjectT, SessionT],
 	ServiceMethodCallInputContextT ServiceMethodCallInputContext[
 		SessionIDNumT, SessionIDT,
 		TerminalIDNumT, TerminalIDT,
 		UserIDNumT, UserIDT,
 		SessionSubjectT,
-		SessionT, ServiceMethodIdempotencyKeyT,
-	],
+		SessionT, ServiceMethodIdempotencyKeyT],
 	ServiceMethodIdempotencyKeyT ServiceMethodIdempotencyKey,
 ] interface {
 	EntityMutatingContext
