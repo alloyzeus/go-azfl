@@ -1,6 +1,6 @@
 package azcore
 
-import "github.com/alloyzeus/go-azfl/azid"
+import "github.com/alloyzeus/go-azfl/v2/azid"
 
 // Entity defines the contract for all its concrete implementations.
 //
@@ -32,7 +32,7 @@ type EntityAttributes interface {
 // KeyedEntityAttributes is a self-identifying data structure that contains
 // both the ID of the entity and its representing attributes.
 //
-//TODO: an envelope with EntityInstanceInfo?
+// TODO: an envelope with EntityInstanceInfo?
 type KeyedEntityAttributes[
 	EntityIDNumT EntityIDNum,
 	EntityIDT EntityID[EntityIDNumT],
@@ -48,7 +48,7 @@ type EntityIDNumMethods interface {
 
 // EntityIDNum is the unique or local part of an entity identifier.
 //
-//TODO: this is a value-object.
+// TODO: this is a value-object.
 type EntityIDNum interface {
 	azid.IDNum
 

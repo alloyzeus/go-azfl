@@ -1,6 +1,6 @@
 package azcore
 
-import "github.com/alloyzeus/go-azfl/azid"
+import "github.com/alloyzeus/go-azfl/v2/azid"
 
 type UserIDNumMethods interface {
 	AZUserIDNum()

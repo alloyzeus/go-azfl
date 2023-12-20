@@ -2,7 +2,7 @@
 package access
 
 import (
-	"github.com/alloyzeus/go-azfl/errors"
+	"github.com/alloyzeus/go-azfl/v2/errors"
 )
 
 // Error is an abstract error type for all API access-related errors.

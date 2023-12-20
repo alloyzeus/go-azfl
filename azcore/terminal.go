@@ -1,6 +1,6 @@
 package azcore
 
-import "github.com/alloyzeus/go-azfl/azid"
+import "github.com/alloyzeus/go-azfl/v2/azid"
 
 // A Terminal is an object which could act within the system, i.e., an agent.
 type Terminal[

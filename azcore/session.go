@@ -1,12 +1,12 @@
 package azcore
 
-import "github.com/alloyzeus/go-azfl/azid"
+import "github.com/alloyzeus/go-azfl/v2/azid"
 
 // Session represents information about a session. Every action can
 // only be performed with an active session. A session is obtained through
 // authorization, or authentication, of a Terminal.
 //
-//TODO: scope, expiry.
+// TODO: scope, expiry.
 type Session[
 	SessionIDNumT SessionIDNum, SessionIDT SessionID[SessionIDNumT],
 	TerminalIDNumT TerminalIDNum, TerminalIDT TerminalID[TerminalIDNumT],

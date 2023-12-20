@@ -1,7 +1,7 @@
 package azid
 
 import (
-	"github.com/alloyzeus/go-azfl/azob"
+	"github.com/alloyzeus/go-azfl/v2/azob"
 )
 
 type IDNumMethods interface {
@@ -16,7 +16,7 @@ type IDNumMethods interface {
 
 // IDNum abstracts entity and entity-like object IDs.
 //
-//TODO: define that an IDNum must be of a primitive type.
+// TODO: define that an IDNum must be of a primitive type.
 type IDNum interface {
 	~int16 | ~int32 | ~int64
 

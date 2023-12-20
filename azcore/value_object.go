@@ -1,6 +1,6 @@
 package azcore
 
-import "github.com/alloyzeus/go-azfl/azob"
+import "github.com/alloyzeus/go-azfl/v2/azob"
 
 // A ValueObject is a small object that represents a simple entity whose
 // equality is not based on identity, i.e., two value objects are equal when
@@ -16,8 +16,7 @@ type ValueObject interface {
 //
 // To use:
 //
-//     var _ = ValueObjectAssert[MyStruct] = MyStruct{}
-//
+//	var _ = ValueObjectAssert[MyStruct] = MyStruct{}
 type ValueObjectAssert[T any] interface {
 	azob.CloneableAssert[T]
 }

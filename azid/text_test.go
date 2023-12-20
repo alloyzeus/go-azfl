@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"testing"
 
-	"github.com/alloyzeus/go-azfl/azid"
+	"github.com/alloyzeus/go-azfl/v2/azid"
 )
 
 var _ azid.TextMarshalable = adjunctID{}

@@ -1,6 +1,6 @@
 package azcore
 
-import "github.com/alloyzeus/go-azfl/azid"
+import "github.com/alloyzeus/go-azfl/v2/azid"
 
 // An AdjunctEntityID is an identifier of an adjunt-entity.
 type AdjunctEntityID[IDNumT AdjunctEntityIDNum] interface {
