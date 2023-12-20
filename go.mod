@@ -1,4 +1,4 @@
-module github.com/alloyzeus/go-azfl
+module github.com/alloyzeus/go-azfl/v2
 
 go 1.21
 

@@ -21,7 +21,7 @@ type OperationInfo[
 		SessionSubjectT, SessionT],
 ] interface {
 	// IdempotencyKey returns the idempotency key for this operation.
-	IdempotencyKey() ServiceMethodIdempotencyKey
+	IdempotencyKey() ServiceOpIdempotencyKey
 
 	// Actor returns the subject who executed the action. Must not be empty
 	// in server, might be empty in clients, might be queryable.
@@ -55,7 +55,7 @@ type OperationInfo[
 // OperationDelegationInfo holds information about delegation for an action
 // if that action was delegated.
 //
-//TODO: actual info
+// TODO: actual info
 type OperationDelegationInfo[
 	SessionIDNumT SessionIDNum, SessionIDT SessionID[SessionIDNumT],
 	TerminalIDNumT TerminalIDNum, TerminalIDT TerminalID[TerminalIDNumT],

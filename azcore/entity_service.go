@@ -2,26 +2,26 @@ package azcore
 
 //region Method
 
-// EntityMethodMessage abstracts the messages, i.e., requests and responses.
-type EntityMethodMessage interface {
-	ServiceMethodMessage
+// EntityOpMessage abstracts the messages, i.e., requests and responses.
+type EntityOpMessage interface {
+	ServiceOpMessage
 
-	EntityMethodContext() EntityMethodContext
+	EntityOpContext() EntityOpContext
 }
 
 //endregion
 
 //region Context
 
-// EntityMethodContext provides an abstraction for all operations which
+// EntityOpContext provides an abstraction for all operations which
 // apply to entity instances.
-type EntityMethodContext interface {
-	ServiceMethodContext
+type EntityOpContext interface {
+	ServiceOpContext
 }
 
-// EntityMethodCallInputContext is an abstraction for all method call
+// EntityOpCallContext is an abstraction for all method call
 // input contexts.
-type EntityMethodCallInputContext[
+type EntityOpCallContext[
 	SessionIDNumT SessionIDNum, SessionIDT SessionID[SessionIDNumT],
 	TerminalIDNumT TerminalIDNum, TerminalIDT TerminalID[TerminalIDNumT],
 	UserIDNumT UserIDNum, UserIDT UserID[UserIDNumT],
@@ -33,39 +33,39 @@ type EntityMethodCallInputContext[
 		TerminalIDNumT, TerminalIDT,
 		UserIDNumT, UserIDT,
 		SessionSubjectT, SessionT],
-	ServiceMethodIdempotencyKeyT ServiceMethodIdempotencyKey,
+	ServiceOpIdempotencyKeyT ServiceOpIdempotencyKey,
 ] interface {
-	EntityMethodContext
-	ServiceMethodCallInputContext[
+	EntityOpContext
+	ServiceOpCallContext[
 		SessionIDNumT, SessionIDT,
 		TerminalIDNumT, TerminalIDT,
 		UserIDNumT, UserIDT,
 		SessionSubjectT,
-		SessionT, ServiceMethodIdempotencyKeyT,
+		SessionT, ServiceOpIdempotencyKeyT,
 	]
 }
 
-// EntityMethodCallOutputContext is an abstraction for all method call
+// EntityOpResultContext is an abstraction for all method call
 // output contexts.
-type EntityMethodCallOutputContext interface {
-	EntityMethodContext
-	ServiceMethodCallOutputContext
+type EntityOpResultContext interface {
+	EntityOpContext
+	ServiceOpResultContext
 }
 
 //endregion
 
 //region MutatingContext
 
-// EntityMutatingContext is a specialization of EntityOperationContext which
+// EntityMutationOpContext is a specialization of EntityOperationContext which
 // is used for operations which make any change to the entity.
-type EntityMutatingContext interface {
-	EntityMethodContext
-	ServiceMutatingMethodContext
+type EntityMutationOpContext interface {
+	EntityOpContext
+	ServiceMutationOpContext
 }
 
-// EntityMutatingMethodCallContext provides an abstraction for input contexts
+// EntityMutatingOpCallContext provides an abstraction for input contexts
 // for mutating method calls.
-type EntityMutatingMethodCallContext[
+type EntityMutatingOpCallContext[
 	SessionIDNumT SessionIDNum, SessionIDT SessionID[SessionIDNumT],
 	TerminalIDNumT TerminalIDNum, TerminalIDT TerminalID[TerminalIDNumT],
 	UserIDNumT UserIDNum, UserIDT UserID[UserIDNumT],
@@ -77,39 +77,39 @@ type EntityMutatingMethodCallContext[
 		TerminalIDNumT, TerminalIDT,
 		UserIDNumT, UserIDT,
 		SessionSubjectT, SessionT],
-	ServiceMethodCallInputContextT ServiceMethodCallInputContext[
+	ServiceOpCallContextT ServiceOpCallContext[
 		SessionIDNumT, SessionIDT,
 		TerminalIDNumT, TerminalIDT,
 		UserIDNumT, UserIDT,
 		SessionSubjectT,
-		SessionT, ServiceMethodIdempotencyKeyT],
-	ServiceMethodIdempotencyKeyT ServiceMethodIdempotencyKey,
+		SessionT, ServiceOpIdempotencyKeyT],
+	ServiceOpIdempotencyKeyT ServiceOpIdempotencyKey,
 ] interface {
-	EntityMutatingContext
-	EntityMethodCallInputContext[
+	EntityMutationOpContext
+	EntityOpCallContext[
 		SessionIDNumT, SessionIDT, TerminalIDNumT, TerminalIDT,
 		UserIDNumT, UserIDT, SessionSubjectT, SessionT,
-		ServiceMethodIdempotencyKeyT]
-	ServiceMutatingMethodCallInputContext[
+		ServiceOpIdempotencyKeyT]
+	ServiceMutationOpCallContext[
 		SessionIDNumT, SessionIDT, TerminalIDNumT, TerminalIDT,
 		UserIDNumT, UserIDT, SessionSubjectT, SessionT,
-		ServiceMethodCallInputContextT, ServiceMethodIdempotencyKeyT]
+		ServiceOpCallContextT, ServiceOpIdempotencyKeyT]
 }
 
-// EntityMutatingMethodCallOutputContext provides an abstraction for output contexts
+// EntityMutatingOpResultContext provides an abstraction for output contexts
 // for mutating method calls.
-type EntityMutatingMethodCallOutputContext interface {
-	EntityMutatingContext
-	EntityMethodCallOutputContext
-	ServiceMutatingMethodCallOutputContext
+type EntityMutatingOpResultContext interface {
+	EntityMutationOpContext
+	EntityOpResultContext
+	ServiceMutationOpResultContext
 }
 
 // EntityMutatingMessage abstracts entity mutating method requests and responses.
 type EntityMutatingMessage interface {
-	EntityMethodMessage
-	ServiceMutatingMethodMessage
+	EntityOpMessage
+	ServiceMutationOpMessage
 
-	EntityMutatingContext() EntityMutatingContext
+	EntityMutatingContext() EntityMutationOpContext
 }
 
 //endregion

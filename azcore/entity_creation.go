@@ -55,9 +55,9 @@ type EntityCreationEvent[
 	CreationInfo() EntityCreationInfoT
 }
 
-// EntityCreationInputContext is the abstraction for all entity creation
+// EntityCreationCallContext is the abstraction for all entity creation
 // call input contexts.
-type EntityCreationInputContext[
+type EntityCreationCallContext[
 	SessionIDNumT SessionIDNum, SessionIDT SessionID[SessionIDNumT],
 	TerminalIDNumT TerminalIDNum, TerminalIDT TerminalID[TerminalIDNumT],
 	UserIDNumT UserIDNum, UserIDT UserID[UserIDNumT],
@@ -69,22 +69,22 @@ type EntityCreationInputContext[
 		TerminalIDNumT, TerminalIDT,
 		UserIDNumT, UserIDT,
 		SessionSubjectT, SessionT],
-	ServiceMethodIdempotencyKeyT ServiceMethodIdempotencyKey,
+	ServiceOpIdempotencyKeyT ServiceOpIdempotencyKey,
 ] interface {
-	ServiceMethodCallInputContext[
+	ServiceOpCallContext[
 		SessionIDNumT, SessionIDT,
 		TerminalIDNumT, TerminalIDT,
 		UserIDNumT, UserIDT,
 		SessionSubjectT,
-		SessionT, ServiceMethodIdempotencyKeyT]
+		SessionT, ServiceOpIdempotencyKeyT]
 
-	AZEntityCreationInputContext()
+	AZEntityCreationCallContext()
 }
 
-// EntityCreationOutputContext is the abstraction for all entity creation
+// EntityCreationResultContext is the abstraction for all entity creation
 // call output contexts.
-type EntityCreationOutputContext interface {
-	ServiceMethodCallOutputContext
+type EntityCreationResultContext interface {
+	ServiceOpResultContext
 
-	AZEntityCreationOutputContext()
+	AZEntityCreationResultContext()
 }

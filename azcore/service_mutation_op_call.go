@@ -1,7 +1,7 @@
 package azcore
 
-// ServiceMutatingMethodCallInputContext abstracts mutating method request contexts.
-type ServiceMutatingMethodCallInputContext[
+// ServiceMutationOpCallContext abstracts mutating method request contexts.
+type ServiceMutationOpCallContext[
 	SessionIDNumT SessionIDNum, SessionIDT SessionID[SessionIDNumT],
 	TerminalIDNumT TerminalIDNum, TerminalIDT TerminalID[TerminalIDNumT],
 	UserIDNumT UserIDNum, UserIDT UserID[UserIDNumT],
@@ -13,26 +13,26 @@ type ServiceMutatingMethodCallInputContext[
 		TerminalIDNumT, TerminalIDT,
 		UserIDNumT, UserIDT,
 		SessionSubjectT, SessionT],
-	ServiceMethodCallInputContextT ServiceMethodCallInputContext[
+	ServiceOpCallContextT ServiceOpCallContext[
 		SessionIDNumT, SessionIDT,
 		TerminalIDNumT, TerminalIDT,
 		UserIDNumT, UserIDT,
 		SessionSubjectT,
-		SessionT, ServiceMethodIdempotencyKeyT],
-	ServiceMethodIdempotencyKeyT ServiceMethodIdempotencyKey,
+		SessionT, ServiceOpIdempotencyKeyT],
+	ServiceOpIdempotencyKeyT ServiceOpIdempotencyKey,
 ] interface {
-	ServiceMutatingMethodContext
-	ServiceMethodCallInputContext[
+	ServiceMutationOpContext
+	ServiceOpCallContext[
 		SessionIDNumT, SessionIDT,
 		TerminalIDNumT, TerminalIDT,
 		UserIDNumT, UserIDT,
 		SessionSubjectT,
-		SessionT, ServiceMethodIdempotencyKeyT]
+		SessionT, ServiceOpIdempotencyKeyT]
 }
 
-// ServiceMutatingMethodCallOutputContext abstracts mutating
+// ServiceMutationOpResultContext abstracts mutating
 // method response contexts.
-type ServiceMutatingMethodCallOutputContext interface {
-	ServiceMutatingMethodContext
-	ServiceMethodCallOutputContext
+type ServiceMutationOpResultContext interface {
+	ServiceMutationOpContext
+	ServiceOpResultContext
 }
