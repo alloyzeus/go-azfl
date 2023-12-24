@@ -7,8 +7,6 @@ import (
 type IDNumMethods interface {
 	azob.Equatable
 
-	AZIDNum()
-
 	// An IDNum must be azid-bin-marshalable as a field. It never need to be
 	// marshalable as a top-level object.
 	BinFieldMarshalable
