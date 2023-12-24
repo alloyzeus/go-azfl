@@ -2,48 +2,36 @@ package azcore
 
 import "github.com/alloyzeus/go-azfl/v2/azid"
 
-// Entity defines the contract for all its concrete implementations.
-//
-// For now, this is unused.
-type Entity interface {
-	AZEntity()
-}
-
 // An EntityID is an identifier of an entity.
 type EntityID[IDNumT EntityIDNum] interface {
 	azid.ID[IDNumT]
-
-	AZEntityID()
 }
 
-// An EntityAttributes instance contains the actual attributes of an entity.
+// An EntityAttrSet instance contains the actual attributes of an entity.
 // It's on itself is a value object and does not have any identity.
 //
-// An EntityAttributes instance doesn't hold the ID of its entity instance.
+// An EntityAttrSet instance doesn't hold the ID of its entity instance.
 // For the structure that holds both the ID and its attributes, see
-// KeyedEntityAttributes, which pratically contains a pair of attributes --
+// KeyedEntityAttrSet, which pratically contains a pair of attributes --
 // the ID of the entity and the of attributes of the entity.
-type EntityAttributes interface {
-	Attributes
-
-	AZEntityAttributes()
+type EntityAttrSet interface {
+	AttrSet
 }
 
-// KeyedEntityAttributes is a self-identifying data structure that contains
+// KeyedEntityAttrSet is a self-identifying data structure that contains
 // both the ID of the entity and its representing attributes.
 //
 // TODO: an envelope with EntityInstanceInfo?
-type KeyedEntityAttributes[
+type KeyedEntityAttrSet[
 	EntityIDNumT EntityIDNum,
 	EntityIDT EntityID[EntityIDNumT],
-	EntityAttributesT EntityAttributes,
+	EntityAttrSetT EntityAttrSet,
 ] struct {
-	ID         EntityIDT
-	Attributes EntityAttributesT
+	ID      EntityIDT
+	AttrSet EntityAttrSetT
 }
 
 type EntityIDNumMethods interface {
-	AZEntityIDNum()
 }
 
 // EntityIDNum is the unique or local part of an entity identifier.

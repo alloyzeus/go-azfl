@@ -6,8 +6,6 @@ package azcore
 // on method-related errors.
 type ServiceOpError interface {
 	ServiceError
-
-	AZServiceOpError()
 }
 
 // ServiceOpErrorMsg is a basic implementation of ServiceOpError
@@ -18,12 +16,6 @@ type ServiceOpErrorMsg struct {
 
 var _ ServiceOpError = ServiceOpErrorMsg{}
 
-// AZServiceOpError is required for conformance with ServiceOpError.
-func (ServiceOpErrorMsg) AZServiceOpError() {}
-
-// AZServiceError is required for conformance with ServiceError.
-func (ServiceOpErrorMsg) AZServiceError() {}
-
 func (err ServiceOpErrorMsg) Error() string { return err.msg }
 
 // ServiceOpInternalError represents error in the method, service, or in
@@ -32,8 +24,6 @@ func (err ServiceOpErrorMsg) Error() string { return err.msg }
 // This is analogous to HTTP's 5xx status code.
 type ServiceOpInternalError interface {
 	ServiceOpError
-
-	AZServiceOpInternalError()
 }
 
 // ServiceOpInternalErrorMsg is a basic implementation of
@@ -43,16 +33,6 @@ type ServiceOpInternalErrorMsg struct {
 }
 
 var _ ServiceOpInternalError = ServiceOpInternalErrorMsg{}
-
-// AZServiceOpInternalError is required for conformance
-// with ServiceOpInternalError.
-func (ServiceOpInternalErrorMsg) AZServiceOpInternalError() {}
-
-// AZServiceOpError is required for conformance with ServiceOpError.
-func (ServiceOpInternalErrorMsg) AZServiceOpError() {}
-
-// AZServiceError is required for conformance with ServiceError.
-func (ServiceOpInternalErrorMsg) AZServiceError() {}
 
 func (err ServiceOpInternalErrorMsg) Error() string { return err.msg }
 
@@ -91,8 +71,6 @@ type ServiceOpContext interface {
 
 // ServiceOpMessage abstracts the messages, i.e., requests and responses.
 type ServiceOpMessage interface {
-	AZServiceOpMessage()
-
 	// ServiceOpContext returns the context of this message.
 	//
 	// Implementations must return most specialized context implementation.

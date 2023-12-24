@@ -5,8 +5,6 @@ package azcore
 // AdjunctEntityService abstracts adjunct entity services.
 type AdjunctEntityService interface {
 	Service
-
-	AZAdjunctEntityService()
 }
 
 //endregion
@@ -20,14 +18,6 @@ type AdjunctEntityServiceBase struct{}
 
 var _ AdjunctEntityService = &AdjunctEntityServiceBase{}
 
-// AZAdjunctEntityService is required
-// for conformance with AdjunctEntityService.
-func (*AdjunctEntityServiceBase) AZAdjunctEntityService() {}
-
-// AZService is required
-// for conformance with Service.
-func (*AdjunctEntityServiceBase) AZService() {}
-
 //endregion
 
 //region ServiceClient
@@ -37,8 +27,6 @@ func (*AdjunctEntityServiceBase) AZService() {}
 type AdjunctEntityServiceClient interface {
 	AdjunctEntityService
 	ServiceClient
-
-	AZAdjunctEntityServiceClient()
 }
 
 //endregion
@@ -53,14 +41,6 @@ type AdjunctEntityServiceClientBase struct {
 
 var _ AdjunctEntityServiceClient = &AdjunctEntityServiceClientBase{}
 
-// AZAdjunctEntityServiceClient is required
-// for comformance with AdjunctEntityServiceClient.
-func (*AdjunctEntityServiceClientBase) AZAdjunctEntityServiceClient() {}
-
-// AZServiceClient is required
-// for conformance with ServiceClient.
-func (*AdjunctEntityServiceClientBase) AZServiceClient() {}
-
 //endregion
 
 //region ServiceServer
@@ -70,8 +50,6 @@ func (*AdjunctEntityServiceClientBase) AZServiceClient() {}
 type AdjunctEntityServiceServer interface {
 	AdjunctEntityService
 	ServiceServer
-
-	AZAdjunctEntityServiceServer()
 }
 
 //endregion
@@ -85,13 +63,5 @@ type AdjunctEntityServiceServerBase struct {
 }
 
 var _ AdjunctEntityServiceServer = &AdjunctEntityServiceServerBase{}
-
-// AZAdjunctEntityServiceServer is required
-// for comformance with AdjunctEntityServiceServer.
-func (*AdjunctEntityServiceServerBase) AZAdjunctEntityServiceServer() {}
-
-// AZServiceServer is required
-// for conformance with ServiceServer.
-func (*AdjunctEntityServiceServerBase) AZServiceServer() {}
 
 //endregion

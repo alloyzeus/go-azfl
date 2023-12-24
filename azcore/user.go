@@ -3,7 +3,6 @@ package azcore
 import "github.com/alloyzeus/go-azfl/v2/azid"
 
 type UserIDNumMethods interface {
-	AZUserIDNum()
 }
 
 // UserID abstracts the identifiers of User entity instances.

@@ -9,8 +9,6 @@ import (
 // Context is a generalized context for all service methods.
 type Context interface {
 	context.Context
-
-	AZContext()
 }
 
 // HumanContext is a specialized context, where current processing

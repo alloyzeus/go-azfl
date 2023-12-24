@@ -119,7 +119,6 @@ type EntityMutatingMessage interface {
 // EntityService provides an abstraction for all entity services. This
 // abstraction is used by both client and server.
 type EntityService interface {
-	AZEntityService()
 }
 
 //endregion
@@ -131,9 +130,6 @@ type EntityServiceBase struct{}
 
 var _ EntityService = &EntityServiceBase{}
 
-// AZEntityService is required for conformance with EntityService.
-func (*EntityServiceBase) AZEntityService() {}
-
 //endregion
 
 //region ServiceClient
@@ -141,8 +137,6 @@ func (*EntityServiceBase) AZEntityService() {}
 // EntityServiceClient provides an abstraction for all entity service clients.
 type EntityServiceClient interface {
 	EntityService
-
-	AZEntityServiceClient()
 }
 
 //endregion
@@ -152,8 +146,6 @@ type EntityServiceClient interface {
 // EntityServiceServer provides an abstraction for all entity service servers.
 type EntityServiceServer interface {
 	EntityService
-
-	AZEntityServiceServer()
 }
 
 //endregion

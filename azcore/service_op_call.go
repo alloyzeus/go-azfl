@@ -47,8 +47,6 @@ type ServiceOpCallOriginInfo struct {
 // identifier doubles as idempotency token.
 type ServiceOpIdempotencyKey interface {
 	azob.Equatable
-
-	AZServiceOpIdempotencyKey()
 }
 
 //endregion
@@ -71,8 +69,6 @@ type ServiceOpCallData interface {
 // TODO: sub-classes: acces, parameters, context
 type ServiceOpCallInvocationError interface {
 	ServiceOpError
-
-	AZServiceOpCallInvocationError()
 }
 
 //endregion
@@ -116,8 +112,6 @@ type ServiceOpCallContext[
 ] interface {
 	ServiceOpContext
 
-	AZServiceOpCallContext()
-
 	// Session returns the session for this context.
 	Session() SessionT
 
@@ -138,8 +132,6 @@ type ServiceOpCallContext[
 // ServiceOpCallInputError.
 type ServiceOpCallContextError interface {
 	ServiceOpCallInvocationError
-
-	AZServiceOpCallContextError()
 }
 
 // ServiceOpCallSessionError is a sub-class of
@@ -147,8 +139,6 @@ type ServiceOpCallContextError interface {
 // in the session.
 type ServiceOpCallSessionError interface {
 	ServiceOpCallContextError
-
-	AZServiceOpCallSessionError()
 }
 
 //region ServiceOpResultContext
@@ -163,8 +153,6 @@ type ServiceOpResultContext interface {
 	//TODO: ServiceOpCallContext, or keep it like this and
 	// add a method to access the input context: OpCallContext()
 	ServiceOpContext
-
-	AZServiceOpResultContext()
 
 	// // Succeed returns true when the method achieved its objective.
 	// Succeed() bool
@@ -210,16 +198,6 @@ func NewOpResultContext(
 		err:        err,
 		mutated:    mutated}
 }
-
-// AZContext is required for conformance with Context.
-func (ServiceOpResultContextBase) AZContext() {}
-
-// AZServiceContext is required for conformance with ServiceContext.
-func (ServiceOpResultContextBase) AZServiceContext() {}
-
-// AZServiceOpResultContext is required
-// for conformance with ServiceOpResultContext.
-func (ServiceOpResultContextBase) AZServiceOpResultContext() {}
 
 // OperationName is required for conformance with ServiceOpContext.
 func (ctx ServiceOpResultContextBase) OperationName() string { return ctx.opName }

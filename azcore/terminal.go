@@ -1,6 +1,10 @@
 package azcore
 
-import "github.com/alloyzeus/go-azfl/v2/azid"
+import (
+	"context"
+
+	"github.com/alloyzeus/go-azfl/v2/azid"
+)
 
 // A Terminal is an object which could act within the system, i.e., an agent.
 type Terminal[
@@ -16,7 +20,6 @@ type Terminal[
 }
 
 type TerminalIDNumMethods interface {
-	AZTerminalIDNum()
 }
 
 // TerminalIDNum abstracts the identifiers of Terminal entity instances.
@@ -32,4 +35,27 @@ type TerminalID[IDNumT TerminalIDNum] interface {
 
 	// TerminalIDNum returns only the ID part of this ref-key.
 	TerminalIDNum() IDNumT
+}
+
+func NewTerminalRef[
+	TerminalIDNumT TerminalIDNum, TerminalIDT TerminalID[TerminalIDNumT],
+	UserIDNumT UserIDNum, UserIDT UserID[UserIDNumT],
+	TerminalT Terminal[TerminalIDNumT, TerminalIDT, UserIDNumT, UserIDT],
+](
+	id TerminalIDT,
+	instanceResolver func(context.Context, TerminalIDT) (TerminalT, error),
+) TerminalRef[TerminalIDNumT, TerminalIDT, UserIDNumT, UserIDT, TerminalT] {
+	return TerminalRef[TerminalIDNumT, TerminalIDT, UserIDNumT, UserIDT, TerminalT]{
+		id:               id,
+		instanceResolver: instanceResolver,
+	}
+}
+
+type TerminalRef[
+	TerminalIDNumT TerminalIDNum, TerminalIDT TerminalID[TerminalIDNumT],
+	UserIDNumT UserIDNum, UserIDT UserID[UserIDNumT],
+	TerminalT Terminal[TerminalIDNumT, TerminalIDT, UserIDNumT, UserIDT],
+] struct {
+	id               TerminalIDT
+	instanceResolver func(context.Context, TerminalIDT) (TerminalT, error)
 }

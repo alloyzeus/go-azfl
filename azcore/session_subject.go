@@ -5,8 +5,6 @@ type SessionSubject[
 	TerminalIDNumT TerminalIDNum, TerminalIDT TerminalID[TerminalIDNumT],
 	UserIDNumT UserIDNum, UserIDT UserID[UserIDNumT],
 ] interface {
-	AZSessionSubject()
-
 	// TerminalID returns the ref-key of the terminal for this subject.
 	TerminalID() TerminalIDT
 

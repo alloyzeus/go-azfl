@@ -1,6 +1,5 @@
 package azcore
 
-// Attributes abstracts attributes.
-type Attributes interface {
-	AZAttributes()
+// AttrSet abstracts attributes.
+type AttrSet interface {
 }

@@ -10,7 +10,6 @@ type ServiceClientConfig interface {
 // ServiceClient provides an abstraction for all service clients.
 type ServiceClient interface {
 	Service
-	AZServiceClient()
 }
 
 // ServiceClientModule provides all the required to instantiate a service
@@ -22,13 +21,8 @@ type ServiceClientModule struct {
 
 var _ ServiceModule = ServiceClientModule{}
 
-// AZServiceModule is required for conformance with ServiceModule.
-func (ServiceClientModule) AZServiceModule() {}
-
 // ServiceClientError is an abstraction for all errors emitted by a
 // service server.
 type ServiceClientError interface {
 	ServiceError
-
-	AZServiceClientError()
 }

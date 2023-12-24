@@ -20,12 +20,11 @@ func IsEntityError(err error) bool {
 // entityIdentifier which could be the name, key or URL of an entity. The
 // entityIdentifier should describe the 'what' while err describes the 'why'.
 //
-//   // Describes that the file ".config.yaml" does not exist.
-//   errors.Ent("./config.yaml", os.ErrNotExist)
+//	// Describes that the file ".config.yaml" does not exist.
+//	errors.Ent("./config.yaml", os.ErrNotExist)
 //
-//   // Describes that the site "https://example.com" is unreachable.
-//   errors.Ent("https://example.com/", errors.Msg("unreachable"))
-//
+//	// Describes that the site "https://example.com" is unreachable.
+//	errors.Ent("https://example.com/", errors.Msg("unreachable"))
 func Ent(entityIdentifier string, err error) EntityError {
 	return &entityError{
 		identifier: entityIdentifier,
@@ -114,6 +113,7 @@ var (
 	_ Unwrappable   = &entityError{}
 	_ EntityError   = &entityError{}
 	_ hasDescriptor = &entityError{}
+	_ NamedError    = &entityError{}
 )
 
 func (e *entityError) Error() string {
@@ -148,6 +148,9 @@ func (e entityError) fieldErrorsAsString() string {
 	}
 	return ""
 }
+
+func (e *entityError) Name() string { return e.identifier }
+func (e *entityError) Value() any   { return nil }
 
 func (e *entityError) Unwrap() error            { return e.err }
 func (e *entityError) EntityIdentifier() string { return e.identifier }

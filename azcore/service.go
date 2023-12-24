@@ -1,30 +1,22 @@
 package azcore
 
-// ServiceConfig provides a contract for all of its implementations.
-type ServiceConfig interface {
-	AZServiceConfig()
-}
-
 // Service provides an abstraction for all services.
 type Service interface {
-	AZService()
 }
 
-// ServiceModule provides an abstraction for all kind of service modules.
-type ServiceModule interface {
-	AZServiceModule()
+// ServiceConfig provides an abstractions for all service-related configs.
+type ServiceConfig interface {
 }
 
-// ServiceContext is an abstraction for service-related contexts.
+// ServiceContext provides an abstraction for all service-related contexts.
 type ServiceContext interface {
-	Context
+}
 
-	AZServiceContext()
+// ServiceModule provides an abstraction for modular services.
+type ServiceModule interface {
 }
 
 // ServiceError is an abstraction for all errors emitted by a service.
 type ServiceError interface {
 	Error
-
-	AZServiceError()
 }

@@ -46,7 +46,6 @@ type Session[
 }
 
 type SessionIDNumMethods interface {
-	AZSessionIDNum()
 }
 
 // SessionIDNum abstracts the identifiers of Session entity instances.

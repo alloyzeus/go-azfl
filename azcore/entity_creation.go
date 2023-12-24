@@ -50,8 +50,6 @@ type EntityCreationEvent[
 		SessionIDNumT, SessionIDT, TerminalIDNumT, TerminalIDT,
 		UserIDNumT, UserIDT, SessionSubjectT, SessionT],
 ] interface {
-	AZEntityCreationEvent()
-
 	CreationInfo() EntityCreationInfoT
 }
 
@@ -77,14 +75,10 @@ type EntityCreationCallContext[
 		UserIDNumT, UserIDT,
 		SessionSubjectT,
 		SessionT, ServiceOpIdempotencyKeyT]
-
-	AZEntityCreationCallContext()
 }
 
 // EntityCreationResultContext is the abstraction for all entity creation
 // call output contexts.
 type EntityCreationResultContext interface {
 	ServiceOpResultContext
-
-	AZEntityCreationResultContext()
 }
