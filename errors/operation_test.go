@@ -3,7 +3,7 @@ package errors
 import "testing"
 
 func TestOpEmpty(t *testing.T) {
-	var err error = Op("")
+	var err error = Op("", nil)
 
 	assert(t, "operation error", err.Error())
 	assert(t, nil, Unwrap(err))
@@ -15,7 +15,7 @@ func TestOpEmpty(t *testing.T) {
 }
 
 func TestOpJustName(t *testing.T) {
-	var err error = Op("DeleteAccount")
+	var err error = Op("DeleteAccount", nil)
 
 	assert(t, "DeleteAccount error", err.Error())
 	assert(t, nil, Unwrap(err))
@@ -27,7 +27,7 @@ func TestOpJustName(t *testing.T) {
 }
 
 func TestOpJustWrapped(t *testing.T) {
-	var err error = Op("").Wrap(ErrAccessForbidden)
+	var err error = Op("", ErrAccessForbidden)
 
 	assert(t, "operation forbidden", err.Error())
 
@@ -43,7 +43,7 @@ func TestOpJustWrapped(t *testing.T) {
 }
 
 func TestOpNameAndWrapped(t *testing.T) {
-	var err error = Op("DropDatabase").Wrap(ErrAccessForbidden)
+	var err error = Op("DropDatabase", ErrAccessForbidden)
 
 	assert(t, "DropDatabase: forbidden", err.Error())
 
@@ -59,39 +59,39 @@ func TestOpNameAndWrapped(t *testing.T) {
 }
 
 func TestOpParamsBasic(t *testing.T) {
-	var err error = Op("LaunchNuke").Params(N("authorizationCode").Desc(ErrValueMismatch))
+	var err error = Op("LaunchNuke", nil).Params(N("authorizationCode").Desc(ErrValueMismatch))
 
 	assert(t, "LaunchNuke error. authorizationCode: mismatch", err.Error())
 }
 
 func TestOpParamsRes(t *testing.T) {
-	var err error = Op("Fetch").Params(N("part").Val("HEAD")).Wrap(ErrEntityUnreachable)
+	var err error = Op("Fetch", ErrEntityUnreachable).Params(N("part").Val("HEAD"))
 
 	//TODO: param values are quoted when necessary
 	assert(t, "Fetch: unreachable. part=HEAD", err.Error())
 }
 
 func TestOpParamsNoWrap(t *testing.T) {
-	var err error = Op("Fetch").Params(N("part").Val("HEAD"))
+	var err error = Op("Fetch", nil).Params(N("part").Val("HEAD"))
 
 	assert(t, "Fetch error. part=HEAD", err.Error())
 }
 
 func TestOpNoNameParamsNoWrap(t *testing.T) {
-	var err error = Op("").Params(N("part").Val("HEAD"))
+	var err error = Op("", nil).Params(N("part").Val("HEAD"))
 
 	assert(t, "operation error. part=HEAD", err.Error())
 }
 
 func TestOpHintWrap(t *testing.T) {
-	var err error = Op("SwimmingRevolution").Params(N("location").Val("Pacific Ocean")).
+	var err error = Op("SwimmingRevolution", nil).Params(N("location").Val("Pacific Ocean")).
 		Wrap(Msg("sun is shining")).Hint("Please check the water temperature first")
 
 	assert(t, `SwimmingRevolution: sun is shining. location="Pacific Ocean". Please check the water temperature first`, err.Error())
 }
 
 func TestOpHintNoWrap(t *testing.T) {
-	var err error = Op("SwimmingRevolution").Params(N("location").Val("Pacific Ocean")).
+	var err error = Op("SwimmingRevolution", nil).Params(N("location").Val("Pacific Ocean")).
 		Hint("Please check the water temperature first")
 
 	assert(t, `SwimmingRevolution error. location="Pacific Ocean". Please check the water temperature first`, err.Error())

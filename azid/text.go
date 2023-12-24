@@ -3,7 +3,7 @@ package azid
 import (
 	"github.com/rez-go/crock32"
 
-	errors "github.com/alloyzeus/go-azfl/v2/azerrs"
+	"github.com/alloyzeus/go-azfl/v2/errors"
 )
 
 // TextMarshalable is an interface definition for objects which able to
@@ -24,10 +24,10 @@ var (
 )
 
 // TextDecode decodes azid-bin ref-key from a string.
-func TextDecode(s string) ([]byte, error) {
+func TextDecode(input string) ([]byte, error) {
 	var dataEncoded []byte
 	var checksumEncoded []byte
-	inputAsBytes := []byte(s)
+	inputAsBytes := []byte(input)
 	for i, c := range inputAsBytes {
 		if c == 'U' || c == 'u' {
 			if i+1 < len(inputAsBytes) {
@@ -43,11 +43,11 @@ func TextDecode(s string) ([]byte, error) {
 		}
 	}
 	if dataEncoded == nil {
-		dataEncoded = []byte(s)
+		dataEncoded = []byte(input)
 	}
 	dataBytes, err := crock32.Decode(string(dataEncoded))
 	if err != nil {
-		return nil, errors.Arg1().Desc(errors.ErrValueMalformed).Wrap(err)
+		return nil, errors.ArgDW("input", errors.ErrValueMalformed, err)
 	}
 	if len(checksumEncoded) == 2 {
 		//TODO: checksum

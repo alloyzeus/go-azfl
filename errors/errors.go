@@ -15,12 +15,6 @@ var (
 	Unwrap = errors.Unwrap
 )
 
-//TODO: fields.
-// e.g., errors.Msg("error message", errors.Str("name", name), errors.Err(err))
-//    or errors.With().Str("name", name).Err(err).Msg("error message")
-//    or errors.With().StrErr("name", nameErr).Msg("error message")
-// (sounds like structured logging? exactly!)
-
 const (
 	// ErrUnimplemented is used to declare that a functionality, or part of it,
 	// has not been implemented. This could be well mapped to some protocols'

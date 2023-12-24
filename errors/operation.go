@@ -23,8 +23,8 @@ type OperationErrorBuilder interface {
 	Wrap(detailingError error) OperationErrorBuilder
 }
 
-func Op(operationName string) OperationErrorBuilder {
-	return &opError{operationName: operationName}
+func Op(operationName string, detailingError error) OperationErrorBuilder {
+	return &opError{operationName: operationName, wrapped: detailingError}
 }
 
 type opError struct {
@@ -53,13 +53,7 @@ func (e *opError) Error() string {
 	if e.hintText != "" {
 		suffix = suffix + ". " + e.hintText
 	}
-	var descStr string
 	causeStr := errorString(e.wrapped)
-	if causeStr == "" {
-		causeStr = descStr
-	} else if descStr != "" {
-		causeStr = descStr + ": " + causeStr
-	}
 
 	if e.operationName != "" {
 		if causeStr != "" {

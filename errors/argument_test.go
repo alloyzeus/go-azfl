@@ -8,7 +8,7 @@ func TestArgEmpty(t *testing.T) {
 
 	inner := Unwrap(err)
 	assert(t, nil, inner)
-	assert(t, false, IsArgumentUnspecifiedError(err))
+	assert(t, true, IsArgumentError(err))
 }
 
 func TestArgFields(t *testing.T) {
@@ -21,11 +21,6 @@ func TestArgFieldsNoName(t *testing.T) {
 	var err error = Arg("").Fieldset(
 		N("name").Desc(ErrValueEmpty), N("bar").Desc(ErrValueUnspecified))
 	assert(t, "arg: name: empty, bar: unspecified", err.Error())
-}
-
-func TestArg1(t *testing.T) {
-	var err error = Arg1().Desc(ErrValueUnspecified)
-	assert(t, "arg unspecified", err.Error())
 }
 
 func TestArgDescWrap(t *testing.T) {
@@ -66,7 +61,7 @@ func TestArgDescMsg(t *testing.T) {
 }
 
 func TestAsArgumentError(t *testing.T) {
-	var err error = Arg1()
+	var err error = Arg("")
 	assert(t, err, AsArgumentError(err))
 }
 
@@ -84,7 +79,7 @@ func TestArgUnspecifiedEmpty(t *testing.T) {
 	var err error = ArgUnspecified("")
 
 	assert(t, "arg unspecified", err.Error())
-	assert(t, true, IsArgumentUnspecifiedError(err))
+	assert(t, true, IsArgumentError(err))
 	assert(t, ErrValueUnspecified, UnwrapDescriptor(err))
 
 	argErr, ok := err.(ArgumentError)
@@ -109,15 +104,15 @@ func TestArgUnspecifiedEmpty(t *testing.T) {
 func TestArgUnspecifiedFoo(t *testing.T) {
 	var err error = ArgUnspecified("foo")
 	assert(t, "arg foo: unspecified", err.Error())
-	assert(t, true, IsArgumentUnspecifiedError(err))
-	assert(t, true, IsArgumentUnspecified(err, "foo"))
-	assert(t, false, IsArgumentUnspecified(err, "bar"))
+	assert(t, true, IsArgumentError(err))
+	assert(t, true, IsArgumentErrorWithName(err, "foo"))
+	assert(t, false, IsArgumentErrorWithName(err, "bar"))
 
 	argErr, ok := err.(ArgumentError)
 	assert(t, true, ok)
 	assertNotEqual(t, nil, argErr)
 	assert(t, "foo", argErr.ArgumentName())
-	assert(t, true, IsArgumentUnspecifiedError(err))
+	assert(t, true, IsArgumentError(err))
 	assert(t, ErrValueUnspecified, UnwrapDescriptor(err))
 
 	wrapped := Unwrap(err)
@@ -128,25 +123,25 @@ func TestArgUnspecifiedFoo(t *testing.T) {
 	assert(t, ErrValueUnspecified, desc)
 }
 
-func TestIsArgUnspecifiedErrorNil(t *testing.T) {
+func TestIsArgErrorNil(t *testing.T) {
 	var err error
-	assert(t, false, IsArgumentUnspecifiedError(err))
-	assert(t, false, IsArgumentUnspecified(err, "foo"))
+	assert(t, false, IsArgumentError(err))
+	assert(t, false, IsArgumentErrorWithName(err, "foo"))
 }
 
-func TestIsArgUnspecifiedNegative(t *testing.T) {
+func TestIsArgNegative(t *testing.T) {
 	var err error = ErrValueInvalid
-	assert(t, false, IsArgumentUnspecified(err, "foo"))
+	assert(t, false, IsArgumentErrorWithName(err, "foo"))
 }
 
 func TestIsArgUnspecifiedWrongArgName(t *testing.T) {
 	var err error = ArgUnspecified("foo")
-	assert(t, false, IsArgumentUnspecified(err, "bar"))
+	assert(t, false, IsArgumentErrorWithName(err, "bar"))
 }
 
-func TestIsArgUnspecifiedCustomStruct(t *testing.T) {
+func TestIsArgCustomStruct(t *testing.T) {
 	var err error = &customArgError{argName: "foo"}
-	assert(t, false, IsArgumentUnspecified(err, "foo"))
+	assert(t, true, IsArgumentErrorWithName(err, "foo"))
 }
 
 func TestArgValueUnsupportedNoName(t *testing.T) {
@@ -166,15 +161,11 @@ func TestArgValueUnsupportedNoName(t *testing.T) {
 func TestArgValueUnsupportedFoo(t *testing.T) {
 	var err error = ArgValueUnsupported("foo")
 	assert(t, "arg foo: unsupported", err.Error())
-	// assert(t, true, IsArgumentUnspecifiedError(err))
-	// assert(t, true, IsArgumentUnspecified(err, "foo"))
-	// assert(t, false, IsArgumentUnspecified(err, "bar"))
 
 	argErr, ok := err.(ArgumentError)
 	assert(t, true, ok)
 	assertNotEqual(t, nil, argErr)
 	assert(t, "foo", argErr.ArgumentName())
-	// assert(t, true, IsArgumentUnspecifiedError(err))
 	assert(t, ErrValueUnsupported, UnwrapDescriptor(err))
 
 	wrapped := Unwrap(err)
@@ -205,7 +196,7 @@ func TestArgRewrapDesc(t *testing.T) {
 }
 
 func TestArgRewrapDescWrapped(t *testing.T) {
-	var err error = Arg("foo").Rewrap(Arg1().Desc(ErrValueMalformed).Wrap(Msg("bar")))
+	var err error = Arg("foo").Rewrap(Arg("").Desc(ErrValueMalformed).Wrap(Msg("bar")))
 	assert(t, "arg foo: malformed: bar", err.Error())
 	assert(t, true, IsArgumentError(err))
 	assert(t, false, IsEntityError(err))
@@ -225,7 +216,7 @@ func TestArgRewrapRandom(t *testing.T) {
 }
 
 func TestArgRewrapWrappedNoDesc(t *testing.T) {
-	var err error = Arg("foo").Rewrap(Arg1().Wrap(Msg("bar")))
+	var err error = Arg("foo").Rewrap(Arg("").Wrap(Msg("bar")))
 	assert(t, "arg foo: bar", err.Error())
 	assert(t, true, IsArgumentError(err))
 	assert(t, false, IsEntityError(err))
@@ -235,7 +226,7 @@ func TestArgRewrapWrappedNoDesc(t *testing.T) {
 }
 
 func TestArgRewrapFields(t *testing.T) {
-	var err error = Arg("simple").Rewrap(Arg1().Fieldset(
+	var err error = Arg("simple").Rewrap(Arg("").Fieldset(
 		NamedValueUnsupported("foo"),
 		N("bar").Desc(ErrValueMalformed),
 	))

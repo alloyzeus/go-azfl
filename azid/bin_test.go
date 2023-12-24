@@ -5,8 +5,8 @@ import (
 	"encoding/binary"
 	"testing"
 
-	errors "github.com/alloyzeus/go-azfl/v2/azerrs"
 	"github.com/alloyzeus/go-azfl/v2/azid"
+	"github.com/alloyzeus/go-azfl/v2/errors"
 )
 
 type int32IDNum int32

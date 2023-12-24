@@ -48,6 +48,14 @@ func IsArgumentError(err error) bool {
 	return ok
 }
 
+func IsArgumentErrorWithName(err error, argName string) bool {
+	e := AsArgumentError(err)
+	if e != nil {
+		return e.ArgumentName() == argName
+	}
+	return false
+}
+
 // AsArgumentError returns non-nil if err is indeed an ArgumentError.
 func AsArgumentError(err error) ArgumentError {
 	if e, ok := err.(ArgumentError); ok {
@@ -56,23 +64,27 @@ func AsArgumentError(err error) ArgumentError {
 	return nil
 }
 
-func Arg(argName string) ArgumentErrorBuilder {
-	return &argumentError{
-		argName: argName,
-	}
-}
-
-// Arg1 is used when there's only one argument for a function.
-func Arg1() ArgumentErrorBuilder {
-	return &argumentError{
-		argName: "",
-	}
-}
-
-func ArgFields(argName string, fields ...NamedError) ArgumentErrorBuilder {
+func Arg(argName string, fields ...NamedError) ArgumentErrorBuilder {
 	return &argumentError{
 		argName: argName,
 		fields:  fields,
+	}
+}
+
+func ArgD(argName string, desc ErrorDescriptor, fields ...NamedError) ArgumentErrorBuilder {
+	return &argumentError{
+		argName:    argName,
+		descriptor: desc,
+		fields:     fields,
+	}
+}
+
+func ArgDW(argName string, desc ErrorDescriptor, detailingError error, fields ...NamedError) ArgumentErrorBuilder {
+	return &argumentError{
+		argName:    argName,
+		descriptor: desc,
+		fields:     fields,
+		wrapped:    detailingError,
 	}
 }
 
@@ -84,10 +96,18 @@ func ArgMsg(argName, errMsg string, fields ...NamedError) ArgumentErrorBuilder {
 	}
 }
 
-func ArgWrap(argName, contextMessage string, err error, fields ...NamedError) ArgumentErrorBuilder {
+func ArgMW(argName, contextMessage string, err error, fields ...NamedError) ArgumentErrorBuilder {
 	return &argumentError{
 		argName: argName,
 		wrapped: Wrap(contextMessage, err),
+		fields:  fields,
+	}
+}
+
+func ArgW(argName string, err error, fields ...NamedError) ArgumentErrorBuilder {
+	return &argumentError{
+		argName: argName,
+		wrapped: err,
 		fields:  fields,
 	}
 }
@@ -100,16 +120,6 @@ func ArgUnspecified(argName string) ArgumentErrorBuilder {
 	}
 }
 
-func IsArgumentUnspecifiedError(err error) bool {
-	if !IsArgumentError(err) {
-		return false
-	}
-	if desc := UnwrapDescriptor(err); desc != nil {
-		return desc == ErrValueUnspecified
-	}
-	return false
-}
-
 // ArgValueUnsupported creates an ArgumentError with name is set to the value
 // of argName and descriptor is set to ErrValueUnsupported.
 func ArgValueUnsupported(argName string) ArgumentErrorBuilder {
@@ -117,43 +127,6 @@ func ArgValueUnsupported(argName string) ArgumentErrorBuilder {
 		argName:    argName,
 		descriptor: ErrValueUnsupported,
 	}
-}
-
-// IsArgumentUnspecified checks if an error describes about unspecifity of an argument.
-//
-//TODO: ArgSet
-func IsArgumentUnspecified(err error, argName string) bool {
-	if err == nil {
-		return false
-	}
-	argErr, ok := err.(ArgumentError)
-	if !ok {
-		return false
-	}
-	if argErr.ArgumentName() != argName {
-		return false
-	}
-	if desc := UnwrapDescriptor(err); desc != nil {
-		return desc == ErrValueUnspecified
-	}
-	return false
-}
-
-func IsArgUnspecified(err error, argName string) bool {
-	if err == nil {
-		return false
-	}
-	argErr, ok := err.(ArgumentError)
-	if !ok {
-		return false
-	}
-	if argErr.ArgumentName() != argName {
-		return false
-	}
-	if desc := UnwrapDescriptor(err); desc != nil {
-		return desc == ErrValueUnspecified
-	}
-	return false
 }
 
 type argumentError struct {
