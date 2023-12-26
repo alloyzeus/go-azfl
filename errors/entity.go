@@ -1,6 +1,9 @@
 package errors
 
-import "strings"
+import (
+	"slices"
+	"strings"
+)
 
 // EntityError is a class of errors describing errors in entities.
 //
@@ -194,8 +197,7 @@ func asEntityErrorSet(err error) EntityErrorSet {
 // EntityError. Note that the resulting error is not an EntityError because
 // it has no identity.
 func EntSet(entityErrors ...EntityError) EntityErrorSet {
-	ours := make([]EntityError, len(entityErrors))
-	copy(ours, entityErrors)
+	ours := slices.Clone(entityErrors)
 	return entErrorSet(ours)
 }
 
@@ -234,22 +236,11 @@ func (e entErrorSet) Errors() []error {
 
 func (e entErrorSet) EntityErrors() []EntityError {
 	if len(e) > 0 {
-		errs := make([]EntityError, len(e))
-		copy(errs, e)
-		return errs
+		return slices.Clone(e)
 	}
 	return nil
 }
 
 func copyFieldSet(fields []EntityError) []EntityError {
-	var copiedFields []EntityError
-	if len(fields) > 0 {
-		copiedFields = make([]EntityError, 0, len(fields))
-		for _, e := range fields {
-			if e != nil {
-				copiedFields = append(copiedFields, e)
-			}
-		}
-	}
-	return copiedFields
+	return slices.Clone(fields)
 }

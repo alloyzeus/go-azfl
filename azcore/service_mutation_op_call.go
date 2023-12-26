@@ -12,7 +12,7 @@ type ServiceMutationOpCallContext[
 		SessionIDNumT, SessionIDT,
 		TerminalIDNumT, TerminalIDT,
 		UserIDNumT, UserIDT,
-		SessionSubjectT, SessionT],
+		SessionSubjectT],
 	ServiceOpCallContextT ServiceOpCallContext[
 		SessionIDNumT, SessionIDT,
 		TerminalIDNumT, TerminalIDT,

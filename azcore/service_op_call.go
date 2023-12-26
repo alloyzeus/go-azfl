@@ -83,7 +83,7 @@ type ServiceOpCallInput[
 		SessionIDNumT, SessionIDT,
 		TerminalIDNumT, TerminalIDT,
 		UserIDNumT, UserIDT,
-		SessionSubjectT, SessionT],
+		SessionSubjectT],
 	ServiceOpIdempotencyKeyT ServiceOpIdempotencyKey,
 	ContextT ServiceOpCallContext[
 		SessionIDNumT, SessionIDT, TerminalIDNumT, TerminalIDT,
@@ -107,7 +107,7 @@ type ServiceOpCallContext[
 		SessionIDNumT, SessionIDT,
 		TerminalIDNumT, TerminalIDT,
 		UserIDNumT, UserIDT,
-		SessionSubjectT, SessionT],
+		SessionSubjectT],
 	ServiceOpIdempotencyKeyT ServiceOpIdempotencyKey,
 ] interface {
 	ServiceOpContext

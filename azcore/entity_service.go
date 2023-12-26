@@ -32,7 +32,7 @@ type EntityOpCallContext[
 		SessionIDNumT, SessionIDT,
 		TerminalIDNumT, TerminalIDT,
 		UserIDNumT, UserIDT,
-		SessionSubjectT, SessionT],
+		SessionSubjectT],
 	ServiceOpIdempotencyKeyT ServiceOpIdempotencyKey,
 ] interface {
 	EntityOpContext
@@ -76,7 +76,7 @@ type EntityMutatingOpCallContext[
 		SessionIDNumT, SessionIDT,
 		TerminalIDNumT, TerminalIDT,
 		UserIDNumT, UserIDT,
-		SessionSubjectT, SessionT],
+		SessionSubjectT],
 	ServiceOpCallContextT ServiceOpCallContext[
 		SessionIDNumT, SessionIDT,
 		TerminalIDNumT, TerminalIDT,

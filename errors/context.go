@@ -12,6 +12,10 @@ func IsContextError(err error) bool {
 	return ok
 }
 
+func CtxM(msg string, fields ...EntityError) ContextError {
+	return &contextError{inner: Msg(msg), fields: copyFieldSet(fields)}
+}
+
 func Context(details error, fields ...EntityError) ContextError {
 	return &contextError{inner: details, fields: copyFieldSet(fields)}
 }

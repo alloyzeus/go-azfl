@@ -34,6 +34,9 @@ type ID[IDNumT IDNum] interface {
 
 	// AZIDNum returns only the ID-num part of this ID.
 	AZIDNum() IDNumT
+
+	// IsStaticallyValid performs integrity check to the held value.
+	IsStaticallyValid() bool
 }
 
 // IDFromString is a function which creates an instance of ID
