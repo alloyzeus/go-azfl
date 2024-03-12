@@ -76,7 +76,8 @@ func IsEntInvalidError(err error) bool {
 
 const (
 	// ErrEntityNotFound is used when the entity with the specified name
-	// cannot be found in the system.
+	// cannot be found in the system or the system does not want to tell
+	// existence of the entity.
 	ErrEntityNotFound = valueConstantErrorDescriptor("not found")
 
 	// ErrEntityConflict is used when the process of creating a new entity
@@ -86,6 +87,12 @@ const (
 	// ErrEntityUnreachable is used to describe that the system is unable
 	// to reach the system responsible of the specified entity.
 	ErrEntityUnreachable = valueConstantErrorDescriptor("unreachable")
+
+	// ErrEntityGone is used to describe when an entity is no longer available.
+	//
+	// If the entity was sensitive, it's recommended to use ErrEntityNotFound
+	// instaed.
+	ErrEntityGone = valueConstantErrorDescriptor("gone")
 )
 
 func EntNotFound(entityIdentifier string, details error) EntityError {
